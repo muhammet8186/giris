@@ -1,1 +1,1258 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle">Yönetim ve Erişim Merkezi - Giriş Paneli</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        temsa: {
+                            red: '#E30613',
+                            darkRed: '#B8000B',
+                            dark: '#121619',
+                            slate: '#1E242B',
+                            gray: '#2C343E',
+                            lightGray: '#F3F4F6'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome İkonları -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FFFFFF !important;
+            background-image: radial-gradient(rgba(0, 0, 0, 0.08) 1.2px, transparent 1.2px) !important;
+            background-size: 24px 24px !important;
+        }
 
+        /* 20 ADET ULTRA MODERN TEMA, PANEL VE TEMA UYUMLU BUTON TONLARI */
+        body.theme-dark { --panel-bg: rgba(15, 23, 42, 0.95); --quick-panel-bg: rgba(241, 245, 249, 0.95); --panel-border: rgba(51, 65, 85, 0.8); --panel-text: #F8FAFC; --panel-muted: #94A3B8; --primary-accent: #E30613; --primary-hover: #B8000B; --btn-bg: #1A2234; --btn-border: rgba(227, 6, 19, 0.4); }
+        body.theme-light { --panel-bg: rgba(30, 41, 59, 0.95); --quick-panel-bg: rgba(241, 245, 249, 0.95); --panel-border: rgba(71, 85, 105, 0.8); --panel-text: #F8FAFC; --panel-muted: #94A3B8; --primary-accent: #E30613; --primary-hover: #B8000B; --btn-bg: #27303F; --btn-border: rgba(227, 6, 19, 0.4); }
+        body.theme-emerald { --panel-bg: rgba(2, 44, 34, 0.95); --quick-panel-bg: rgba(236, 253, 245, 0.95); --panel-border: rgba(16, 185, 129, 0.3); --panel-text: #ECFDF5; --panel-muted: #6EE7B7; --primary-accent: #10B981; --primary-hover: #059669; --btn-bg: #064E3B; --btn-border: rgba(16, 185, 129, 0.4); }
+        body.theme-ocean { --panel-bg: rgba(11, 25, 44, 0.95); --quick-panel-bg: rgba(240, 249, 255, 0.95); --panel-border: rgba(0, 180, 216, 0.3); --panel-text: #F0F8FF; --panel-muted: #90E0EF; --primary-accent: #00B4D8; --primary-hover: #0077B6; --btn-bg: #112A46; --btn-border: rgba(0, 180, 216, 0.4); }
+        body.theme-purple { --panel-bg: rgba(26, 11, 46, 0.95); --quick-panel-bg: rgba(250, 245, 255, 0.95); --panel-border: rgba(168, 85, 247, 0.3); --panel-text: #FAF5FF; --panel-muted: #D8B4FE; --primary-accent: #A855F7; --primary-hover: #7E22CE; --btn-bg: #2E154F; --btn-border: rgba(168, 85, 247, 0.4); }
+        body.theme-sunset { --panel-bg: rgba(39, 19, 2, 0.95); --quick-panel-bg: rgba(255, 247, 237, 0.95); --panel-border: rgba(249, 115, 22, 0.3); --panel-text: #FFF7ED; --panel-muted: #FDBA74; --primary-accent: #F97316; --primary-hover: #C2410C; --btn-bg: #4A2208; --btn-border: rgba(249, 115, 22, 0.4); }
+        body.theme-rose { --panel-bg: rgba(42, 8, 19, 0.95); --quick-panel-bg: rgba(255, 241, 242, 0.95); --panel-border: rgba(244, 63, 94, 0.3); --panel-text: #FFF1F2; --panel-muted: #FDA4AF; --primary-accent: #F43F5E; --primary-hover: #BE123C; --btn-bg: #4C1122; --btn-border: rgba(244, 63, 94, 0.4); }
+        body.theme-teal { --panel-bg: rgba(4, 47, 46, 0.95); --quick-panel-bg: rgba(240, 253, 250, 0.95); --panel-border: rgba(20, 184, 166, 0.3); --panel-text: #F0FDFA; --panel-muted: #5EEAD4; --primary-accent: #14B8A6; --primary-hover: #0F766E; --btn-bg: #0F5956; --btn-border: rgba(20, 184, 166, 0.4); }
+        body.theme-gold { --panel-bg: rgba(28, 25, 23, 0.95); --quick-panel-bg: rgba(254, 252, 232, 0.95); --panel-border: rgba(234, 179, 8, 0.3); --panel-text: #FEFCE8; --panel-muted: #FDE047; --primary-accent: #EAB308; --primary-hover: #CA8A04; --btn-bg: #3E3830; --btn-border: rgba(234, 179, 8, 0.4); }
+        body.theme-indigo { --panel-bg: rgba(15, 23, 42, 0.95); --quick-panel-bg: rgba(238, 242, 255, 0.95); --panel-border: rgba(99, 102, 241, 0.3); --panel-text: #EEF2FF; --panel-muted: #A5B4FC; --primary-accent: #6366F1; --primary-hover: #4338CA; --btn-bg: #1E2548; --btn-border: rgba(99, 102, 241, 0.4); }
+        
+        body.theme-cyber { --panel-bg: rgba(15, 23, 42, 0.95); --quick-panel-bg: rgba(236, 254, 255, 0.95); --panel-border: rgba(6, 182, 212, 0.4); --panel-text: #ECFEFF; --panel-muted: #67E8F9; --primary-accent: #06B6D4; --primary-hover: #0891B2; --btn-bg: #10314C; --btn-border: rgba(6, 182, 212, 0.4); }
+        body.theme-crimson { --panel-bg: rgba(30, 10, 15, 0.95); --quick-panel-bg: rgba(255, 241, 242, 0.95); --panel-border: rgba(225, 29, 72, 0.4); --panel-text: #FFF1F2; --panel-muted: #FDA4AF; --primary-accent: #E11D48; --primary-hover: #BE123C; --btn-bg: #481420; --btn-border: rgba(225, 29, 72, 0.4); }
+        body.theme-midnight { --panel-bg: rgba(3, 7, 18, 0.95); --quick-panel-bg: rgba(243, 244, 246, 0.95); --panel-border: rgba(55, 65, 81, 0.8); --panel-text: #F9FAFB; --panel-muted: #9CA3AF; --primary-accent: #374151; --primary-hover: #1F2937; --btn-bg: #111827; --btn-border: rgba(55, 65, 81, 0.5); }
+        body.theme-lime { --panel-bg: rgba(20, 30, 10, 0.95); --quick-panel-bg: rgba(247, 254, 231, 0.95); --panel-border: rgba(132, 204, 22, 0.4); --panel-text: #F7FEE7; --panel-muted: #BEF264; --primary-accent: #84CC16; --primary-hover: #65A30D; --btn-bg: #2A400E; --btn-border: rgba(132, 204, 22, 0.4); }
+        body.theme-amethyst { --panel-bg: rgba(24, 9, 39, 0.95); --quick-panel-bg: rgba(250, 245, 255, 0.95); --panel-border: rgba(192, 132, 252, 0.4); --panel-text: #FAF5FF; --panel-muted: #E9D5FF; --primary-accent: #C084FC; --primary-hover: #A855F7; --btn-bg: #341257; --btn-border: rgba(192, 132, 252, 0.4); }
+        body.theme-coral { --panel-bg: rgba(35, 15, 15, 0.95); --quick-panel-bg: rgba(255, 241, 242, 0.95); --panel-border: rgba(251, 113, 133, 0.4); --panel-text: #FFF1F2; --panel-muted: #FECDD3; --primary-accent: #FB7185; --primary-hover: #F43F5E; --btn-bg: #4E2025; --btn-border: rgba(251, 113, 133, 0.4); }
+        body.theme-sapphire { --panel-bg: rgba(10, 25, 47, 0.95); --quick-panel-bg: rgba(239, 246, 255, 0.95); --panel-border: rgba(59, 130, 246, 0.4); --panel-text: #EFF6FF; --panel-muted: #93C5FD; --primary-accent: #3B82F6; --primary-hover: #1D4ED8; --btn-bg: #11325F; --btn-border: rgba(59, 130, 246, 0.4); }
+        body.theme-bronze { --panel-bg: rgba(28, 18, 8, 0.95); --quick-panel-bg: rgba(255, 251, 235, 0.95); --panel-border: rgba(217, 119, 6, 0.4); --panel-text: #FFFBEB; --panel-muted: #FDE68A; --primary-accent: #D97706; --primary-hover: #B45309; --btn-bg: #44290E; --btn-border: rgba(217, 119, 6, 0.4); }
+        body.theme-mint { --panel-bg: rgba(6, 30, 22, 0.95); --quick-panel-bg: rgba(240, 253, 250, 0.95); --panel-border: rgba(45, 212, 191, 0.4); --panel-text: #CCFBF1; --panel-muted: #5EEAD4; --primary-accent: #2DD4BF; --primary-hover: #0D9488; --btn-bg: #0E4939; --btn-border: rgba(45, 212, 191, 0.4); }
+        body.theme-carbon { --panel-bg: rgba(18, 18, 18, 0.95); --quick-panel-bg: rgba(243, 244, 246, 0.95); --panel-border: rgba(75, 85, 99, 0.6); --panel-text: #F3F4F6; --panel-muted: #9CA3AF; --primary-accent: #4B5563; --primary-hover: #374151; --btn-bg: #262626; --btn-border: rgba(75, 85, 99, 0.5); }
+
+        /* Dinamik Panel ve Renk Sınıfları */
+        .modern-panel { background-color: var(--panel-bg) !important; border-color: var(--panel-border) !important; color: var(--panel-text) !important; }
+        .quick-access-panel { background-color: var(--quick-panel-bg) !important; border-color: var(--panel-border) !important; color: #1E293B !important; }
+        .quick-access-panel h3 { color: #0F172A !important; }
+        .quick-access-panel p { color: #475569 !important; }
+        .modern-text { color: var(--panel-text) !important; }
+        .modern-muted { color: var(--panel-muted) !important; }
+        .dynamic-btn { background-color: var(--primary-accent) !important; color: #FFFFFF !important; }
+        .dynamic-btn:hover { background-color: var(--primary-hover) !important; }
+
+        /* Hızlı Erişim Buton Kartları */
+        .quick-btn-card {
+            background-color: var(--btn-bg) !important;
+            border: 1px solid var(--btn-border) !important;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .quick-btn-card:hover {
+            border-color: var(--primary-accent) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+        }
+        .quick-btn-card:hover .quick-title {
+            color: var(--primary-accent) !important;
+        }
+
+        /* Açık Kutucuklar (Light Inputs) */
+        .open-input {
+            background-color: #F8FAFC !important;
+            border-color: #CBD5E1 !important;
+            color: #0F172A !important;
+        }
+        .open-input::placeholder {
+            color: #64748B !important;
+        }
+        .open-input:focus {
+            background-color: #FFFFFF !important;
+            border-color: var(--primary-accent) !important;
+            outline: none;
+        }
+    </style>
+</head>
+<body id="mainBody" class="theme-dark text-slate-800 min-h-screen flex flex-col justify-between relative overflow-x-hidden transition-colors duration-300">
+
+    <!-- ÜST MENÜ (HEADER NAVBAR) -->
+    <header id="mainHeader" class="w-full modern-panel backdrop-blur-xl border-b sticky top-0 z-40 px-6 py-4 transition-all shadow-xl">
+        <div class="max-w-7xl mx-auto flex items-center justify-between relative min-h-[44px]">
+            
+            <!-- Sol / Başlık Alanı -->
+            <div id="brandHeaderContainer" class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl dynamic-btn flex items-center justify-center font-black text-lg shadow-md shadow-black/30">
+                    <i class="fa-solid fa-fingerprint"></i>
+                </div>
+                <div>
+                    <h1 id="brandTitleText" class="text-base sm:text-lg font-black tracking-wider modern-text uppercase transition-colors duration-300">Yönetim ve Erişim Merkezi</h1>
+                    <p class="text-[10px] font-semibold modern-muted tracking-widest uppercase">Güvenli Erişim Paneli</p>
+                </div>
+            </div>
+
+            <!-- Sağ Alan: Tema Değiştirici & Kullanıcı Bilgisi & Çıkış -->
+            <div class="ml-auto flex items-center gap-3 z-10">
+                <!-- Tema Değiştir Butonu -->
+                <button onclick="toggleTheme()" id="themeToggleBtn" class="px-3.5 py-2 text-xs font-bold modern-text bg-black/30 hover:bg-black/50 rounded-2xl transition-all duration-200 border border-white/10 flex items-center gap-2.5 shadow-md group" title="Temayı Değiştir (20 Modern Tema)">
+                    <i id="themeIcon" class="fa-solid fa-palette text-amber-400 group-hover:rotate-45 transition-transform duration-300 text-sm"></i>
+                    <span id="themeLabelName" class="hidden sm:inline">Dark</span>
+                </button>
+
+                <div id="navUserArea" class="hidden items-center gap-3">
+                    <div id="userBadgeBox" class="flex items-center gap-2.5 modern-panel border px-3.5 py-1.5 rounded-2xl shadow-md">
+                        <div class="w-7 h-7 rounded-xl dynamic-btn flex items-center justify-center font-bold text-xs shadow-inner">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <div class="text-left">
+                            <p id="navUserName" class="text-xs font-bold modern-text">Kullanıcı</p>
+                            <p id="navUserRole" class="text-[10px] font-semibold modern-muted uppercase tracking-wider">Rol</p>
+                        </div>
+                    </div>
+                    <button onclick="handleLogout()" class="p-2.5 text-slate-300 hover:text-white bg-black/30 hover:bg-red-600 rounded-2xl transition-all duration-200 border border-white/10 group shadow-md" title="Çıkış Yap">
+                        <i class="fa-solid fa-right-from-bracket group-hover:scale-110 transition-transform"></i>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- ANA İÇERİK KAPSAYICISI -->
+    <main id="mainContainer" class="flex-grow flex items-center justify-center p-4 sm:p-6 py-10 transition-all duration-300">
+        <div class="w-full max-w-5xl space-y-8">
+
+            <!-- GİRİŞ FORMU KARTI -->
+            <div id="loginCard" class="max-w-md mx-auto modern-panel backdrop-blur-2xl border rounded-3xl p-8 shadow-2xl relative overflow-hidden transition-all duration-500">
+                <div class="absolute top-0 left-0 right-0 h-1.5 dynamic-btn"></div>
+
+                <div class="text-center mb-8 pt-2">
+                    <div class="inline-flex items-center justify-center w-16 h-16 dynamic-btn rounded-2xl mb-4 shadow-lg shadow-black/30">
+                        <i class="fa-solid fa-shield-halved text-2xl"></i>
+                    </div>
+                    <h2 id="loginTitleText" class="text-2xl font-black tracking-tight modern-text transition-colors duration-300">Sistem Girişi</h2>
+                    <p id="loginSubtitleText" class="text-xs modern-muted mt-1.5 font-medium">Lütfen devam etmek için şifrenizi doğrulayın (Varsayılan: yonetici)</p>
+                </div>
+
+                <form onsubmit="handleLogin(event)" class="space-y-5">
+                    <div>
+                        <label id="loginPassLabel" class="block text-[11px] font-extrabold uppercase tracking-wider modern-text mb-2">Giriş Şifresi</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+                                <i class="fa-solid fa-lock text-sm"></i>
+                            </span>
+                            <input type="text" id="passwordInput" required
+                                class="w-full pl-10 pr-4 py-3 open-input border rounded-2xl text-sm transition-all shadow-inner font-mono"
+                                placeholder="Şifrenizi yazınız...">
+                        </div>
+                    </div>
+
+                    <!-- Hata Mesajı -->
+                    <div id="errorAlert" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-2xl text-xs flex items-center gap-2.5 shadow-md">
+                        <i class="fa-solid fa-triangle-exclamation text-red-500 text-sm"></i>
+                        <span class="font-semibold">Hatalı şifre! Lütfen tekrar deneyin.</span>
+                    </div>
+
+                    <button type="submit" class="w-full py-3.5 dynamic-btn font-extrabold text-xs uppercase tracking-wider rounded-2xl shadow-xl transition-all duration-200 flex items-center justify-center gap-2 group">
+                        <span>Giriş Yap</span>
+                        <i class="fa-solid fa-arrow-right text-xs group-hover:translate-x-1 transition-transform"></i>
+                    </button>
+                </form>
+            </div>
+
+            <!-- KONTROL PANELİ ALANI -->
+            <div id="dashboardSection" class="hidden space-y-6">
+
+                <!-- 1. BÖLÜM: BAŞLIK AYARI (Yalnızca Admin) -->
+                <div id="adminPortalSettings" class="hidden modern-panel border rounded-3xl p-6 shadow-xl relative transition-colors duration-300">
+                    <div class="flex items-center justify-between mb-4 pb-3 border-b border-white/10">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center border border-purple-500/30">
+                                <i class="fa-solid fa-heading text-sm"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-bold modern-text transition-colors duration-300">Sistem Başlık Ayarı</h3>
+                                <p class="text-[11px] modern-muted">Ana başlığı canlı olarak güncelleyin</p>
+                            </div>
+                        </div>
+                    </div>
+                    <form onsubmit="handleSavePortalTitle(event)" class="flex flex-col sm:flex-row gap-3">
+                        <input type="text" id="portalTitleInput" required
+                            class="flex-grow px-3.5 py-2.5 open-input border rounded-xl text-xs shadow-sm"
+                            placeholder="Yeni başlık yazın...">
+                        <button type="submit" class="px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-semibold text-xs rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 flex-shrink-0">
+                            <i class="fa-solid fa-floppy-disk"></i>
+                            <span>Başlığı Güncelle</span>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- 2. BÖLÜM: BUTON YÖNETİMİ (Yalnızca Admin) -->
+                <div id="adminButtonSection" class="hidden space-y-6">
+                    <div class="modern-panel border rounded-3xl p-6 shadow-xl relative transition-colors duration-300">
+                        <div class="flex items-center justify-between mb-5 pb-3 border-b border-white/10">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-8 h-8 rounded-xl dynamic-btn flex items-center justify-center">
+                                    <i id="btnPanelIcon" class="fa-solid fa-plus text-sm"></i>
+                                </div>
+                                <div>
+                                    <h3 id="btnPanelTitleText" class="text-sm font-bold modern-text transition-colors duration-300">Yeni Buton Ekle</h3>
+                                    <p class="text-[11px] modern-muted">Sayfaya yeni bir internet linki butonu tanımlayın veya güncelleyin</p>
+                                </div>
+                            </div>
+                            <span class="text-[10px] dynamic-btn font-extrabold px-2 py-0.5 rounded tracking-wide uppercase">Yönetici Paneli</span>
+                        </div>
+
+                        <form onsubmit="handleSaveButton(event)" class="grid grid-cols-1 md:grid-cols-12 gap-4">
+                            <input type="hidden" id="editButtonIdInput" value="">
+
+                            <div class="md:col-span-4">
+                                <label class="block text-[11px] font-bold uppercase modern-muted mb-1.5">Buton Adı</label>
+                                <input type="text" id="newBtnName" required
+                                    class="w-full px-3 py-2.5 open-input border rounded-xl text-xs shadow-sm"
+                                    placeholder="Örn: Kurumsal Web">
+                            </div>
+
+                            <div class="md:col-span-5">
+                                <label class="block text-[11px] font-bold uppercase modern-muted mb-1.5">İnternet Linki (URL)</label>
+                                <input type="url" id="newBtnUrl" required
+                                    class="w-full px-3 py-2.5 open-input border rounded-xl text-xs shadow-sm"
+                                    placeholder="https://www.ornek.com">
+                            </div>
+
+                            <div class="md:col-span-3 flex items-end gap-2">
+                                <button type="submit" id="saveButtonSubmit" class="w-full py-2.5 dynamic-btn font-semibold text-xs rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-floppy-disk text-xs"></i>
+                                    <span id="saveButtonText">Butonu Ekle</span>
+                                </button>
+                                <button type="button" id="cancelButtonEditBtn" onclick="resetButtonForm()" class="hidden py-2.5 px-3 bg-slate-700 hover:bg-slate-600 text-white text-xs rounded-xl transition-all" title="İptal">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- HIZLI ERİŞİM MENÜSÜ -->
+                <div class="quick-access-panel border backdrop-blur-xl rounded-3xl p-6 shadow-xl relative overflow-hidden transition-colors duration-300">
+                    <div class="absolute top-0 left-0 right-0 h-1.5 dynamic-btn"></div>
+                    <div class="flex items-center justify-between mb-5 pb-3 border-b border-black/10 pt-1">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-xl dynamic-btn flex items-center justify-center text-white shadow-md">
+                                <i class="fa-solid fa-link text-sm"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-bold transition-colors duration-300">Hızlı Erişim Menüsü</h3>
+                                <p class="text-[11px]">Tanımlanmış internet bağlantı butonları (Yönetici isterseniz sürükleyerek sıralayabilirsiniz)</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="dynamicButtonsList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 justify-items-center min-h-[120px]">
+                        <!-- Firebase Verileri -->
+                    </div>
+                </div>
+
+                <!-- 3. BÖLÜM: KULLANICI / ŞİFRE YÖNETİMİ (Yalnızca Admin) -->
+                <div id="adminUserSection" class="hidden space-y-6 pt-4">
+                    <div class="modern-panel border rounded-3xl p-6 shadow-xl relative transition-colors duration-300">
+                        <div class="flex items-center justify-between mb-5 pb-3 border-b border-white/10">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-8 h-8 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center border border-blue-500/30">
+                                    <i id="userPanelIcon" class="fa-solid fa-user-plus text-sm"></i>
+                                </div>
+                                <div>
+                                    <h3 id="userPanelTitleText" class="text-sm font-bold modern-text transition-colors duration-300">Sisteme Kullanıcı / Şifre Tanımla</h3>
+                                    <p class="text-[11px] modern-muted">Yeni bir yönetici veya standart kullanıcı hesabı oluşturun veya güncelleyin</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <form onsubmit="handleSaveUser(event)" class="grid grid-cols-1 md:grid-cols-12 gap-4">
+                            <input type="hidden" id="editUserIdInput" value="">
+
+                            <div class="md:col-span-4">
+                                <label class="block text-[11px] font-bold uppercase modern-muted mb-1.5">Kullanıcı Adı / Unvanı</label>
+                                <input type="text" id="newUserNameInput" required
+                                    class="w-full px-3 py-2.5 open-input border rounded-xl text-xs shadow-sm"
+                                    placeholder="Örn: Ahmet Yılmaz">
+                            </div>
+
+                            <div class="md:col-span-3">
+                                <label class="block text-[11px] font-bold uppercase modern-muted mb-1.5">Kullanıcı Rolü</label>
+                                <select id="newUserRoleInput" class="w-full px-3 py-2.5 open-input border rounded-xl text-xs shadow-sm">
+                                    <option value="user">Standart Kullanıcı</option>
+                                    <option value="admin">Sistem Yöneticisi</option>
+                                </select>
+                            </div>
+
+                            <div class="md:col-span-3">
+                                <label class="block text-[11px] font-bold uppercase modern-muted mb-1.5">Giriş Şifresi</label>
+                                <input type="text" id="newUserPassInput" required
+                                    class="w-full px-3 py-2.5 open-input border rounded-xl text-xs shadow-sm font-mono"
+                                    placeholder="Şifre belirleyin">
+                            </div>
+
+                            <div class="md:col-span-2 flex items-end gap-2">
+                                <button type="submit" id="saveUserSubmitBtn" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white font-semibold text-xs rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-user-check text-xs text-emerald-400"></i>
+                                    <span id="saveUserBtnText">Şifre Ekle</span>
+                                </button>
+                                <button type="button" id="cancelUserEditBtn" onclick="resetUserForm()" class="hidden py-2.5 px-3 bg-slate-700 hover:bg-slate-600 text-white text-xs rounded-xl transition-all" title="İptal">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Kayıtlı Kullanıcılar Listesi -->
+                    <div class="modern-panel border rounded-3xl p-6 shadow-xl transition-colors duration-300">
+                        <div class="flex items-center justify-between mb-5 pb-3 border-b border-white/10">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-8 h-8 rounded-xl bg-black/30 text-blue-400 flex items-center justify-center border border-white/10">
+                                    <i class="fa-solid fa-users text-sm"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-sm font-bold modern-text transition-colors duration-300">Sistem Kullanıcıları ve Şifreleri</h3>
+                                    <p class="text-[11px] modern-muted">Sisteme kayıtlı kullanıcıların adı, rolü ve şifre bilgileri</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="dynamicUsersList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 min-h-[100px]">
+                            <!-- Firebase Verileri -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. BÖLÜM: FIREBASE KONFİGÜRASYON FORMU & LİSTESİ (Yalnızca Admin) -->
+                <div id="adminFirebaseConfigSection" class="hidden modern-panel border rounded-3xl p-6 shadow-xl relative transition-colors duration-300 pt-4">
+                    <div class="flex items-center justify-between mb-4 pb-3 border-b border-white/10">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center border border-amber-500/30">
+                                <i id="firebaseConfigPanelIcon" class="fa-solid fa-database text-sm"></i>
+                            </div>
+                            <div>
+                                <h3 id="firebaseConfigPanelTitleText" class="text-sm font-bold modern-text transition-colors duration-300">Firebase Konfigürasyon Tanımla</h3>
+                                <p class="text-[11px] modern-muted">Yeni bir Firebase kök başlığı ve konfigürasyon kaydı oluşturun</p>
+                            </div>
+                        </div>
+                    </div>
+                    <form onsubmit="handleSaveFirebaseConfig(event)" class="space-y-4">
+                        <input type="hidden" id="editFirebaseConfigIdInput" value="">
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase modern-muted mb-1.5">Firebase Kök Başlığı (Root Path)</label>
+                            <input type="text" id="firebaseRootPathInput" required
+                                class="w-full px-3.5 py-2.5 open-input border rounded-xl text-xs shadow-sm font-mono"
+                                placeholder="Fireebase kök başlığı">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase modern-muted mb-1.5">Konfigürasyon Verisi</label>
+                            <textarea id="firebaseConfigInput" rows="7" required
+                                class="w-full px-3.5 py-2.5 open-input border rounded-xl text-xs shadow-sm font-mono"
+                                placeholder="{
+  apiKey: '',
+  authDomain: '',
+  databaseURL: '',
+  projectId: '',
+  storageBucket: '',
+  messagingSenderId: '',
+  appId: '',
+  measurementId: ''
+}"></textarea>
+                        </div>
+                        <div class="flex items-center justify-end gap-2">
+                            <button type="submit" id="saveFirebaseConfigBtnText" class="px-5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-semibold text-xs rounded-xl shadow-lg transition-all flex items-center gap-2">
+                                <i class="fa-solid fa-floppy-disk"></i>
+                                <span>Konfigürasyonu Kaydet</span>
+                            </button>
+                            <button type="button" id="cancelFirebaseConfigEditBtn" onclick="resetFirebaseConfigForm()" class="hidden py-2.5 px-3 bg-slate-700 hover:bg-slate-600 text-white text-xs rounded-xl transition-all" title="İptal">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Kayıtlı Firebase Konfigürasyonları Listesi -->
+                <div id="adminFirebaseConfigsListSection" class="hidden modern-panel border rounded-3xl p-6 shadow-xl transition-colors duration-300">
+                    <div class="flex items-center justify-between mb-5 pb-3 border-b border-white/10">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-xl bg-black/30 text-amber-400 flex items-center justify-center border border-white/10">
+                                <i class="fa-solid fa-server text-sm"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-bold modern-text transition-colors duration-300">Kayıtlı Firebase Konfigürasyonları</h3>
+                                <p class="text-[11px] modern-muted">Sisteme kayıtlı kök yollar ve konfigürasyon verileri</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="dynamicFirebaseConfigsList" class="grid grid-cols-1 md:grid-cols-2 gap-4 min-h-[100px]">
+                        <!-- Firebase Verileri -->
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- MODERN ŞİFRE ONAY MODALI (SİLME İŞLEMİ İÇİN) -->
+    <div id="passwordConfirmModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        <div class="modern-panel border rounded-3xl p-6 max-w-sm w-full shadow-2xl space-y-4 relative">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-red-500/20 text-red-500 flex items-center justify-center border border-red-500/30 flex-shrink-0">
+                    <i class="fa-solid fa-shield-halved text-base"></i>
+                </div>
+                <div>
+                    <h4 class="text-sm font-bold modern-text">Yönetici Şifre Onayı</h4>
+                    <p class="text-[11px] modern-muted">Silme işlemini onaylamak için yönetici şifrenizi girin</p>
+                </div>
+            </div>
+            <form onsubmit="confirmDeleteFirebaseConfig(event)" class="space-y-3">
+                <input type="password" id="confirmPasswordInput" required
+                    class="w-full px-3.5 py-2.5 open-input border rounded-xl text-xs shadow-sm font-mono"
+                    placeholder="Yönetici şifreniz...">
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closePasswordModal()" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white text-xs rounded-xl transition-all">İptal</button>
+                    <button type="submit" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold rounded-xl transition-all shadow-lg">Sil</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- BİLDİRİM ALANI (TOAST) -->
+    <div id="toastContainer" class="fixed bottom-6 right-6 z-50 flex flex-col gap-3 max-w-sm w-full pointer-events-none"></div>
+
+    <!-- ALT BİLGİ (FOOTER) -->
+    <footer id="mainFooter" class="w-full modern-panel backdrop-blur-md border-t py-4 px-6 text-center text-xs modern-muted transition-colors duration-300 shadow-inner">
+        <p id="footerText">© 2026 Yönetim ve Erişim Merkezi. Tüm hakları saklıdır.</p>
+    </footer>
+
+    <!-- FIREBASE SDK & TEMA YÖNETİMİ -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, set, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // ====================================================================================
+        // ⚙️ KOD İÇİNDEN DEĞİŞTİRİLEBİLİR FIREBASE VE KÖK YOL (ROOT PATH) AYARLARI
+        // Kendi Firebase bilgilerinizi ve kök yolunuzu bu alandan kolayca güncelleyebilirsiniz:
+        // ====================================================================================
+        const defaultFirebaseConfig = {
+            apiKey: "",
+            authDomain: "",
+            databaseURL: "",
+            projectId: "",
+            storageBucket: "",
+            messagingSenderId: "",
+            appId: "",
+            measurementId: ""
+        };
+
+        // Firebase Veritabanı Kök Yolu (Root Path)
+let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli";
+        // ====================================================================================
+
+        let db = null;
+        try {
+            if (defaultFirebaseConfig.apiKey && defaultFirebaseConfig.databaseURL) {
+                let activeApp = initializeApp(defaultFirebaseConfig);
+                db = getDatabase(activeApp);
+            }
+        } catch (e) {
+            console.warn("Firebase bağlantısı yapılandırılmamış.");
+        }
+
+        const TITLE_DB_PATH = () => currentRootPath + '/baslik';
+        const FIREBASE_CONFIGS_DB_PATH = () => currentRootPath + '/firebaseConfigs';
+        const USERS_DB_PATH = () => currentRootPath + '/kullanicilar';
+        const BUTTONS_DB_PATH = () => currentRootPath + '/butonlar';
+
+        let currentUser = null;
+        let globalButtons = {};
+        let globalUsers = {
+            "default_admin": {
+                title: "Sistem Yöneticisi",
+                role: "admin",
+                password: "yonetici"
+            }
+        };
+        let globalFirebaseConfigs = {};
+        let systemTitle = "Yönetim ve Erişim Merkezi";
+        let draggedButtonId = null;
+        let pendingDeleteConfigId = null;
+
+        // 20 ADET ULTRA MODERN TEMA LİSTESİ
+        const themesList = [
+            { id: "dark", name: "1. Temsa Kırmızı", icon: "fa-moon" },
+            { id: "light", name: "2. Slate Koyu", icon: "fa-circle-half-stroke" },
+            { id: "emerald", name: "3. Zümrüt Yeşili", icon: "fa-gem" },
+            { id: "ocean", name: "4. Okyanus Mavi", icon: "fa-water" },
+            { id: "purple", name: "5. Asil Mor", icon: "fa-wand-magic-sparkles" },
+            { id: "sunset", name: "6. Gün Batımı", icon: "fa-sun-plant-wilt" },
+            { id: "rose", name: "7. Gül Pembe", icon: "fa-heart" },
+            { id: "teal", name: "8. Kuzey Turkuaz", icon: "fa-compass" },
+            { id: "gold", name: "9. Siber Altın", icon: "fa-crown" },
+            { id: "indigo", name: "10. Gece İndigo", icon: "fa-meteor" },
+            { id: "cyber", name: "11. Siber Mavi", icon: "fa-bolt" },
+            { id: "crimson", name: "12. Kan Kırmızı", icon: "fa-fire" },
+            { id: "midnight", name: "13. Gece Yarısı", icon: "fa-star" },
+            { id: "lime", name: "14. Neon Limon", icon: "fa-lemon" },
+            { id: "amethyst", name: "15. Ametist Mor", icon: "fa-eye" },
+            { id: "coral", name: "16. Mercan Turuncu", icon: "fa-fish" },
+            { id: "sapphire", name: "17. Safir Mavi", icon: "fa-shield-halved" },
+            { id: "bronze", name: "18. Bronz Kehribar", icon: "fa-coins" },
+            { id: "mint", name: "19. Ferah Nane", icon: "fa-leaf" },
+            { id: "carbon", name: "20. Karbon Siyah", icon: "fa-atom" }
+        ];
+
+        window.toggleTheme = function() {
+            const currentTheme = localStorage.getItem("sistem_temasi") || "dark";
+            let currentIndex = themesList.findIndex(t => t.id === currentTheme);
+            if (currentIndex === -1) currentIndex = 0;
+            
+            const nextIndex = (currentIndex + 1) % themesList.length;
+            const newTheme = themesList[nextIndex].id;
+            
+            localStorage.setItem("sistem_temasi", newTheme);
+            applyTheme(newTheme);
+            showToast(`Tema: ${themesList[nextIndex].name}`, "info");
+        }
+
+        function applyTheme(theme) {
+            const body = document.getElementById("mainBody");
+            const themeLabel = document.getElementById("themeLabelName");
+            const themeIcon = document.getElementById("themeIcon");
+
+            themesList.forEach(t => body.classList.remove(`theme-${t.id}`));
+            body.classList.add(`theme-${theme}`);
+
+            const themeObj = themesList.find(t => t.id === theme) || themesList[0];
+            if (themeLabel) themeLabel.innerText = themeObj.name;
+            if (themeIcon) themeIcon.className = `fa-solid ${themeObj.icon} text-amber-400 group-hover:rotate-45 transition-transform duration-300 text-sm`;
+
+            renderDynamicButtons();
+            renderDynamicUsers();
+            renderDynamicFirebaseConfigs();
+        }
+
+        // GERÇEK ZAMANLI DİNLEYİCİLERİ BAŞLAT
+        function initListeners() {
+            if (!db || !currentRootPath) return;
+
+            onValue(ref(db, TITLE_DB_PATH()), (snapshot) => {
+                systemTitle = snapshot.val() || "Yönetim ve Erişim Merkezi";
+                updateSystemTitleUI(systemTitle);
+            });
+
+            onValue(ref(db, FIREBASE_CONFIGS_DB_PATH()), (snapshot) => {
+                globalFirebaseConfigs = snapshot.val() || {};
+                renderDynamicFirebaseConfigs();
+            });
+
+            onValue(ref(db, BUTTONS_DB_PATH()), (snapshot) => {
+                globalButtons = snapshot.val() || {};
+                renderDynamicButtons();
+            });
+
+            onValue(ref(db, USERS_DB_PATH()), (snapshot) => {
+                if (snapshot.exists()) {
+                    globalUsers = snapshot.val() || {};
+                }
+                renderDynamicUsers();
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem("sistem_temasi") || "dark";
+            applyTheme(savedTheme);
+            initListeners();
+            resetFirebaseConfigForm();
+        });
+
+        function updateSystemTitleUI(title) {
+            document.getElementById("brandTitleText").innerText = title;
+            document.getElementById("pageTitle").innerText = title + " - Giriş Paneli";
+            document.getElementById("footerText").innerText = "© 2026 " + title + ". Tüm hakları saklıdır.";
+            const titleInput = document.getElementById("portalTitleInput");
+            if (titleInput) titleInput.value = title;
+        }
+
+        window.handleSavePortalTitle = function(event) {
+            event.preventDefault();
+            if (!currentUser || currentUser.role !== "admin") return;
+            if (!db) {
+                showToast("Lütfen önce alt kısımdan Firebase konfigürasyonu ekleyin.", "error");
+                return;
+            }
+
+            const input = document.getElementById("portalTitleInput");
+            const newTitle = input.value.trim();
+
+            if (!newTitle) {
+                showToast("Başlık boş olamaz!", "error");
+                return;
+            }
+
+            set(ref(db, TITLE_DB_PATH()), newTitle)
+                .then(() => showToast("Sistem başlığı güncellendi.", "success"))
+                .catch((err) => showToast("Hata: " + err.message, "error"));
+        }
+
+        // FIREBASE KONFİGÜRASYON YÖNETİMİ & DİNAMİK BAĞLANTI DEĞİŞİMİ
+        window.handleSaveFirebaseConfig = function(event) {
+            event.preventDefault();
+            if (!currentUser || currentUser.role !== "admin") return;
+
+            const rootPathInput = document.getElementById("firebaseRootPathInput");
+            const configInput = document.getElementById("firebaseConfigInput");
+            const editIdInput = document.getElementById("editFirebaseConfigIdInput");
+
+            const rootPathVal = rootPathInput.value.trim();
+            const configText = configInput.value.trim();
+            const editId = editIdInput.value;
+
+            if (!rootPathVal || !configText) {
+                showToast("Lütfen tüm alanları doldurunuz.", "error");
+                return;
+            }
+
+            let parsedConfig;
+            try {
+                parsedConfig = new Function("return " + configText)();
+            } catch (e) {
+                showToast("Konfigürasyon formatı geçersiz JSON/JS objesi!", "error");
+                return;
+            }
+
+            if (!db) {
+                switchDatabase(parsedConfig, rootPathVal);
+            }
+
+            if (!editId && db) {
+                push(ref(db, FIREBASE_CONFIGS_DB_PATH()), { rootPath: rootPathVal, configData: configText })
+                    .then(() => {
+                        switchDatabase(parsedConfig, rootPathVal);
+                        showToast("Firebase konfigürasyonu kaydedildi ve bağlandı.", "success");
+                        resetFirebaseConfigForm();
+                    })
+                    .catch((err) => showToast("Hata: " + err.message, "error"));
+            } else if (db) {
+                update(ref(db, FIREBASE_CONFIGS_DB_PATH() + '/' + editId), { rootPath: rootPathVal, configData: configText })
+                    .then(() => {
+                        switchDatabase(parsedConfig, rootPathVal);
+                        showToast("Firebase konfigürasyonu güncellendi.", "success");
+                        resetFirebaseConfigForm();
+                    })
+                    .catch((err) => showToast("Hata: " + err.message, "error"));
+            }
+        }
+
+        function switchDatabase(newConfig, newRootPath) {
+            try {
+                const newApp = initializeApp(newConfig, "DynamicApp_" + Date.now());
+                db = getDatabase(newApp);
+                currentRootPath = newRootPath;
+                localStorage.setItem("sistem_kok_yolu", newRootPath);
+                initListeners();
+            } catch (e) {
+                console.error("Veritabanı geçiş hatası:", e);
+            }
+        }
+
+        window.editFirebaseConfig = function(id) {
+            const item = globalFirebaseConfigs[id];
+            if (!item) return;
+
+            document.getElementById("firebaseRootPathInput").value = item.rootPath;
+            document.getElementById("firebaseConfigInput").value = item.configData;
+            document.getElementById("editFirebaseConfigIdInput").value = id;
+
+            document.getElementById("firebaseConfigPanelTitleText").innerText = "Firebase Konfigürasyonunu Düzenle";
+            document.getElementById("firebaseConfigPanelIcon").className = "fa-solid fa-pen text-sm";
+            document.getElementById("saveFirebaseConfigBtnText").innerHTML = '<i class="fa-solid fa-floppy-disk"></i><span>Değişiklikleri Kaydet</span>';
+            document.getElementById("cancelFirebaseConfigEditBtn").classList.remove("hidden");
+
+            document.getElementById("firebaseRootPathInput").focus();
+        }
+
+        window.resetFirebaseConfigForm = function() {
+            document.getElementById("firebaseRootPathInput").value = currentRootPath;
+            document.getElementById("firebaseConfigInput").value = "";
+            document.getElementById("editFirebaseConfigIdInput").value = "";
+
+            document.getElementById("firebaseConfigPanelTitleText").innerText = "Firebase Konfigürasyon Tanımla";
+            document.getElementById("firebaseConfigPanelIcon").className = "fa-solid fa-database text-sm";
+            document.getElementById("saveFirebaseConfigBtnText").innerHTML = '<i class="fa-solid fa-floppy-disk"></i><span>Konfigürasyonu Kaydet</span>';
+            document.getElementById("cancelFirebaseConfigEditBtn").classList.add("hidden");
+        }
+
+        window.deleteFirebaseConfig = function(id) {
+            if (!currentUser || currentUser.role !== "admin") return;
+            pendingDeleteConfigId = id;
+            document.getElementById("confirmPasswordInput").value = "";
+            document.getElementById("passwordConfirmModal").classList.remove("hidden");
+            document.getElementById("confirmPasswordInput").focus();
+        }
+
+        window.closePasswordModal = function() {
+            document.getElementById("passwordConfirmModal").classList.add("hidden");
+            pendingDeleteConfigId = null;
+        }
+
+        window.confirmDeleteFirebaseConfig = function(event) {
+            event.preventDefault();
+            const password = document.getElementById("confirmPasswordInput").value.trim();
+
+            if (!currentUser || currentUser.password !== password) {
+                showToast("Hatalı yönetici şifresi!", "error");
+                document.getElementById("confirmPasswordInput").value = "";
+                return;
+            }
+
+            if (pendingDeleteConfigId && db) {
+                remove(ref(db, FIREBASE_CONFIGS_DB_PATH() + '/' + pendingDeleteConfigId))
+                    .then(() => {
+                        showToast("Firebase konfigürasyonu silindi.", "info");
+                        resetFirebaseConfigForm();
+                        closePasswordModal();
+                    })
+                    .catch((err) => showToast("Hata: " + err.message, "error"));
+            }
+        }
+
+        function renderDynamicFirebaseConfigs() {
+            const container = document.getElementById("dynamicFirebaseConfigsList");
+            const keys = Object.keys(globalFirebaseConfigs);
+
+            if (keys.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full py-8 text-center bg-black/5 rounded-2xl border border-dashed border-black/15 w-full">
+                        <i class="fa-solid fa-database text-2xl text-slate-400 mb-2 block"></i>
+                        <p class="text-xs text-slate-600">Henüz kayıtlı Firebase konfigürasyonu yok.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = "";
+            keys.forEach((id) => {
+                const item = globalFirebaseConfigs[id];
+                const card = document.createElement("div");
+
+                card.className = "flex flex-col justify-between p-4 bg-slate-100 border border-slate-300 rounded-2xl shadow-sm gap-3";
+
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-bold bg-amber-500/20 text-amber-800 px-2.5 py-1 rounded-lg font-mono">${escapeHtml(item.rootPath)}</span>
+                            <div class="flex items-center gap-1">
+                                <button onclick="editFirebaseConfig('${id}')" class="p-1.5 text-slate-500 hover:text-amber-600 hover:bg-amber-500/10 rounded-lg transition-colors" title="Düzenle">
+                                    <i class="fa-solid fa-pen text-xs"></i>
+                                </button>
+                                <button onclick="deleteFirebaseConfig('${id}')" class="p-1.5 text-slate-500 hover:text-red-600 hover:bg-red-500/10 rounded-lg transition-colors" title="Sil">
+                                    <i class="fa-solid fa-trash-can text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <pre class="text-[10px] text-slate-700 font-mono bg-white p-3 rounded-xl border border-slate-200 overflow-x-auto max-h-36">${escapeHtml(item.configData)}</pre>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        window.handleLogin = function(event) {
+            event.preventDefault();
+            const password = document.getElementById("passwordInput").value.trim();
+            const errorAlert = document.getElementById("errorAlert");
+
+            let foundUser = null;
+            Object.keys(globalUsers).forEach(key => {
+                if (globalUsers[key].password === password) {
+                    foundUser = globalUsers[key];
+                }
+            });
+
+            if (foundUser) {
+                currentUser = foundUser;
+                errorAlert.classList.add("hidden");
+
+                document.getElementById("loginCard").classList.add("hidden");
+                document.getElementById("dashboardSection").classList.remove("hidden");
+                document.getElementById("navUserArea").classList.remove("hidden");
+                document.getElementById("navUserArea").classList.add("flex");
+
+                const mainContainer = document.getElementById("mainContainer");
+                mainContainer.classList.remove("items-center");
+                mainContainer.classList.add("items-start");
+
+                document.getElementById("navUserName").innerText = currentUser.title;
+                document.getElementById("navUserRole").innerText = currentUser.role === "admin" ? "Yönetici" : "Kullanıcı";
+
+                const portalSettings = document.getElementById("adminPortalSettings");
+                const btnSection = document.getElementById("adminButtonSection");
+                const userSection = document.getElementById("adminUserSection");
+                const firebaseConfigSection = document.getElementById("adminFirebaseConfigSection");
+                const firebaseConfigsListSection = document.getElementById("adminFirebaseConfigsListSection");
+
+                if (currentUser.role === "admin") {
+                    portalSettings.classList.remove("hidden");
+                    btnSection.classList.remove("hidden");
+                    userSection.classList.remove("hidden");
+                    if (firebaseConfigSection) firebaseConfigSection.classList.remove("hidden");
+                    if (firebaseConfigsListSection) firebaseConfigsListSection.classList.remove("hidden");
+                } else {
+                    portalSettings.classList.add("hidden");
+                    btnSection.classList.add("hidden");
+                    userSection.classList.add("hidden");
+                    if (firebaseConfigSection) firebaseConfigSection.classList.add("hidden");
+                    if (firebaseConfigsListSection) firebaseConfigsListSection.classList.add("hidden");
+                }
+
+                renderDynamicButtons();
+                renderDynamicUsers();
+                renderDynamicFirebaseConfigs();
+                showToast("Başarıyla giriş yapıldı.", "success");
+            } else {
+                errorAlert.classList.remove("hidden");
+                document.getElementById("passwordInput").value = "";
+            }
+        }
+
+        window.handleLogout = function() {
+            currentUser = null;
+            document.getElementById("passwordInput").value = "";
+            document.getElementById("dashboardSection").classList.add("hidden");
+            document.getElementById("navUserArea").classList.add("hidden");
+            document.getElementById("navUserArea").classList.remove("flex");
+            document.getElementById("loginCard").classList.remove("hidden");
+
+            const mainContainer = document.getElementById("mainContainer");
+            mainContainer.classList.remove("items-start");
+            mainContainer.classList.add("items-center");
+
+            resetButtonForm();
+            resetUserForm();
+            resetFirebaseConfigForm();
+            closePasswordModal();
+            showToast("Oturum kapatıldı.", "info");
+        }
+
+        // BUTON YÖNETİMİ
+        window.handleSaveButton = function(event) {
+            event.preventDefault();
+            if (!currentUser || currentUser.role !== "admin") return;
+            if (!db) {
+                showToast("Firebase bağlantısı yapılmadı!", "error");
+                return;
+            }
+
+            const nameInput = document.getElementById("newBtnName");
+            const urlInput = document.getElementById("newBtnUrl");
+            const editIdInput = document.getElementById("editButtonIdInput");
+
+            const name = nameInput.value.trim();
+            let url = urlInput.value.trim();
+            const editId = editIdInput.value;
+
+            if (!name || !url) {
+                showToast("Lütfen tüm alanları doldurunuz.", "error");
+                return;
+            }
+
+            if (!url.startsWith("http://") && !url.startsWith("https://")) {
+                url = "https://" + url;
+            }
+
+            if (!editId) {
+                const newOrder = Object.keys(globalButtons).length;
+                push(ref(db, BUTTONS_DB_PATH()), { name: name, url: url, order: newOrder })
+                    .then(() => {
+                        showToast(`"${name}" eklendi.`, "success");
+                        resetButtonForm();
+                    });
+            } else {
+                update(ref(db, BUTTONS_DB_PATH() + '/' + editId), { name: name, url: url })
+                    .then(() => {
+                        showToast(`"${name}" güncellendi.`, "success");
+                        resetButtonForm();
+                    });
+            }
+        }
+
+        window.moveButton = function(id, direction) {
+            if (!currentUser || currentUser.role !== "admin" || !db) return;
+            const entries = Object.entries(globalButtons).map(([id, val]) => ({ id, ...val }));
+            entries.sort((a, b) => (a.order || 0) - (b.order || 0));
+
+            const index = entries.findIndex(item => item.id === id);
+            if (index === -1) return;
+
+            if (direction === 'up' && index > 0) {
+                const temp = entries[index].order ?? index;
+                entries[index].order = entries[index - 1].order ?? (index - 1);
+                entries[index - 1].order = temp;
+                if (entries[index].order === entries[index - 1].order) {
+                    entries[index].order -= 1;
+                }
+            } else if (direction === 'down' && index < entries.length - 1) {
+                const temp = entries[index].order ?? index;
+                entries[index].order = entries[index + 1].order ?? (index + 1);
+                entries[index + 1].order = temp;
+                if (entries[index].order === entries[index + 1].order) {
+                    entries[index].order += 1;
+                }
+            } else {
+                return;
+            }
+
+            const updates = {};
+            updates[entries[index].id + '/order'] = entries[index].order;
+            const targetIndex = direction === 'up' ? index - 1 : index + 1;
+            updates[entries[targetIndex].id + '/order'] = entries[targetIndex].order;
+
+            update(ref(db, BUTTONS_DB_PATH()), updates)
+                .then(() => showToast("Buton sırası güncellendi.", "success"))
+                .catch(err => showToast("Hata: " + err.message, "error"));
+        }
+
+        window.handleDragStart = function(e, id) {
+            if (!currentUser || currentUser.role !== "admin") return;
+            draggedButtonId = id;
+            e.dataTransfer.setData('text/plain', id);
+        };
+
+        window.handleDragOver = function(e) {
+            if (!currentUser || currentUser.role !== "admin") return;
+            e.preventDefault();
+        };
+
+        window.handleDrop = function(e, targetId) {
+            if (!currentUser || currentUser.role !== "admin" || !db) return;
+            e.preventDefault();
+            if (!draggedButtonId || draggedButtonId === targetId) return;
+
+            const entries = Object.entries(globalButtons).map(([id, val]) => ({ id, ...val }));
+            entries.sort((a, b) => (a.order || 0) - (b.order || 0));
+
+            const draggedIdx = entries.findIndex(item => item.id === draggedButtonId);
+            const targetIdx = entries.findIndex(item => item.id === targetId);
+
+            if (draggedIdx === -1 || targetIdx === -1) return;
+
+            const [movedItem] = entries.splice(draggedIdx, 1);
+            entries.splice(targetIdx, 0, movedItem);
+
+            const updates = {};
+            entries.forEach((item, idx) => {
+                updates[item.id + '/order'] = idx;
+            });
+
+            update(ref(db, BUTTONS_DB_PATH()), updates)
+                .then(() => showToast("Sıralama güncellendi.", "success"))
+                .catch(err => showToast("Hata: " + err.message, "error"));
+
+            draggedButtonId = null;
+        };
+
+        window.editButton = function(id) {
+            const btn = globalButtons[id];
+            if (!btn) return;
+
+            document.getElementById("newBtnName").value = btn.name;
+            document.getElementById("newBtnUrl").value = btn.url;
+            document.getElementById("editButtonIdInput").value = id;
+
+            document.getElementById("btnPanelTitleText").innerText = "Butonu Düzenle";
+            document.getElementById("btnPanelIcon").className = "fa-solid fa-pen text-sm";
+            document.getElementById("saveButtonText").innerText = "Değişiklikleri Kaydet";
+            document.getElementById("cancelButtonEditBtn").classList.remove("hidden");
+
+            document.getElementById("newBtnName").focus();
+        }
+
+        window.resetButtonForm = function() {
+            document.getElementById("newBtnName").value = "";
+            document.getElementById("newBtnUrl").value = "";
+            document.getElementById("editButtonIdInput").value = "";
+
+            document.getElementById("btnPanelTitleText").innerText = "Yeni Buton Ekle";
+            document.getElementById("btnPanelIcon").className = "fa-solid fa-plus text-sm";
+            document.getElementById("saveButtonText").innerText = "Butonu Ekle";
+            document.getElementById("cancelButtonEditBtn").classList.add("hidden");
+        }
+
+        window.deleteButton = function(id) {
+            if (!currentUser || currentUser.role !== "admin" || !db) return;
+            remove(ref(db, BUTTONS_DB_PATH() + '/' + id))
+                .then(() => {
+                    showToast("Buton silindi.", "info");
+                    resetButtonForm();
+                });
+        }
+
+        // KULLANICI YÖNETİMİ
+        window.handleSaveUser = function(event) {
+            event.preventDefault();
+            if (!currentUser || currentUser.role !== "admin") return;
+            if (!db) {
+                showToast("Firebase bağlantısı yapılmadı!", "error");
+                return;
+            }
+
+            const nameInput = document.getElementById("newUserNameInput");
+            const roleInput = document.getElementById("newUserRoleInput");
+            const passInput = document.getElementById("newUserPassInput");
+            const editIdInput = document.getElementById("editUserIdInput");
+
+            const title = nameInput.value.trim();
+            const role = roleInput.value;
+            const password = passInput.value.trim();
+            const editId = editIdInput.value;
+
+            if (!title || !password) {
+                showToast("Lütfen kullanıcı adı ve şifre alanlarını doldurunuz.", "error");
+                return;
+            }
+
+            let isDuplicate = false;
+            Object.keys(globalUsers).forEach(key => {
+                if (key !== editId && globalUsers[key].password === password) {
+                    isDuplicate = true;
+                }
+            });
+
+            if (isDuplicate) {
+                showToast("Bu şifre başka bir kullanıcı tarafından kullanılıyor!", "error");
+                return;
+            }
+
+            if (!editId) {
+                push(ref(db, USERS_DB_PATH()), { title: title, role: role, password: password })
+                    .then(() => {
+                        showToast(`"${title}" başarıyla eklendi!`, "success");
+                        resetUserForm();
+                    });
+            } else {
+                update(ref(db, USERS_DB_PATH() + '/' + editId), { title: title, role: role, password: password })
+                    .then(() => {
+                        showToast(`"${title}" başarıyla güncellendi!`, "success");
+                        resetUserForm();
+                    });
+            }
+        }
+
+        window.editUser = function(id) {
+            const user = globalUsers[id];
+            if (!user) return;
+
+            document.getElementById("newUserNameInput").value = user.title;
+            document.getElementById("newUserRoleInput").value = user.role;
+            document.getElementById("newUserPassInput").value = user.password;
+            document.getElementById("editUserIdInput").value = id;
+
+            document.getElementById("userPanelTitleText").innerText = "Kullanıcıyı Düzenle";
+            document.getElementById("userPanelIcon").className = "fa-solid fa-pen text-sm";
+            document.getElementById("saveUserBtnText").innerText = "Değişiklikleri Kaydet";
+            document.getElementById("cancelUserEditBtn").classList.remove("hidden");
+
+            document.getElementById("newUserNameInput").focus();
+        }
+
+        window.resetUserForm = function() {
+            document.getElementById("newUserNameInput").value = "";
+            document.getElementById("newUserRoleInput").value = "user";
+            document.getElementById("newUserPassInput").value = "";
+            document.getElementById("editUserIdInput").value = "";
+
+            document.getElementById("userPanelTitleText").innerText = "Sisteme Kullanıcı / Şifre Tanımla";
+            document.getElementById("userPanelIcon").className = "fa-solid fa-user-plus text-sm";
+            document.getElementById("saveUserBtnText").innerText = "Şifre Ekle";
+            document.getElementById("cancelUserEditBtn").classList.add("hidden");
+        }
+
+        window.deleteUser = function(id) {
+            if (!currentUser || currentUser.role !== "admin" || !db) return;
+
+            let adminCount = 0;
+            Object.keys(globalUsers).forEach(key => {
+                if (globalUsers[key].role === 'admin') adminCount++;
+            });
+
+            if (globalUsers[id] && globalUsers[id].role === 'admin' && adminCount <= 1) {
+                showToast("Sistemde en az bir yönetici kalmalıdır!", "error");
+                return;
+            }
+
+            remove(ref(db, USERS_DB_PATH() + '/' + id))
+                .then(() => {
+                    showToast("Kullanıcı silindi.", "info");
+                    resetUserForm();
+                });
+        }
+
+        function renderDynamicButtons() {
+            const container = document.getElementById("dynamicButtonsList");
+            const keys = Object.keys(globalButtons);
+
+            if (keys.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full py-8 text-center bg-black/5 rounded-2xl border border-dashed border-black/15 w-full">
+                        <i class="fa-solid fa-link-slash text-2xl text-slate-400 mb-2 block"></i>
+                        <p class="text-xs text-slate-600">Henüz özel buton eklenmemiş.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let sortedKeys = keys.sort((a, b) => {
+                let orderA = globalButtons[a].order ?? 0;
+                let orderB = globalButtons[b].order ?? 0;
+                return orderA - orderB;
+            });
+
+            container.innerHTML = "";
+            sortedKeys.forEach((id) => {
+                const btn = globalButtons[id];
+                const card = document.createElement("div");
+                
+                const isAdmin = currentUser && currentUser.role === "admin";
+
+                card.className = `w-full max-w-xs flex items-center justify-between p-3.5 quick-btn-card rounded-2xl shadow-md group ${isAdmin ? 'cursor-grab active:cursor-grabbing' : ''}`;
+                
+                if (isAdmin) {
+                    card.setAttribute('draggable', 'true');
+                    card.setAttribute('ondragstart', `handleDragStart(event, '${id}')`);
+                    card.setAttribute('ondragover', 'handleDragOver(event)');
+                    card.setAttribute('ondrop', `handleDrop(event, '${id}')`);
+                }
+
+                card.innerHTML = `
+                    <a href="${btn.url}" target="_blank" class="flex items-center gap-3 flex-grow min-w-0 pr-2">
+                        <div class="w-9 h-9 rounded-xl dynamic-btn flex items-center justify-center text-xs font-bold transition-all flex-shrink-0 shadow-sm text-white">
+                            <i class="fa-solid fa-globe"></i>
+                        </div>
+                        <div class="truncate">
+                            <h4 class="text-xs font-bold text-white quick-title transition-colors truncate">${escapeHtml(btn.name)}</h4>
+                        </div>
+                    </a>
+                    ${isAdmin ? `
+                        <div class="flex items-center gap-0.5 flex-shrink-0">
+                            <button onclick="moveButton('${id}', 'up')" class="p-1.5 text-slate-400 hover:text-amber-400 hover:bg-amber-400/10 rounded-lg transition-colors" title="Yukarı Taşı">
+                                <i class="fa-solid fa-arrow-up text-[10px]"></i>
+                            </button>
+                            <button onclick="moveButton('${id}', 'down')" class="p-1.5 text-slate-400 hover:text-amber-400 hover:bg-amber-400/10 rounded-lg transition-colors" title="Aşağı Taşı">
+                                <i class="fa-solid fa-arrow-down text-[10px]"></i>
+                            </button>
+                            <button onclick="editButton('${id}')" class="p-1.5 text-slate-400 hover:text-amber-400 hover:bg-amber-400/10 rounded-lg transition-colors ml-1" title="Düzenle">
+                                <i class="fa-solid fa-pen text-[10px]"></i>
+                            </button>
+                            <button onclick="deleteButton('${id}')" class="p-1.5 text-slate-400 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors" title="Sil">
+                                <i class="fa-solid fa-trash-can text-[10px]"></i>
+                            </button>
+                        </div>
+                    ` : ''}
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function renderDynamicUsers() {
+            const container = document.getElementById("dynamicUsersList");
+            const keys = Object.keys(globalUsers);
+
+            container.innerHTML = "";
+            keys.forEach((id) => {
+                const user = globalUsers[id];
+                const card = document.createElement("div");
+
+                card.className = "flex items-center justify-between p-3.5 bg-slate-100 border border-slate-300 rounded-2xl shadow-sm";
+
+                const isAdmin = user.role === "admin";
+
+                card.innerHTML = `
+                    <div class="flex items-center gap-3 flex-grow min-w-0 pr-2">
+                        <div class="w-9 h-9 rounded-xl ${isAdmin ? 'bg-amber-500/20 text-amber-600 border-amber-500/40' : 'bg-blue-500/20 text-blue-600 border-blue-500/40'} flex items-center justify-center text-xs font-bold border flex-shrink-0">
+                            <i class="fa-solid ${isAdmin ? 'fa-user-shield' : 'fa-user'}"></i>
+                        </div>
+                        <div class="truncate">
+                            <h4 class="text-xs font-bold text-slate-900 truncate">${escapeHtml(user.title)}</h4>
+                            <p class="text-[10px] text-slate-600 font-mono mt-0.5">Şifre: <span class="text-slate-900 font-semibold">${escapeHtml(user.password)}</span> <span class="ml-1 px-1.5 py-0.5 rounded text-[9px] ${isAdmin ? 'bg-amber-500/20 text-amber-700' : 'bg-slate-300 text-slate-800'}">${isAdmin ? 'Yönetici' : 'Kullanıcı'}</span></p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1 flex-shrink-0">
+                        <button onclick="editUser('${id}')" class="p-2 text-slate-500 hover:text-amber-600 hover:bg-amber-500/10 rounded-lg transition-colors" title="Düzenle">
+                            <i class="fa-solid fa-pen text-xs"></i>
+                        </button>
+                        <button onclick="deleteUser('${id}')" class="p-2 text-slate-500 hover:text-red-600 hover:bg-red-500/10 rounded-lg transition-colors" title="Sil">
+                            <i class="fa-solid fa-trash-can text-xs"></i>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.innerText = text || "";
+            return div.innerHTML;
+        }
+
+        // MODERN BİLDİRİM (TOAST) FONKSİYONU
+        function showToast(message, type = "success") {
+            const container = document.getElementById("toastContainer");
+            const toast = document.createElement("div");
+
+            let borderColor = "border-emerald-500/40";
+
+            if (type === "error") {
+                borderColor = "border-red-500/40";
+            } else if (type === "info") {
+                borderColor = "border-blue-500/40";
+            }
+
+            toast.className = `pointer-events-auto flex items-center justify-between gap-3.5 p-4 rounded-2xl modern-panel border ${borderColor} shadow-2xl backdrop-blur-2xl transition-all duration-300 transform translate-y-4 opacity-0 text-xs font-semibold modern-text`;
+            toast.innerHTML = `
+                <div class="flex-grow pr-2">${message}</div>
+                <button onclick="this.parentElement.remove()" class="text-slate-400 hover:text-white transition-colors p-1 flex-shrink-0">
+                    <i class="fa-solid fa-xmark text-xs"></i>
+                </button>
+            `;
+
+            container.appendChild(toast);
+            
+            setTimeout(() => toast.classList.remove("translate-y-4", "opacity-0"), 10);
+            
+            setTimeout(() => {
+                toast.classList.add("translate-y-4", "opacity-0");
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+    </script>
+</body>
+</html>
