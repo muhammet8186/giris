@@ -469,16 +469,22 @@
         // ⚙️ KOD İÇİNDEN DEĞİŞTİRİLEBİLİR FIREBASE VE KÖK YOL (ROOT PATH) AYARLARI
         // Kendi Firebase bilgilerinizi ve kök yolunuzu bu alandan kolayca güncelleyebilirsiniz:
         // ====================================================================================
-        const defaultFirebaseConfig = {
-            apiKey: "",
-            authDomain: "",
-            databaseURL: "",
-            projectId: "",
-            storageBucket: "",
-            messagingSenderId: "",
-            appId: "",
-            measurementId: ""
+        const emptyFirebaseConfig = {
+            apiKey: "", authDomain: "", databaseURL: "", projectId: "",
+            storageBucket: "", messagingSenderId: "", appId: "", measurementId: ""
         };
+        // Firebase bağlantı bilgileri ve kayıtlı bağlantı listesi yalnızca bu tarayıcının localStorage alanında tutulur.
+        let defaultFirebaseConfig = emptyFirebaseConfig;
+        try {
+            defaultFirebaseConfig = JSON.parse(localStorage.getItem("sistem_firebase_aktif") || "null") || emptyFirebaseConfig;
+        } catch (_) { defaultFirebaseConfig = emptyFirebaseConfig; }
+        function readLocalFirebaseConfigs() {
+            try { return JSON.parse(localStorage.getItem("sistem_firebase_listesi") || "{}"); }
+            catch (_) { return {}; }
+        }
+        function saveLocalFirebaseConfigs() {
+            localStorage.setItem("sistem_firebase_listesi", JSON.stringify(globalFirebaseConfigs));
+        }
 
         // Firebase Veritabanı Kök Yolu (Root Path)
 let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli";
@@ -495,7 +501,6 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
         }
 
         const TITLE_DB_PATH = () => currentRootPath + '/baslik';
-        const FIREBASE_CONFIGS_DB_PATH = () => currentRootPath + '/firebaseConfigs';
         const USERS_DB_PATH = () => currentRootPath + '/kullanicilar';
         const BUTTONS_DB_PATH = () => currentRootPath + '/butonlar';
 
@@ -508,7 +513,7 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
                 password: "yonetici"
             }
         };
-        let globalFirebaseConfigs = {};
+        let globalFirebaseConfigs = readLocalFirebaseConfigs();
         let systemTitle = "Yönetim ve Erişim Merkezi";
         let draggedButtonId = null;
         let pendingDeleteConfigId = null;
@@ -576,11 +581,6 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
                 updateSystemTitleUI(systemTitle);
             });
 
-            onValue(ref(db, FIREBASE_CONFIGS_DB_PATH()), (snapshot) => {
-                globalFirebaseConfigs = snapshot.val() || {};
-                renderDynamicFirebaseConfigs();
-            });
-
             onValue(ref(db, BUTTONS_DB_PATH()), (snapshot) => {
                 globalButtons = snapshot.val() || {};
                 renderDynamicButtons();
@@ -639,54 +639,40 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
             event.preventDefault();
             if (!currentUser || currentUser.role !== "admin") return;
 
-            const rootPathInput = document.getElementById("firebaseRootPathInput");
-            const configInput = document.getElementById("firebaseConfigInput");
-            const editIdInput = document.getElementById("editFirebaseConfigIdInput");
-
-            const rootPathVal = rootPathInput.value.trim();
-            const configText = configInput.value.trim();
-            const editId = editIdInput.value;
-
+            const rootPathVal = document.getElementById("firebaseRootPathInput").value.trim();
+            const configText = document.getElementById("firebaseConfigInput").value.trim();
+            const editId = document.getElementById("editFirebaseConfigIdInput").value;
             if (!rootPathVal || !configText) {
                 showToast("Lütfen tüm alanları doldurunuz.", "error");
                 return;
             }
 
             let parsedConfig;
-            try {
-                parsedConfig = new Function("return " + configText)();
-            } catch (e) {
+            try { parsedConfig = new Function("return " + configText)(); }
+            catch (e) {
                 showToast("Konfigürasyon formatı geçersiz JSON/JS objesi!", "error");
                 return;
             }
-
-            if (!db) {
-                switchDatabase(parsedConfig, rootPathVal);
+            if (!parsedConfig.apiKey || !parsedConfig.databaseURL) {
+                showToast("apiKey ve databaseURL alanları zorunludur.", "error");
+                return;
             }
 
-            if (!editId && db) {
-                push(ref(db, FIREBASE_CONFIGS_DB_PATH()), { rootPath: rootPathVal, configData: configText })
-                    .then(() => {
-                        switchDatabase(parsedConfig, rootPathVal);
-                        showToast("Firebase konfigürasyonu kaydedildi ve bağlandı.", "success");
-                        resetFirebaseConfigForm();
-                    })
-                    .catch((err) => showToast("Hata: " + err.message, "error"));
-            } else if (db) {
-                update(ref(db, FIREBASE_CONFIGS_DB_PATH() + '/' + editId), { rootPath: rootPathVal, configData: configText })
-                    .then(() => {
-                        switchDatabase(parsedConfig, rootPathVal);
-                        showToast("Firebase konfigürasyonu güncellendi.", "success");
-                        resetFirebaseConfigForm();
-                    })
-                    .catch((err) => showToast("Hata: " + err.message, "error"));
-            }
+            const id = editId || ("local_" + Date.now());
+            globalFirebaseConfigs[id] = { rootPath: rootPathVal, configData: configText };
+            saveLocalFirebaseConfigs();
+            localStorage.setItem("sistem_firebase_aktif", JSON.stringify(parsedConfig));
+            switchDatabase(parsedConfig, rootPathVal);
+            renderDynamicFirebaseConfigs();
+            showToast("Firebase ayarları yalnızca bu cihazda kaydedildi ve bağlantı kuruldu.", "success");
+            resetFirebaseConfigForm();
         }
 
         function switchDatabase(newConfig, newRootPath) {
             try {
                 const newApp = initializeApp(newConfig, "DynamicApp_" + Date.now());
                 db = getDatabase(newApp);
+                localStorage.setItem("sistem_firebase_aktif", JSON.stringify(newConfig));
                 currentRootPath = newRootPath;
                 localStorage.setItem("sistem_kok_yolu", newRootPath);
                 initListeners();
@@ -738,21 +724,18 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
         window.confirmDeleteFirebaseConfig = function(event) {
             event.preventDefault();
             const password = document.getElementById("confirmPasswordInput").value.trim();
-
             if (!currentUser || currentUser.password !== password) {
                 showToast("Hatalı yönetici şifresi!", "error");
                 document.getElementById("confirmPasswordInput").value = "";
                 return;
             }
-
-            if (pendingDeleteConfigId && db) {
-                remove(ref(db, FIREBASE_CONFIGS_DB_PATH() + '/' + pendingDeleteConfigId))
-                    .then(() => {
-                        showToast("Firebase konfigürasyonu silindi.", "info");
-                        resetFirebaseConfigForm();
-                        closePasswordModal();
-                    })
-                    .catch((err) => showToast("Hata: " + err.message, "error"));
+            if (pendingDeleteConfigId) {
+                delete globalFirebaseConfigs[pendingDeleteConfigId];
+                saveLocalFirebaseConfigs();
+                renderDynamicFirebaseConfigs();
+                showToast("Firebase ayarı bu cihazın yerel listesinden silindi.", "info");
+                resetFirebaseConfigForm();
+                closePasswordModal();
             }
         }
 
@@ -764,7 +747,7 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
                 container.innerHTML = `
                     <div class="col-span-full py-8 text-center bg-black/5 rounded-2xl border border-dashed border-black/15 w-full">
                         <i class="fa-solid fa-database text-2xl text-slate-400 mb-2 block"></i>
-                        <p class="text-xs text-slate-600">Henüz kayıtlı Firebase konfigürasyonu yok.</p>
+                        <p class="text-xs text-slate-600">Bu cihazda henüz kayıtlı Firebase ayarı yok.</p>
                     </div>
                 `;
                 return;
