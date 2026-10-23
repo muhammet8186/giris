@@ -318,6 +318,14 @@
                                     placeholder="Şifre belirleyin">
                             </div>
 
+                            <div class="md:col-span-12">
+                                <label class="block text-[11px] font-bold uppercase modern-muted mb-2">Bu kullanıcının görebileceği butonlar</label>
+                                <div id="userButtonPermissions" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 p-3 rounded-xl border border-white/10 bg-black/10">
+                                    <p class="text-xs modern-muted">Henüz buton eklenmemiş.</p>
+                                </div>
+                                <p class="text-[10px] modern-muted mt-1">İşaretlediğiniz butonlar kullanıcı giriş yaptığında görünür. İşaretlemedikleriniz gizlenir.</p>
+                            </div>
+
                             <div class="md:col-span-2 flex items-end gap-2">
                                 <button type="submit" id="saveUserSubmitBtn" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white font-semibold text-xs rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
                                     <i class="fa-solid fa-user-check text-xs text-emerald-400"></i>
@@ -470,9 +478,8 @@
             messagingSenderId: "",
             appId: "",
             measurementId: ""
-        }; 
+        };
 
-       
         // Firebase Veritabanı Kök Yolu (Root Path)
 let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli";
         // ====================================================================================
@@ -577,6 +584,8 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
             onValue(ref(db, BUTTONS_DB_PATH()), (snapshot) => {
                 globalButtons = snapshot.val() || {};
                 renderDynamicButtons();
+                const editingUserId = document.getElementById("editUserIdInput")?.value;
+                renderUserButtonPermissions(editingUserId && globalUsers[editingUserId] ? (globalUsers[editingUserId].allowedButtons || {}) : {});
             });
 
             onValue(ref(db, USERS_DB_PATH()), (snapshot) => {
@@ -584,6 +593,8 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
                     globalUsers = snapshot.val() || {};
                 }
                 renderDynamicUsers();
+                if (currentUser) currentUser = globalUsers[Object.keys(globalUsers).find(k => globalUsers[k].password === currentUser.password)] || currentUser;
+                renderDynamicButtons();
             });
         }
 
@@ -1017,6 +1028,22 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
         }
 
         // KULLANICI YÖNETİMİ
+        function renderUserButtonPermissions(selected = {}) {
+            const box = document.getElementById("userButtonPermissions");
+            if (!box) return;
+            const ids = Object.keys(globalButtons).sort((a, b) => (globalButtons[a].order ?? 0) - (globalButtons[b].order ?? 0));
+            if (!ids.length) {
+                box.innerHTML = '<p class="text-xs modern-muted">Önce hızlı erişim bölümünden buton ekleyin.</p>';
+                return;
+            }
+            box.innerHTML = ids.map(id => `
+                <label class="flex items-center gap-2 p-2 rounded-lg bg-white/5 text-xs modern-text">
+                    <input type="checkbox" class="user-button-permission accent-amber-500" value="${id}" ${selected[id] ? 'checked' : ''}>
+                    <span class="truncate">${escapeHtml(globalButtons[id].name || 'İsimsiz buton')}</span>
+                </label>
+            `).join('');
+        }
+
         window.handleSaveUser = function(event) {
             event.preventDefault();
             if (!currentUser || currentUser.role !== "admin") return;
@@ -1025,46 +1052,35 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
                 return;
             }
 
-            const nameInput = document.getElementById("newUserNameInput");
-            const roleInput = document.getElementById("newUserRoleInput");
-            const passInput = document.getElementById("newUserPassInput");
-            const editIdInput = document.getElementById("editUserIdInput");
-
-            const title = nameInput.value.trim();
-            const role = roleInput.value;
-            const password = passInput.value.trim();
-            const editId = editIdInput.value;
+            const title = document.getElementById("newUserNameInput").value.trim();
+            const role = document.getElementById("newUserRoleInput").value;
+            const password = document.getElementById("newUserPassInput").value.trim();
+            const editId = document.getElementById("editUserIdInput").value;
+            const allowedButtons = {};
+            document.querySelectorAll(".user-button-permission:checked").forEach(input => { allowedButtons[input.value] = true; });
 
             if (!title || !password) {
                 showToast("Lütfen kullanıcı adı ve şifre alanlarını doldurunuz.", "error");
                 return;
             }
-
             let isDuplicate = false;
             Object.keys(globalUsers).forEach(key => {
-                if (key !== editId && globalUsers[key].password === password) {
-                    isDuplicate = true;
-                }
+                if (key !== editId && globalUsers[key].password === password) isDuplicate = true;
             });
-
             if (isDuplicate) {
                 showToast("Bu şifre başka bir kullanıcı tarafından kullanılıyor!", "error");
                 return;
             }
 
-            if (!editId) {
-                push(ref(db, USERS_DB_PATH()), { title: title, role: role, password: password })
-                    .then(() => {
-                        showToast(`"${title}" başarıyla eklendi!`, "success");
-                        resetUserForm();
-                    });
-            } else {
-                update(ref(db, USERS_DB_PATH() + '/' + editId), { title: title, role: role, password: password })
-                    .then(() => {
-                        showToast(`"${title}" başarıyla güncellendi!`, "success");
-                        resetUserForm();
-                    });
-            }
+            const userData = { title, role, password, allowedButtons };
+            const request = !editId
+                ? push(ref(db, USERS_DB_PATH()), userData)
+                : update(ref(db, USERS_DB_PATH() + '/' + editId), userData);
+            request.then(() => {
+                showToast(`"${title}" için kullanıcı ve buton yetkileri kaydedildi.`, "success");
+                resetUserForm();
+                renderDynamicButtons();
+            }).catch(err => showToast("Kayıt hatası: " + err.message, "error"));
         }
 
         window.editUser = function(id) {
@@ -1075,6 +1091,7 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
             document.getElementById("newUserRoleInput").value = user.role;
             document.getElementById("newUserPassInput").value = user.password;
             document.getElementById("editUserIdInput").value = id;
+            renderUserButtonPermissions(user.allowedButtons || {});
 
             document.getElementById("userPanelTitleText").innerText = "Kullanıcıyı Düzenle";
             document.getElementById("userPanelIcon").className = "fa-solid fa-pen text-sm";
@@ -1089,6 +1106,7 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
             document.getElementById("newUserRoleInput").value = "user";
             document.getElementById("newUserPassInput").value = "";
             document.getElementById("editUserIdInput").value = "";
+            renderUserButtonPermissions({});
 
             document.getElementById("userPanelTitleText").innerText = "Sisteme Kullanıcı / Şifre Tanımla";
             document.getElementById("userPanelIcon").className = "fa-solid fa-user-plus text-sm";
@@ -1139,9 +1157,9 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
             container.innerHTML = "";
             sortedKeys.forEach((id) => {
                 const btn = globalButtons[id];
-                const card = document.createElement("div");
-                
                 const isAdmin = currentUser && currentUser.role === "admin";
+                if (!isAdmin && (!currentUser || !currentUser.allowedButtons || currentUser.allowedButtons[id] !== true)) return;
+                const card = document.createElement("div");
 
                 card.className = `w-full max-w-xs flex items-center justify-between p-3.5 quick-btn-card rounded-2xl shadow-md group ${isAdmin ? 'cursor-grab active:cursor-grabbing' : ''}`;
                 
@@ -1180,6 +1198,9 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
                 `;
                 container.appendChild(card);
             });
+            if (!isAdmin && container.children.length === 0) {
+                container.innerHTML = '<div class="col-span-full py-8 text-center text-xs modern-muted">Size atanmış bir hızlı erişim butonu bulunmuyor.</div>';
+            }
         }
 
         function renderDynamicUsers() {
