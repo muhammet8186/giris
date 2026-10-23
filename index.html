@@ -189,6 +189,27 @@
             <!-- KONTROL PANELİ ALANI -->
             <div id="dashboardSection" class="hidden space-y-6">
 
+                <!-- SİSTEM BAŞLIĞI AYARI (Yalnızca Yönetici) -->
+                <div id="adminPortalSettings" class="hidden modern-panel border rounded-3xl p-6 shadow-xl relative transition-colors duration-300">
+                    <div class="flex items-center gap-3 mb-5 pb-3 border-b border-white/10">
+                        <div class="w-10 h-10 rounded-2xl bg-purple-500/20 text-purple-400 flex items-center justify-center border border-purple-500/30">
+                            <i class="fa-solid fa-heading text-lg"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-bold modern-text">Sistem Başlık Ayarı</h3>
+                            <p class="text-[11px] modern-muted">Giriş sayfasında ve üst bölümde görünecek başlığı düzenleyin.</p>
+                        </div>
+                    </div>
+                    <form onsubmit="handleSavePortalTitle(event)" class="flex flex-col sm:flex-row gap-3">
+                        <input type="text" id="portalTitleInput" required maxlength="100"
+                            class="flex-grow px-3.5 py-3 open-input border rounded-xl text-sm shadow-sm"
+                            placeholder="Örn: Yönetim ve Erişim Merkezi">
+                        <button type="submit" class="px-5 py-3 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 flex-shrink-0">
+                            <i class="fa-solid fa-floppy-disk"></i><span>Başlığı Kaydet</span>
+                        </button>
+                    </form>
+                </div>
+
                 <!-- 2. BÖLÜM: BUTON YÖNETİMİ (Yalnızca Admin) -->
                 <div id="adminButtonSection" class="hidden space-y-6">
                     <div class="modern-panel border rounded-3xl p-6 shadow-xl relative transition-colors duration-300">
@@ -617,6 +638,8 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
 
         function updateSystemTitleUI(title) {
             document.getElementById("brandTitleText").innerText = title;
+            const loginTitle = document.getElementById("loginTitleText");
+            if (loginTitle) loginTitle.innerText = title;
             document.getElementById("pageTitle").innerText = title + " - Giriş Paneli";
             document.getElementById("footerText").innerText = "© 2026 " + title + ". Tüm hakları saklıdır.";
             const titleInput = document.getElementById("portalTitleInput");
@@ -888,11 +911,8 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
 
                 const displayName = getLocalDisplayName(currentUserId, currentUser);
                 document.getElementById("navUserName").innerText = displayName;
-                document.getElementById("brandTitleText").innerText = displayName;
-                document.getElementById("loginTitleText").innerText = displayName;
-                document.getElementById("pageTitle").innerText = displayName + " - Giriş Paneli";
-                localStorage.setItem("sistem_son_gorunen_baslik", displayName);
-                document.getElementById("footerText").innerText = "© 2026 " + displayName + ". Tüm hakları saklıdır.";
+                // Sistem başlığı kullanıcı adından bağımsız tutulur; yönetici ayarından düzenlenir.
+                updateSystemTitleUI(systemTitle || localStorage.getItem("sistem_son_gorunen_baslik") || "Yönetim ve Erişim Merkezi");
                 document.getElementById("navUserRole").innerText = currentUser.role === "admin" ? "Yönetici" : "Kullanıcı";
 
                 const btnSection = document.getElementById("adminButtonSection");
@@ -900,12 +920,15 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
                 const firebaseConfigSection = document.getElementById("adminFirebaseConfigSection");
                 const firebaseConfigsListSection = document.getElementById("adminFirebaseConfigsListSection");
 
+                const portalSettings = document.getElementById("adminPortalSettings");
                 if (currentUser.role === "admin") {
+                    if (portalSettings) portalSettings.classList.remove("hidden");
                     btnSection.classList.remove("hidden");
                     userSection.classList.remove("hidden");
                     if (firebaseConfigSection) firebaseConfigSection.classList.remove("hidden");
                     if (firebaseConfigsListSection) firebaseConfigsListSection.classList.remove("hidden");
                 } else {
+                    if (portalSettings) portalSettings.classList.add("hidden");
                     btnSection.classList.add("hidden");
                     userSection.classList.add("hidden");
                     if (firebaseConfigSection) firebaseConfigSection.classList.add("hidden");
