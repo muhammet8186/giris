@@ -604,6 +604,13 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
         window.addEventListener('DOMContentLoaded', () => {
             const savedTheme = localStorage.getItem("sistem_temasi") || "dark";
             applyTheme(savedTheme);
+            const savedDisplayTitle = localStorage.getItem("sistem_son_gorunen_baslik");
+            if (savedDisplayTitle) {
+                document.getElementById("brandTitleText").innerText = savedDisplayTitle;
+                document.getElementById("loginTitleText").innerText = savedDisplayTitle;
+                document.getElementById("pageTitle").innerText = savedDisplayTitle + " - Giriş Paneli";
+                document.getElementById("footerText").innerText = "© 2026 " + savedDisplayTitle + ". Tüm hakları saklıdır.";
+            }
             initListeners();
             resetFirebaseConfigForm();
         });
@@ -809,7 +816,9 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
             saveLocalDisplayName(currentUserId, name);
             document.getElementById("navUserName").innerText = name;
             document.getElementById("brandTitleText").innerText = name;
+            document.getElementById("loginTitleText").innerText = name;
             document.getElementById("pageTitle").innerText = name + " - Giriş Paneli";
+            localStorage.setItem("sistem_son_gorunen_baslik", name);
             document.getElementById("footerText").innerText = "© 2026 " + name + ". Tüm hakları saklıdır.";
             showToast("Başlık ve görünen ad bu cihazda kaydedildi.", "success");
         };
@@ -880,7 +889,9 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
                 const displayName = getLocalDisplayName(currentUserId, currentUser);
                 document.getElementById("navUserName").innerText = displayName;
                 document.getElementById("brandTitleText").innerText = displayName;
+                document.getElementById("loginTitleText").innerText = displayName;
                 document.getElementById("pageTitle").innerText = displayName + " - Giriş Paneli";
+                localStorage.setItem("sistem_son_gorunen_baslik", displayName);
                 document.getElementById("footerText").innerText = "© 2026 " + displayName + ". Tüm hakları saklıdır.";
                 document.getElementById("navUserRole").innerText = currentUser.role === "admin" ? "Yönetici" : "Kullanıcı";
 
@@ -914,9 +925,11 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
         window.handleLogout = function() {
             currentUser = null;
             currentUserId = null;
-            document.getElementById("brandTitleText").innerText = "Yönetim ve Erişim Merkezi";
-            document.getElementById("pageTitle").innerText = "Yönetim ve Erişim Merkezi - Giriş Paneli";
-            document.getElementById("footerText").innerText = "© 2026 Yönetim ve Erişim Merkezi. Tüm hakları saklıdır.";
+            const lastDisplayTitle = localStorage.getItem("sistem_son_gorunen_baslik") || "Yönetim ve Erişim Merkezi";
+            document.getElementById("brandTitleText").innerText = lastDisplayTitle;
+            document.getElementById("loginTitleText").innerText = lastDisplayTitle;
+            document.getElementById("pageTitle").innerText = lastDisplayTitle + " - Giriş Paneli";
+            document.getElementById("footerText").innerText = "© 2026 " + lastDisplayTitle + ". Tüm hakları saklıdır.";
             document.getElementById("passwordInput").value = "";
             document.getElementById("dashboardSection").classList.add("hidden");
             document.getElementById("navUserArea").classList.add("hidden");
