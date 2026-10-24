@@ -518,6 +518,23 @@
                     </div>
                 </div>
 
+                <!-- EN SON BÖLÜM: VERİ YEDEKLEME VE GERİ YÜKLEME -->
+                <section id="dataBackupSection" class="hidden modern-panel border rounded-3xl p-6 shadow-xl relative transition-colors duration-300">
+                    <div class="flex items-center gap-3 mb-4 pb-3 border-b border-white/10">
+                        <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-500/30"><i class="fa-solid fa-database"></i></div>
+                        <div>
+                            <h3 class="text-sm font-bold modern-text">Veri Yedekleme ve Geri Yükleme</h3>
+                            <p class="text-[11px] modern-muted">Bu cihazdaki uygulama verilerini JSON dosyasına yedekleyin veya önceki yedeği geri yükleyin.</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <button type="button" onclick="backupPortalData()" class="px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-lg flex items-center justify-center gap-2"><i class="fa-solid fa-download"></i> Verileri Yedekle</button>
+                        <label for="restorePortalBackupFile" class="cursor-pointer px-5 py-3 bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs rounded-xl shadow-lg flex items-center justify-center gap-2"><i class="fa-solid fa-upload"></i> Yedekten Geri Yükle</label>
+                        <input id="restorePortalBackupFile" type="file" accept=".json,application/json" class="hidden" onchange="restorePortalData(event)">
+                    </div>
+                    <p class="text-[11px] modern-muted mt-3">Not: Firebase verileri yalnızca bağlantı etkinse yedeğe dahil edilir. Geri yükleme, yedekteki Firebase verilerini mevcut kök yolun üzerine yazabilir.</p>
+                </section>
+
             </div>
 
         </div>
@@ -638,7 +655,7 @@
     <!-- FIREBASE SDK & TEMA YÖNETİMİ -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, set, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, get, set, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         // ====================================================================================
         // ⚙️ KOD İÇİNDEN DEĞİŞTİRİLEBİLİR FIREBASE VE KÖK YOL (ROOT PATH) AYARLARI
@@ -1108,13 +1125,16 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
             const userSection = document.getElementById("adminUserSection");
             const firebaseConfigSection = document.getElementById("adminFirebaseConfigSection");
             const firebaseConfigsListSection = document.getElementById("adminFirebaseConfigsListSection");
+            const dataBackupSection = document.getElementById("dataBackupSection");
             if (currentUser.role === "admin") {
+                if (dataBackupSection) dataBackupSection.classList.remove("hidden");
                 portalSettings.classList.remove("hidden");
                 btnSection.classList.remove("hidden");
                 userSection.classList.remove("hidden");
                 if (firebaseConfigSection) firebaseConfigSection.classList.remove("hidden");
                 if (firebaseConfigsListSection) firebaseConfigsListSection.classList.remove("hidden");
             } else {
+                if (dataBackupSection) dataBackupSection.classList.add("hidden");
                 portalSettings.classList.add("hidden");
                 btnSection.classList.add("hidden");
                 userSection.classList.add("hidden");
@@ -1126,6 +1146,62 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
             renderDynamicFirebaseConfigs();
             showToast("Hoş geldin, " + displayName + "!", "success");
         }
+
+        // Veri yedekleme ve geri yükleme: yalnızca bu uygulamanın mevcut yerel verileri.
+        window.backupPortalData = async function() {
+            try {
+                const localData = {};
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    localData[key] = localStorage.getItem(key);
+                }
+                const backup = { format: "giris-paneli-backup", version: 1, createdAt: new Date().toISOString(), localStorage: localData };
+                if (db) {
+                    try {
+                        const snapshot = await get(ref(db, currentRootPath));
+                        backup.firebase = { rootPath: currentRootPath, data: snapshot.exists() ? snapshot.val() : null };
+                    } catch (firebaseError) {
+                        console.warn("Firebase yedeğe eklenemedi:", firebaseError);
+                        showToast("Yerel veriler yedeklendi; Firebase verisi alınamadı.", "info");
+                    }
+                }
+                const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json;charset=utf-8" });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement("a");
+                link.href = url;
+                link.download = "giris-paneli-yedek-" + new Date().toISOString().replace(/[:.]/g, "-") + ".json";
+                document.body.appendChild(link); link.click(); link.remove(); URL.revokeObjectURL(url);
+                showToast("Veri yedeği indirildi.", "success");
+            } catch (error) {
+                console.error(error); showToast("Yedek oluşturulamadı.", "error");
+            }
+        };
+
+        window.restorePortalData = async function(event) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+            try {
+                const backup = JSON.parse(await file.text());
+                if (!backup || backup.format !== "giris-paneli-backup" || !backup.localStorage || typeof backup.localStorage !== "object") {
+                    throw new Error("Geçersiz yedek dosyası");
+                }
+                if (!confirm("Yedekteki yerel uygulama verileri bu cihazdaki verilerle birleştirilecek. Devam edilsin mi?")) { event.target.value = ""; return; }
+                for (const [key, value] of Object.entries(backup.localStorage)) {
+                    if (typeof value === "string") localStorage.setItem(key, value);
+                }
+                if (backup.firebase && backup.firebase.data !== undefined && db) {
+                    if (!confirm("Yedekte Firebase verisi de var. '" + (backup.firebase.rootPath || currentRootPath) + "' kök yolundaki mevcut veriler yedekle değiştirilsin mi?")) {
+                        showToast("Yerel veriler geri yüklendi; Firebase geri yüklemesi atlandı. Değişikliklerin uygulanması için sayfayı yenileyin.", "info");
+                        event.target.value = ""; return;
+                    }
+                    await set(ref(db, backup.firebase.rootPath || currentRootPath), backup.firebase.data);
+                }
+                showToast("Yedek geri yüklendi. Değişikliklerin tamamı için sayfayı yenileyin.", "success");
+                setTimeout(() => location.reload(), 900);
+            } catch (error) {
+                console.error(error); showToast("Yedek dosyası okunamadı veya geri yüklenemedi.", "error");
+            } finally { event.target.value = ""; }
+        };
 
         document.addEventListener("keydown", function(event) {
             if (event.key === "Escape" && !document.getElementById("displayNameModal").classList.contains("hidden")) {
