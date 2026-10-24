@@ -84,6 +84,43 @@
             color: var(--primary-accent) !important;
         }
 
+
+        /* Modern, mobil uyumlu bildirimler */
+        .modern-toast-stack {
+            position: fixed; top: max(16px, env(safe-area-inset-top)); right: max(16px, env(safe-area-inset-right));
+            z-index: 9999; display: flex; flex-direction: column; gap: 12px;
+            width: min(390px, calc(100vw - 32px)); pointer-events: none;
+        }
+        .modern-toast {
+            --toast-accent: #10b981;
+            position: relative; display: flex; align-items: flex-start; gap: 12px;
+            overflow: hidden; padding: 14px 14px 16px; border-radius: 18px;
+            color: #f8fafc; background: rgba(15, 23, 42, .96);
+            border: 1px solid rgba(148, 163, 184, .22); border-left: 4px solid var(--toast-accent);
+            box-shadow: 0 18px 50px rgba(2, 6, 23, .28), 0 4px 12px rgba(2, 6, 23, .16);
+            backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+            pointer-events: auto; opacity: 0; transform: translate3d(24px, -8px, 0) scale(.97);
+            transition: opacity .24s ease, transform .28s cubic-bezier(.2,.8,.2,1);
+        }
+        .modern-toast.is-visible { opacity: 1; transform: translate3d(0,0,0) scale(1); }
+        .modern-toast.is-leaving { opacity: 0; transform: translate3d(18px,-5px,0) scale(.98); }
+        .modern-toast-icon { flex: 0 0 36px; width: 36px; height: 36px; border-radius: 12px; display: grid; place-items: center; color: var(--toast-accent); background: color-mix(in srgb, var(--toast-accent) 16%, transparent); font-size: 15px; }
+        .modern-toast-copy { min-width: 0; flex: 1; padding-top: 1px; }
+        .modern-toast-title { font-size: 12px; line-height: 1.4; font-weight: 800; letter-spacing: .01em; margin-bottom: 3px; }
+        .modern-toast-message { font-size: 12px; line-height: 1.5; color: #cbd5e1; overflow-wrap: anywhere; }
+        .modern-toast-close { flex: 0 0 auto; border: 0; border-radius: 8px; padding: 5px 7px; color: #94a3b8; background: transparent; cursor: pointer; }
+        .modern-toast-close:hover, .modern-toast-close:focus-visible { color: #fff; background: rgba(148,163,184,.15); outline: none; }
+        .modern-toast-progress { position: absolute; bottom: 0; left: 0; height: 3px; width: 100%; background: var(--toast-accent); transform-origin: left; animation: modernToastTimer var(--toast-duration, 4s) linear forwards; opacity: .85; }
+        @keyframes modernToastTimer { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+        @media (max-width: 520px) {
+            .modern-toast-stack { top: max(10px, env(safe-area-inset-top)); left: 10px; right: 10px; width: auto; gap: 9px; }
+            .modern-toast { padding: 12px 12px 15px; border-radius: 15px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .modern-toast, .modern-toast.is-visible, .modern-toast.is-leaving { transition: none; transform: none; }
+            .modern-toast-progress { animation: none; }
+        }
+
         /* Açık Kutucuklar (Light Inputs) */
         .open-input {
             background-color: #F8FAFC !important;
@@ -464,7 +501,29 @@
     </div>
 
     <!-- BİLDİRİM ALANI (TOAST) -->
-    <div id="toastContainer" class="fixed bottom-6 right-6 z-50 flex flex-col gap-3 max-w-sm w-full pointer-events-none"></div>
+    <div id="toastContainer" class="modern-toast-stack" aria-live="polite" aria-atomic="false"></div>
+    <!-- İlk giriş / görünen ad modalı -->
+    <div id="displayNameModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="displayNameHeading">
+        <div class="absolute inset-0 bg-slate-950/75 backdrop-blur-md"></div>
+        <div class="relative w-full max-w-md overflow-hidden rounded-3xl border border-white/15 bg-slate-900 text-white shadow-2xl">
+            <div class="h-1.5 w-full bg-gradient-to-r from-cyan-400 via-violet-500 to-fuchsia-500"></div>
+            <div class="p-6 sm:p-8">
+                <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-400/20 to-violet-500/25 text-cyan-300 ring-1 ring-white/10 shadow-lg"><i class="fa-solid fa-user-pen text-2xl"></i></div>
+                <div class="text-center">
+                    <p class="mb-2 text-[10px] font-extrabold uppercase tracking-[.25em] text-cyan-300">Kişisel karşılama</p>
+                    <h2 id="displayNameHeading" class="text-2xl font-black tracking-tight">Size nasıl hitap edelim?</h2>
+                    <p class="mt-2 text-sm leading-6 text-slate-300">Adınızı yazın. Bu cihazda kaydedilecek ve sonraki girişlerinizde hatırlanacak.</p>
+                </div>
+                <form id="displayNameForm" class="mt-6 space-y-4">
+                    <label for="displayNameInput" class="block text-xs font-bold uppercase tracking-wider text-slate-300">Görünen adınız</label>
+                    <div class="relative"><i class="fa-solid fa-id-card absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i><input id="displayNameInput" type="text" maxlength="60" required autocomplete="name" placeholder="Adınızı yazın" class="w-full rounded-2xl border border-white/15 bg-slate-800 py-3.5 pl-11 pr-4 text-sm text-white outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"></div>
+                    <button type="submit" class="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-500 to-violet-600 px-4 py-3.5 text-sm font-extrabold shadow-lg transition hover:brightness-110 active:scale-[.99]"><i class="fa-solid fa-check"></i> Adımı kaydet ve devam et</button>
+                    <p class="text-center text-[11px] text-slate-400"><i class="fa-solid fa-lock mr-1"></i> Adınız yalnızca bu tarayıcıda saklanır.</p>
+                </form>
+            </div>
+        </div>
+    </div>
+
 
     <!-- ALT BİLGİ (FOOTER) -->
     <footer id="mainFooter" class="w-full modern-panel backdrop-blur-md border-t py-4 px-6 text-center text-xs modern-muted transition-colors duration-300 shadow-inner">
@@ -791,75 +850,90 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
             });
         }
 
+        let pendingLoginUser = null;
+        let pendingNameStorageKey = "";
+
         window.handleLogin = function(event) {
             event.preventDefault();
             const password = document.getElementById("passwordInput").value.trim();
             const errorAlert = document.getElementById("errorAlert");
-
             let foundUser = null;
             Object.keys(globalUsers).forEach(key => {
-                if (globalUsers[key].password === password) {
-                    foundUser = globalUsers[key];
-                }
+                if (globalUsers[key].password === password) foundUser = globalUsers[key];
             });
-
-            if (foundUser) {
-                currentUser = { ...foundUser };
-                errorAlert.classList.add("hidden");
-                // Ask for a display name after password entry; reuse the saved name on later visits.
-                const nameStorageKey = "portalDisplayName_" + (foundUser.title || foundUser.role || "user");
-                let savedDisplayName = "";
-                try { savedDisplayName = localStorage.getItem(nameStorageKey) || ""; } catch (_) {}
-                const enteredName = window.prompt("Size nasıl hitap edelim? İsminizi yazın:", savedDisplayName || foundUser.title || "");
-                if (enteredName === null) {
-                    document.getElementById("passwordInput").value = "";
-                    return;
-                }
-                const displayName = enteredName.trim() || foundUser.title || "Kullanıcı";
-                try { localStorage.setItem(nameStorageKey, displayName); } catch (_) {}
-                currentUser.displayName = displayName;
-
-                document.getElementById("loginCard").classList.add("hidden");
-                document.getElementById("dashboardSection").classList.remove("hidden");
-                document.getElementById("navUserArea").classList.remove("hidden");
-                document.getElementById("navUserArea").classList.add("flex");
-
-                const mainContainer = document.getElementById("mainContainer");
-                mainContainer.classList.remove("items-center");
-                mainContainer.classList.add("items-start");
-
-                document.getElementById("navUserName").innerText = currentUser.displayName || currentUser.title;
-                document.getElementById("navUserRole").innerText = currentUser.role === "admin" ? "Yönetici" : "Kullanıcı";
-
-                const portalSettings = document.getElementById("adminPortalSettings");
-                const btnSection = document.getElementById("adminButtonSection");
-                const userSection = document.getElementById("adminUserSection");
-                const firebaseConfigSection = document.getElementById("adminFirebaseConfigSection");
-                const firebaseConfigsListSection = document.getElementById("adminFirebaseConfigsListSection");
-
-                if (currentUser.role === "admin") {
-                    portalSettings.classList.remove("hidden");
-                    btnSection.classList.remove("hidden");
-                    userSection.classList.remove("hidden");
-                    if (firebaseConfigSection) firebaseConfigSection.classList.remove("hidden");
-                    if (firebaseConfigsListSection) firebaseConfigsListSection.classList.remove("hidden");
-                } else {
-                    portalSettings.classList.add("hidden");
-                    btnSection.classList.add("hidden");
-                    userSection.classList.add("hidden");
-                    if (firebaseConfigSection) firebaseConfigSection.classList.add("hidden");
-                    if (firebaseConfigsListSection) firebaseConfigsListSection.classList.add("hidden");
-                }
-
-                renderDynamicButtons();
-                renderDynamicUsers();
-                renderDynamicFirebaseConfigs();
-                showToast("Başarıyla giriş yapıldı.", "success");
-            } else {
+            if (!foundUser) {
                 errorAlert.classList.remove("hidden");
                 document.getElementById("passwordInput").value = "";
+                return;
             }
+            errorAlert.classList.add("hidden");
+            pendingLoginUser = { ...foundUser };
+            pendingNameStorageKey = "portalDisplayName_" + (foundUser.title || foundUser.role || "user");
+            let savedDisplayName = "";
+            try { savedDisplayName = localStorage.getItem(pendingNameStorageKey) || ""; } catch (_) {}
+            document.getElementById("displayNameInput").value = savedDisplayName;
+            document.getElementById("displayNameModal").classList.remove("hidden");
+            setTimeout(() => document.getElementById("displayNameInput").focus(), 80);
+        };
+
+        document.getElementById("displayNameForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            if (!pendingLoginUser) return;
+            const displayName = document.getElementById("displayNameInput").value.trim();
+            if (!displayName) {
+                document.getElementById("displayNameInput").focus();
+                return;
+            }
+            try { localStorage.setItem(pendingNameStorageKey, displayName); } catch (_) {}
+            document.getElementById("displayNameModal").classList.add("hidden");
+            completeLogin(pendingLoginUser, displayName);
+            pendingLoginUser = null;
+            pendingNameStorageKey = "";
+        });
+
+        function completeLogin(foundUser, displayName) {
+            currentUser = { ...foundUser, displayName };
+            // After password validation, the chosen local display name becomes the visible portal heading.
+            updateSystemTitleUI(displayName);
+            document.getElementById("loginCard").classList.add("hidden");
+            document.getElementById("dashboardSection").classList.remove("hidden");
+            document.getElementById("navUserArea").classList.remove("hidden");
+            document.getElementById("navUserArea").classList.add("flex");
+            const mainContainer = document.getElementById("mainContainer");
+            mainContainer.classList.remove("items-center");
+            mainContainer.classList.add("items-start");
+            document.getElementById("navUserName").innerText = displayName;
+            document.getElementById("navUserRole").innerText = currentUser.role === "admin" ? "Yönetici" : "Kullanıcı";
+            const portalSettings = document.getElementById("adminPortalSettings");
+            const btnSection = document.getElementById("adminButtonSection");
+            const userSection = document.getElementById("adminUserSection");
+            const firebaseConfigSection = document.getElementById("adminFirebaseConfigSection");
+            const firebaseConfigsListSection = document.getElementById("adminFirebaseConfigsListSection");
+            if (currentUser.role === "admin") {
+                portalSettings.classList.remove("hidden");
+                btnSection.classList.remove("hidden");
+                userSection.classList.remove("hidden");
+                if (firebaseConfigSection) firebaseConfigSection.classList.remove("hidden");
+                if (firebaseConfigsListSection) firebaseConfigsListSection.classList.remove("hidden");
+            } else {
+                portalSettings.classList.add("hidden");
+                btnSection.classList.add("hidden");
+                userSection.classList.add("hidden");
+                if (firebaseConfigSection) firebaseConfigSection.classList.add("hidden");
+                if (firebaseConfigsListSection) firebaseConfigsListSection.classList.add("hidden");
+            }
+            renderDynamicButtons();
+            renderDynamicUsers();
+            renderDynamicFirebaseConfigs();
+            showToast("Hoş geldin, " + displayName + "!", "success");
         }
+
+        document.addEventListener("keydown", function(event) {
+            if (event.key === "Escape" && !document.getElementById("displayNameModal").classList.contains("hidden")) {
+                // Name is required to continue; keep the modal open.
+                event.preventDefault();
+            }
+        });
 
         window.handleLogout = function() {
             currentUser = null;
@@ -1264,36 +1338,73 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
             return div.innerHTML;
         }
 
-        // MODERN BİLDİRİM (TOAST) FONKSİYONU
+        // MODERN BİLDİRİM (TOAST) FONKSİYONU — masaüstü ve mobil uyumlu
         function showToast(message, type = "success") {
             const container = document.getElementById("toastContainer");
-            const toast = document.createElement("div");
+            if (!container) return;
 
-            let borderColor = "border-emerald-500/40";
+            const presets = {
+                success: { title: "İşlem başarılı", icon: "fa-circle-check", accent: "#10b981" },
+                error:   { title: "Bir sorun oluştu", icon: "fa-circle-exclamation", accent: "#f43f5e" },
+                info:    { title: "Bilgilendirme", icon: "fa-circle-info", accent: "#38bdf8" },
+                warning: { title: "Dikkat", icon: "fa-triangle-exclamation", accent: "#f59e0b" }
+            };
+            const preset = presets[type] || presets.success;
+            const duration = type === "error" ? 6000 : 4200;
+            const toast = document.createElement("section");
+            toast.className = "modern-toast";
+            toast.setAttribute("role", type === "error" ? "alert" : "status");
+            toast.style.setProperty("--toast-accent", preset.accent);
+            toast.style.setProperty("--toast-duration", `${duration}ms`);
 
-            if (type === "error") {
-                borderColor = "border-red-500/40";
-            } else if (type === "info") {
-                borderColor = "border-blue-500/40";
-            }
+            const icon = document.createElement("div");
+            icon.className = "modern-toast-icon";
+            icon.setAttribute("aria-hidden", "true");
+            const iconEl = document.createElement("i");
+            iconEl.className = `fa-solid ${preset.icon}`;
+            icon.appendChild(iconEl);
 
-            toast.className = `pointer-events-auto flex items-center justify-between gap-3.5 p-4 rounded-2xl modern-panel border ${borderColor} shadow-2xl backdrop-blur-2xl transition-all duration-300 transform translate-y-4 opacity-0 text-xs font-semibold modern-text`;
-            toast.innerHTML = `
-                <div class="flex-grow pr-2">${message}</div>
-                <button onclick="this.parentElement.remove()" class="text-slate-400 hover:text-white transition-colors p-1 flex-shrink-0">
-                    <i class="fa-solid fa-xmark text-xs"></i>
-                </button>
-            `;
+            const copy = document.createElement("div");
+            copy.className = "modern-toast-copy";
+            const title = document.createElement("div");
+            title.className = "modern-toast-title";
+            title.textContent = preset.title;
+            const body = document.createElement("div");
+            body.className = "modern-toast-message";
+            body.textContent = String(message ?? "");
+            copy.append(title, body);
 
+            const close = document.createElement("button");
+            close.type = "button";
+            close.className = "modern-toast-close";
+            close.setAttribute("aria-label", "Bildirimi kapat");
+            close.innerHTML = '<i class="fa-solid fa-xmark" aria-hidden="true"></i>';
+
+            const progress = document.createElement("div");
+            progress.className = "modern-toast-progress";
+            progress.setAttribute("aria-hidden", "true");
+            toast.append(icon, copy, close, progress);
             container.appendChild(toast);
-            
-            setTimeout(() => toast.classList.remove("translate-y-4", "opacity-0"), 10);
-            
-            setTimeout(() => {
-                toast.classList.add("translate-y-4", "opacity-0");
-                setTimeout(() => toast.remove(), 300);
-            }, 3500);
+
+            let removeTimer;
+            const dismiss = () => {
+                if (toast.dataset.dismissed === "true") return;
+                toast.dataset.dismissed = "true";
+                clearTimeout(removeTimer);
+                toast.classList.remove("is-visible");
+                toast.classList.add("is-leaving");
+                setTimeout(() => toast.remove(), 280);
+            };
+            close.addEventListener("click", dismiss);
+            toast.addEventListener("mouseenter", () => { progress.style.animationPlayState = "paused"; });
+            toast.addEventListener("mouseleave", () => { progress.style.animationPlayState = "running"; });
+            requestAnimationFrame(() => toast.classList.add("is-visible"));
+            removeTimer = setTimeout(dismiss, duration);
+
+            // Ekranı kaplamaması için eski bildirimleri sınırla.
+            while (container.children.length > 5) container.firstElementChild.remove();
         }
+
     </script>
 </body>
 </html>
