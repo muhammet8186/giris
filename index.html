@@ -110,6 +110,11 @@
         .modern-toast-message { font-size: 12px; line-height: 1.5; color: #cbd5e1; overflow-wrap: anywhere; }
         .modern-toast-close { flex: 0 0 auto; border: 0; border-radius: 8px; padding: 5px 7px; color: #94a3b8; background: transparent; cursor: pointer; }
         .modern-toast-close:hover, .modern-toast-close:focus-visible { color: #fff; background: rgba(148,163,184,.15); outline: none; }
+        .modern-toast-actions { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+        .modern-toast-action { border:0; border-radius:9px; padding:7px 11px; font-size:12px; font-weight:700; cursor:pointer; transition:filter .15s ease, transform .15s ease; }
+        .modern-toast-action:hover { filter:brightness(1.08); transform:translateY(-1px); }
+        .modern-toast-cancel { color:#e2e8f0; background:rgba(148,163,184,.18); }
+        .modern-toast-confirm { color:#fff; background:#dc2626; }
         .modern-toast-progress { position: absolute; bottom: 0; left: 0; height: 3px; width: 100%; background: var(--toast-accent); transform-origin: left; animation: modernToastTimer var(--toast-duration, 4s) linear forwards; opacity: .85; }
         @keyframes modernToastTimer { from { transform: scaleX(1); } to { transform: scaleX(0); } }
         @media (max-width: 520px) {
@@ -1105,12 +1110,67 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
         }
 
         window.deleteButton = function(id) {
-            if (!currentUser || currentUser.role !== "admin" || !db) return;
-            remove(ref(db, BUTTONS_DB_PATH() + '/' + id))
-                .then(() => {
-                    showToast("Buton silindi.", "info");
-                    resetButtonForm();
-                });
+            if (!currentUser || currentUser.role !== "admin" || !db) {
+                showToast("Bu işlem için yönetici yetkisi gerekiyor.", "error");
+                return;
+            }
+            const buttonName = (globalButtons[id] && globalButtons[id].name) || "Bu buton";
+            showDeleteConfirmation(buttonName, () => {
+                remove(ref(db, BUTTONS_DB_PATH() + '/' + id))
+                    .then(() => {
+                        showToast('"' + buttonName + '" butonu silindi.', "success");
+                        resetButtonForm();
+                    })
+                    .catch(err => showToast("Buton silinemedi: " + (err.message || "Bilinmeyen hata"), "error"));
+            });
+        }
+
+        // Tarayıcının standart confirm penceresi yerine modern bildirim içinde onay al.
+        function showDeleteConfirmation(itemName, onConfirm) {
+            const container = document.getElementById("toastContainer");
+            if (!container) return;
+            const toast = document.createElement("section");
+            toast.className = "modern-toast is-visible";
+            toast.style.setProperty("--toast-accent", "#f59e0b");
+            toast.setAttribute("role", "alertdialog");
+            toast.setAttribute("aria-label", "Silme işlemini onayla");
+
+            const icon = document.createElement("div");
+            icon.className = "modern-toast-icon";
+            icon.innerHTML = '<i class="fa-solid fa-trash-can" aria-hidden="true"></i>';
+            const copy = document.createElement("div");
+            copy.className = "modern-toast-copy";
+            const title = document.createElement("div");
+            title.className = "modern-toast-title";
+            title.textContent = "Silme işlemini onayla";
+            const message = document.createElement("div");
+            message.className = "modern-toast-message";
+            message.textContent = '“' + itemName + '” butonunu silmek istiyor musunuz?';
+            const actions = document.createElement("div");
+            actions.className = "modern-toast-actions";
+            const cancel = document.createElement("button");
+            cancel.type = "button";
+            cancel.className = "modern-toast-action modern-toast-cancel";
+            cancel.textContent = "Vazgeç";
+            const confirm = document.createElement("button");
+            confirm.type = "button";
+            confirm.className = "modern-toast-action modern-toast-confirm";
+            confirm.textContent = "Evet, sil";
+            actions.append(cancel, confirm);
+            copy.append(title, message, actions);
+            const close = document.createElement("button");
+            close.type = "button";
+            close.className = "modern-toast-close";
+            close.setAttribute("aria-label", "Bildirimi kapat");
+            close.innerHTML = '<i class="fa-solid fa-xmark" aria-hidden="true"></i>';
+            const dismiss = () => toast.remove();
+            cancel.addEventListener("click", dismiss);
+            close.addEventListener("click", dismiss);
+            confirm.addEventListener("click", () => { dismiss(); onConfirm(); });
+            toast.append(icon, copy, close);
+            container.appendChild(toast);
+            while (container.children.length > 5) container.firstElementChild.remove();
+            cancel.focus();
         }
 
         // KULLANICI YÖNETİMİ
