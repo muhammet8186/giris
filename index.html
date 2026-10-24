@@ -279,6 +279,28 @@
 
                 <!-- 2. BÖLÜM: BUTON YÖNETİMİ (Yalnızca Admin) -->
                 <div id="adminButtonSection" class="hidden space-y-6">
+                    <!-- KATEGORİ YÖNETİMİ: BUTON EKLEME ALANINDAN AYRI -->
+                    <div class="modern-panel border rounded-3xl p-6 shadow-xl relative transition-colors duration-300">
+                        <div class="flex items-center gap-3 mb-5 pb-3 border-b border-white/10">
+                            <div class="w-9 h-9 rounded-xl bg-violet-500/20 text-violet-400 flex items-center justify-center border border-violet-500/30"><i class="fa-solid fa-folder-tree"></i></div>
+                            <div>
+                                <h3 class="text-sm font-bold modern-text">Kategori Yönetimi</h3>
+                                <p class="text-[11px] modern-muted">Kategori ekleyin, adını değiştirin veya kullanılmayan kategorileri silin.</p>
+                            </div>
+                        </div>
+                        <form onsubmit="handleSaveCategory(event)" class="flex flex-col sm:flex-row gap-3 mb-4">
+                            <input type="hidden" id="editCategoryIdInput" value="">
+                            <input type="text" id="categoryNameInput" required maxlength="60" class="flex-1 px-3.5 py-3 open-input border rounded-xl text-xs shadow-sm" placeholder="Yeni kategori adı (örn. Muhasebe)">
+                            <div class="flex gap-2">
+                                <button id="saveCategoryBtn" type="submit" class="px-5 py-3 bg-violet-600 hover:bg-violet-700 text-white font-bold text-xs rounded-xl shadow transition"><i class="fa-solid fa-plus mr-1"></i> Kategori Ekle</button>
+                                <button id="cancelCategoryEditBtn" type="button" onclick="resetCategoryForm()" class="hidden px-4 py-3 bg-white/10 border border-white/10 modern-text text-xs rounded-xl">İptal</button>
+                            </div>
+                        </form>
+                        <div id="categoryManagementList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                            <p class="text-xs modern-muted">Kategoriler yükleniyor…</p>
+                        </div>
+                    </div>
+
                     <div class="modern-panel border rounded-3xl p-6 shadow-xl relative transition-colors duration-300">
                         <div class="flex items-center justify-between mb-5 pb-3 border-b border-white/10">
                             <div class="flex items-center gap-2.5">
@@ -305,14 +327,11 @@
 
                             <div class="md:col-span-3">
                                 <label class="block text-[11px] font-bold uppercase modern-muted mb-1.5">Kategori</label>
-                                <input type="text" id="newBtnCategory" list="buttonCategoryOptions"
-                                    class="w-full px-3 py-2.5 open-input border rounded-xl text-xs shadow-sm"
-                                    placeholder="Örn: Muhasebe">
-                                <datalist id="buttonCategoryOptions">
-                                    <option value="Genel"></option><option value="İş Yönetimi"></option>
-                                    <option value="Muhasebe"></option><option value="Web Siteleri"></option>
-                                    <option value="İletişim"></option><option value="Araçlar"></option>
-                                </datalist>
+                                <select id="newBtnCategory" required
+                                    class="w-full px-3 py-2.5 open-input border rounded-xl text-xs shadow-sm">
+                                    <option value="">Önce kategori ekleyin</option>
+                                </select>
+                                <p class="text-[10px] modern-muted mt-1">Kategorileri üstteki ayrı Kategori Yönetimi bölümünden ekleyebilirsiniz.</p>
                             </div>
                             <div class="md:col-span-4">
                                 <label class="block text-[11px] font-bold uppercase modern-muted mb-1.5">İnternet Linki (URL)</label>
@@ -351,6 +370,7 @@
                     <div id="dynamicButtonsList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 justify-items-center min-h-[120px]">
                         <!-- Firebase Verileri -->
                     </div>
+
                 </div>
 
                 <!-- 3. BÖLÜM: KULLANICI / ŞİFRE YÖNETİMİ (Yalnızca Admin) -->
@@ -658,9 +678,25 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
         const TITLE_DB_PATH = () => currentRootPath + '/baslik';
         const USERS_DB_PATH = () => currentRootPath + '/kullanicilar';
         const BUTTONS_DB_PATH = () => currentRootPath + '/butonlar';
+        const CATEGORIES_DB_PATH = () => currentRootPath + '/kategoriler';
 
         let currentUser = null;
         let globalButtons = {};
+        const categoryCacheKey = () => "portal_cached_categories_" + String(currentRootPath || "Giriş Paneli");
+        function readLocalCategories() {
+            try {
+                const value = JSON.parse(localStorage.getItem(categoryCacheKey()) || "{}");
+                return value && typeof value === "object" ? value : {};
+            } catch (_) { return {}; }
+        }
+        function saveLocalCategories() {
+            try { localStorage.setItem(categoryCacheKey(), JSON.stringify(globalCategories)); }
+            catch (err) { console.warn("Kategoriler yerel olarak kaydedilemedi:", err); }
+        }
+        let globalCategories = readLocalCategories();
+        let categoriesStoredInFirebase = false;
+        let categoriesFirebaseLoaded = false;
+        let categorySyncInProgress = false;
         let globalUsers = {
             "default_admin": { title: "Sistem Yöneticisi", role: "admin", password: "yonetici" }
         };
@@ -744,9 +780,57 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
 
             onValue(ref(db, BUTTONS_DB_PATH()), (snapshot) => {
                 globalButtons = snapshot.val() || {};
+                // Butonlarda daha önce kullanılmış ancak kategori listesine aktarılmamış adları da kaybetme.
+                const knownNames = new Set(Object.values(globalCategories).map(item => String(item?.name || '').trim().toLocaleLowerCase('tr-TR')));
+                Object.values(globalButtons).forEach((button, index) => {
+                    const name = String(button?.category || '').trim();
+                    if (name && !knownNames.has(name.toLocaleLowerCase('tr-TR'))) {
+                        globalCategories['legacy_button_' + index] = { name };
+                        knownNames.add(name.toLocaleLowerCase('tr-TR'));
+                    }
+                });
                 renderDynamicButtons();
+                renderCategoryOptions();
+                renderCategoryManagement();
                 const editingUserId = document.getElementById("editUserIdInput")?.value;
                 renderUserButtonPermissions(editingUserId && globalUsers[editingUserId] ? (globalUsers[editingUserId].allowedButtons || {}) : {});
+            });
+
+            onValue(ref(db, CATEGORIES_DB_PATH()), async (snapshot) => {
+                categoriesStoredInFirebase = snapshot.exists();
+                const remoteCategories = snapshot.val() || {};
+                const localCategories = readLocalCategories();
+                // Firebase kayıtları önceliklidir; yerelde bulunup Firebase'e henüz ulaşmamış kayıtlar korunur.
+                globalCategories = { ...localCategories, ...remoteCategories };
+                categoriesFirebaseLoaded = true;
+                saveLocalCategories();
+                // Yerelde olup Firebase'de bulunmayan kategorileri bağlantı geldiyse eşitle.
+                if (!categorySyncInProgress && db) {
+                    const missing = Object.entries(localCategories).filter(([id]) => !Object.prototype.hasOwnProperty.call(remoteCategories, id));
+                    if (missing.length) {
+                        categorySyncInProgress = true;
+                        try {
+                            for (const [id, item] of missing) await set(ref(db, CATEGORIES_DB_PATH() + '/' + id), item);
+                        } catch (syncError) {
+                            console.warn("Yerel kategoriler Firebase'e eşitlenemedi; yerelde korunuyor.", syncError);
+                        } finally { categorySyncInProgress = false; }
+                    }
+                }
+                // Eski kayıtlarla uyumluluk: mevcut butonların kategorileri otomatik listelenir.
+                const knownNames = new Set(Object.values(globalCategories).map(item => String(item?.name || '').trim().toLocaleLowerCase('tr-TR')));
+                Object.values(globalButtons).forEach((button, index) => {
+                    const name = String(button?.category || '').trim();
+                    if (name && !knownNames.has(name.toLocaleLowerCase('tr-TR'))) {
+                        globalCategories['legacy_button_' + index] = { name };
+                        knownNames.add(name.toLocaleLowerCase('tr-TR'));
+                    }
+                });
+                if (!Object.keys(globalCategories).length) {
+                    ['Genel', 'İş Yönetimi', 'Muhasebe', 'Web Siteleri', 'İletişim', 'Araçlar'].forEach((name, index) => { globalCategories['default_' + index] = { name }; });
+                    saveLocalCategories();
+                }
+                renderCategoryOptions();
+                renderCategoryManagement();
             });
 
             onValue(ref(db, USERS_DB_PATH()), (snapshot) => {
@@ -1069,6 +1153,126 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
             showToast("Oturum kapatıldı.", "info");
         }
 
+        // KATEGORİ YÖNETİMİ
+        function categoryEntries() {
+            const seen = new Set();
+            return Object.entries(globalCategories).filter(([id, item]) => {
+                const name = String(item?.name || '').trim();
+                if (!name || seen.has(name.toLocaleLowerCase('tr-TR'))) return false;
+                seen.add(name.toLocaleLowerCase('tr-TR'));
+                return true;
+            }).sort((a, b) => String(a[1].name).localeCompare(String(b[1].name), 'tr'));
+        }
+
+        function renderCategoryOptions(selectedValue) {
+            const select = document.getElementById('newBtnCategory');
+            if (!select) return;
+            const previous = selectedValue ?? select.value;
+            const entries = categoryEntries();
+            select.innerHTML = '<option value="">Kategori seçin</option>' + entries.map(([id, item]) => `<option value="${escapeHtml(item.name)}">${escapeHtml(item.name)}</option>`).join('');
+            if (previous && entries.some(([, item]) => item.name === previous)) select.value = previous;
+            else if (entries.length === 1) select.value = entries[0][1].name;
+        }
+
+        function renderCategoryManagement() {
+            const box = document.getElementById('categoryManagementList');
+            if (!box) return;
+            const entries = categoryEntries();
+            if (!entries.length) {
+                box.innerHTML = '<p class="text-xs modern-muted">Henüz kategori bulunmuyor. Yukarıdan kategori ekleyin.</p>';
+                renderCategoryOptions();
+                return;
+            }
+            box.innerHTML = entries.map(([id, item]) => {
+                const name = String(item.name || '');
+                const inUse = Object.values(globalButtons).some(btn => String(btn?.category || 'Genel').trim().toLocaleLowerCase('tr-TR') === name.trim().toLocaleLowerCase('tr-TR'));
+                return `<div class="flex items-center justify-between gap-3 p-3 rounded-xl border border-white/10 bg-white/5">
+                    <div class="min-w-0"><p class="text-xs font-bold modern-text truncate">${escapeHtml(name)}</p><p class="text-[10px] modern-muted mt-1">${inUse ? 'Kullanımda · silinemez' : 'Kullanımda değil'}</p></div>
+                    <div class="flex items-center gap-1 shrink-0"><button type="button" onclick="editCategory('${id}')" class="px-2.5 py-2 rounded-lg bg-blue-500/15 text-blue-300 text-xs" title="Düzenle"><i class="fa-solid fa-pen"></i></button><button type="button" onclick="deleteCategory('${id}')" ${inUse ? 'disabled' : ''} class="px-2.5 py-2 rounded-lg ${inUse ? 'opacity-30 cursor-not-allowed' : 'bg-rose-500/15 text-rose-300'} text-xs" title="${inUse ? 'Bu kategoriye bağlı buton var' : 'Sil'}"><i class="fa-solid fa-trash"></i></button></div>
+                </div>`;
+            }).join('');
+            renderCategoryOptions();
+        }
+
+        window.handleSaveCategory = async function(event) {
+            event.preventDefault();
+            if (!currentUser || currentUser.role !== 'admin') return;
+            const name = document.getElementById('categoryNameInput').value.trim();
+            const editId = document.getElementById('editCategoryIdInput').value;
+            if (!name) { showToast('Kategori adı boş olamaz.', 'error'); return; }
+            const duplicate = categoryEntries().some(([id, item]) => id !== editId && String(item.name).trim().toLocaleLowerCase('tr-TR') === name.toLocaleLowerCase('tr-TR'));
+            if (duplicate) { showToast('Bu kategori zaten kayıtlı.', 'error'); return; }
+            const oldName = editId ? globalCategories[editId]?.name : '';
+            const id = editId || ('local_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8));
+            // Önce yerel kayıt: bağlantı kesilse bile kategori bu cihazda kalır.
+            globalCategories[id] = { ...(globalCategories[id] || {}), name, _pendingSync: true };
+            saveLocalCategories();
+            renderCategoryOptions(name);
+            renderCategoryManagement();
+            resetCategoryForm();
+            if (!db) {
+                showToast(editId ? 'Kategori yerelde güncellendi. Firebase bağlantısı kurulunca eşitlenecek.' : 'Kategori yerel olarak kaydedildi. Firebase bağlantısı kurulunca eşitlenecek.', 'info');
+                return;
+            }
+            try {
+                const categoryValue = { name };
+                await set(ref(db, CATEGORIES_DB_PATH() + '/' + id), categoryValue);
+                globalCategories[id] = categoryValue;
+                saveLocalCategories();
+                if (editId && oldName && oldName !== name) {
+                    const updates = {};
+                    Object.entries(globalButtons).forEach(([buttonId, button]) => { if (String(button?.category || '').trim() === oldName) updates[buttonId + '/category'] = name; });
+                    if (Object.keys(updates).length) {
+                        // Buton değişikliklerini de önce yerel kategori kaydının ardından Firebase'e uygula.
+                        await update(ref(db, BUTTONS_DB_PATH()), updates);
+                    }
+                }
+                renderCategoryManagement();
+                showToast(editId ? 'Kategori yerelde kaydedildi ve Firebase ile eşitlendi.' : 'Kategori yerelde kaydedildi ve Firebase ile eşitlendi.', 'success');
+            } catch (err) {
+                showToast('Kategori yerelde kayıtlı. Firebase eşitlemesi bekliyor: ' + (err?.message || 'Bağlantı hatası'), 'info');
+            }
+        };
+
+        window.editCategory = function(id) {
+            const item = globalCategories[id];
+            if (!item || !currentUser || currentUser.role !== 'admin') return;
+            document.getElementById('categoryNameInput').value = item.name || '';
+            document.getElementById('editCategoryIdInput').value = id;
+            document.getElementById('saveCategoryBtn').innerHTML = '<i class="fa-solid fa-floppy-disk mr-1"></i> Değişiklikleri Kaydet';
+            document.getElementById('cancelCategoryEditBtn').classList.remove('hidden');
+            document.getElementById('categoryNameInput').focus();
+        };
+
+        window.resetCategoryForm = function() {
+            const input = document.getElementById('categoryNameInput');
+            const idInput = document.getElementById('editCategoryIdInput');
+            if (input) input.value = '';
+            if (idInput) idInput.value = '';
+            const save = document.getElementById('saveCategoryBtn');
+            if (save) save.innerHTML = '<i class="fa-solid fa-plus mr-1"></i> Kategori Ekle';
+            document.getElementById('cancelCategoryEditBtn')?.classList.add('hidden');
+        };
+
+        window.deleteCategory = async function(id) {
+            if (!currentUser || currentUser.role !== 'admin') { showToast('Bu işlem için yönetici yetkisi gerekiyor.', 'error'); return; }
+            const item = globalCategories[id];
+            if (!item) return;
+            const used = Object.values(globalButtons).some(btn => String(btn?.category || 'Genel').trim().toLocaleLowerCase('tr-TR') === String(item.name).trim().toLocaleLowerCase('tr-TR'));
+            if (used) { showToast('Bu kategoriye kayıtlı butonlar var. Önce butonların kategorisini değiştirin veya butonları silin.', 'error'); return; }
+            if (!confirm('"' + item.name + '" kategorisi silinsin mi?')) return;
+            // Yerelden hemen kaldır; Firebase silme işlemi başarısız olsa bile sonraki bağlantı için bilgi ver.
+            delete globalCategories[id];
+            saveLocalCategories();
+            renderCategoryManagement();
+            if (document.getElementById('editCategoryIdInput').value === id) resetCategoryForm();
+            if (!db) { showToast('Kategori yerelden silindi. Firebase bağlantısı olmadığı için sunucudaki kayıt varsa ayrıca eşitlenmelidir.', 'info'); return; }
+            try {
+                await remove(ref(db, CATEGORIES_DB_PATH() + '/' + id));
+                showToast('Kategori yerelden silindi ve Firebase ile eşitlendi.', 'success');
+            } catch (err) { showToast('Kategori yerelden silindi; Firebase eşitlemesi başarısız: ' + (err?.message || 'Bağlantı hatası'), 'info'); }
+        };
+
         // BUTON YÖNETİMİ
         window.handleSaveButton = function(event) {
             event.preventDefault();
@@ -1084,12 +1288,12 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
             const categoryInput = document.getElementById("newBtnCategory");
 
             const name = nameInput.value.trim();
-            const category = (categoryInput && categoryInput.value.trim()) || "Genel";
+            const category = (categoryInput && categoryInput.value.trim()) || "";
             let url = urlInput.value.trim();
             const editId = editIdInput.value;
 
-            if (!name || !url) {
-                showToast("Lütfen tüm alanları doldurunuz.", "error");
+            if (!name || !url || !category) {
+                showToast("Lütfen buton adı, kategori ve link alanlarını doldurunuz. Gerekirse önce kategori ekleyin.", "error");
                 return;
             }
 
