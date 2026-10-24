@@ -231,7 +231,7 @@
                             <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
                                 <i class="fa-solid fa-lock text-sm"></i>
                             </span>
-                            <input type="text" id="passwordInput" required
+                            <input type="password" id="passwordInput" required
                                 class="w-full pl-10 pr-4 py-3 open-input border rounded-2xl text-sm transition-all shadow-inner font-mono"
                                 placeholder="Şifrenizi yazınız...">
                         </div>
@@ -557,6 +557,58 @@
         <p id="footerText">© 2026 Yönetim ve Erişim Merkezi. Tüm hakları saklıdır.</p>
     </footer>
 
+    <!-- İnternet yoksa da çalışabilen bağlantı uyarısı ve yerel giriş yedeği -->
+    <style>
+      #offlineNotice{position:fixed;inset:0;z-index:10000;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(2,6,23,.68);backdrop-filter:blur(10px)}
+      #offlineNotice .offline-card{width:min(420px,100%);border:1px solid rgba(255,255,255,.14);border-radius:26px;padding:26px;background:linear-gradient(145deg,#111827,#1e293b);color:#f8fafc;box-shadow:0 25px 80px rgba(0,0,0,.4);text-align:center;animation:offlinePop .22s ease-out}
+      #offlineNotice .offline-icon{width:62px;height:62px;margin:0 auto 16px;border-radius:20px;display:grid;place-items:center;background:rgba(245,158,11,.15);color:#fbbf24;font-size:25px;border:1px solid rgba(245,158,11,.25)}
+      #offlineNotice button{width:100%;margin-top:20px;border:0;border-radius:14px;padding:13px 18px;background:linear-gradient(90deg,#2563eb,#7c3aed);color:white;font-weight:800;cursor:pointer}
+      @keyframes offlinePop{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+    </style>
+    <div id="offlineNotice" role="alertdialog" aria-modal="true" aria-labelledby="offlineNoticeTitle" aria-describedby="offlineNoticeText">
+      <div class="offline-card"><div class="offline-icon"><i class="fa-solid fa-wifi"></i></div>
+        <h2 id="offlineNoticeTitle" style="font-size:21px;font-weight:900;margin:0 0 8px">İnternet bağlantısı yok</h2>
+        <p id="offlineNoticeText" style="font-size:13px;line-height:1.7;color:#cbd5e1;margin:0">Lütfen internet bağlantınızı kontrol edin. Bağlantı olmadığında, bu cihazda daha önce kaydedilmiş kullanıcı bilgileriyle yerel olarak giriş yapabilirsiniz.</p>
+        <button type="button" id="offlineNoticeOk">Tamam</button>
+      </div>
+    </div>
+    <script>
+      (function(){
+        const notice=document.getElementById('offlineNotice');
+        const close=()=>{notice.style.display='none';};
+        document.getElementById('offlineNoticeOk').addEventListener('click',close);
+        async function hasInternet(){
+          if(!navigator.onLine) return false;
+          const controller=new AbortController();
+          const timer=setTimeout(()=>controller.abort(),3500);
+          try { await fetch('https://www.gstatic.com/generate_204',{mode:'no-cors',cache:'no-store',signal:controller.signal}); return true; }
+          catch(_){ return false; }
+          finally{ clearTimeout(timer); }
+        }
+        window.addEventListener('DOMContentLoaded',async()=>{
+          if(!(await hasInternet())) notice.style.display='flex';
+        });
+        window.addEventListener('offline',()=>{notice.style.display='flex';});
+        // Firebase modülü internet yokken yüklenemese bile daha önce önbelleğe alınmış hesapla yerel giriş.
+        window.handleLogin=window.handleLogin||function(event){
+          event.preventDefault();
+          let users={};
+          try{users=JSON.parse(localStorage.getItem('portal_cached_users')||'{}')}catch(_){ }
+          if(!Object.keys(users).length){ users={default_admin:{title:'Sistem Yöneticisi',role:'admin',password:'yonetici'}}; }
+          const pass=(document.getElementById('passwordInput').value||'').trim();
+          const match=Object.entries(users).find(([,u])=>u&&String(u.password)===pass);
+          if(!match){document.getElementById('errorAlert').classList.remove('hidden');document.getElementById('passwordInput').value='';return;}
+          const [id,user]=match; const name=String(user.title||user.name||(user.role==='admin'?'Sistem Yöneticisi':'Kullanıcı')).trim();
+          try{localStorage.setItem('portalDatabaseUserName_'+id,name);localStorage.setItem('portal_last_user_id',id);localStorage.setItem('portal_last_user_name',name);}catch(_){ }
+          document.getElementById('errorAlert').classList.add('hidden');
+          document.getElementById('brandTitleText').textContent=name;document.getElementById('pageTitle').textContent=name+' - Giriş Paneli';document.getElementById('footerText').textContent='© 2026 '+name+'. Tüm hakları saklıdır.';
+          document.getElementById('loginCard').classList.add('hidden');document.getElementById('dashboardSection').classList.remove('hidden');
+          const area=document.getElementById('navUserArea');area.classList.remove('hidden');area.classList.add('flex');document.getElementById('navUserName').textContent=name;document.getElementById('navUserRole').textContent=user.role==='admin'?'Yönetici':'Kullanıcı';
+          document.getElementById('mainContainer').classList.remove('items-center');document.getElementById('mainContainer').classList.add('items-start');
+        };
+      })();
+    </script>
+
     <!-- FIREBASE SDK & TEMA YÖNETİMİ -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -604,12 +656,13 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
         let currentUser = null;
         let globalButtons = {};
         let globalUsers = {
-            "default_admin": {
-                title: "Sistem Yöneticisi",
-                role: "admin",
-                password: "yonetici"
-            }
+            "default_admin": { title: "Sistem Yöneticisi", role: "admin", password: "yonetici" }
         };
+        // Daha önce çevrimiçiyken alınan kullanıcı kayıtları, bağlantı yokken giriş için yerelde tutulur.
+        try {
+            const cachedUsers = JSON.parse(localStorage.getItem("portal_cached_users") || "null");
+            if (cachedUsers && typeof cachedUsers === "object" && Object.keys(cachedUsers).length) globalUsers = cachedUsers;
+        } catch (_) {}
         let globalFirebaseConfigs = readLocalFirebaseConfigs();
         let systemTitle = "Yönetim ve Erişim Merkezi";
         let draggedButtonId = null;
@@ -693,6 +746,7 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
             onValue(ref(db, USERS_DB_PATH()), (snapshot) => {
                 if (snapshot.exists()) {
                     globalUsers = snapshot.val() || {};
+                    try { localStorage.setItem("portal_cached_users", JSON.stringify(globalUsers)); } catch (_) {}
                 }
                 renderDynamicUsers();
                 if (currentUser) {
@@ -916,7 +970,12 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
             // Veritabanındaki Kullanıcı Adı / Unvanı doğrudan kullanılır; ad sorulmaz.
             const databaseName = String(foundUser.title || foundUser.name || (foundUser.role === "admin" ? "Sistem Yöneticisi" : "Kullanıcı")).trim();
             const localNameKey = "portalDatabaseUserName_" + foundUserId;
-            try { localStorage.setItem(localNameKey, databaseName); } catch (_) {}
+            try {
+                localStorage.setItem(localNameKey, databaseName);
+                localStorage.setItem("portal_last_user_id", foundUserId);
+                localStorage.setItem("portal_last_user_name", databaseName);
+                localStorage.setItem("portal_cached_users", JSON.stringify(globalUsers));
+            } catch (_) {}
             completeLogin({ ...foundUser, _databaseUserId: foundUserId }, databaseName);
         };
 
