@@ -326,8 +326,8 @@
                                     <i class="fa-solid fa-floppy-disk text-xs"></i>
                                     <span id="saveButtonText">Butonu Ekle</span>
                                 </button>
-                                <button type="button" id="cancelButtonEditBtn" onclick="resetButtonForm()" class="hidden py-2.5 px-3 bg-slate-700 hover:bg-slate-600 text-white text-xs rounded-xl transition-all" title="İptal">
-                                    <i class="fa-solid fa-xmark"></i>
+                                <button type="button" id="cancelButtonEditBtn" onclick="resetButtonForm()" class="hidden min-h-[42px] py-2.5 px-4 bg-white/5 hover:bg-rose-500/15 border border-white/15 hover:border-rose-400/50 text-slate-200 hover:text-rose-200 font-semibold text-xs rounded-xl transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-rose-400/60" title="Düzenlemeyi iptal et">
+                                    <i class="fa-solid fa-xmark"></i><span>İptal</span>
                                 </button>
                             </div>
                         </form>
@@ -402,9 +402,9 @@
                             </div>
 
                             <div class="md:col-span-2 flex items-end gap-2">
-                                <button type="submit" id="saveUserSubmitBtn" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white font-semibold text-xs rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
+                                <button type="submit" id="saveUserSubmitBtn" class="w-full min-h-[42px] py-2.5 px-4 bg-gradient-to-r from-indigo-600 via-blue-600 to-cyan-600 hover:from-indigo-500 hover:via-blue-500 hover:to-cyan-500 border border-blue-400/40 text-white font-bold text-xs rounded-xl shadow-lg shadow-blue-900/25 transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-blue-400/70">
                                     <i class="fa-solid fa-user-check text-xs text-emerald-400"></i>
-                                    <span id="saveUserBtnText">Şifre Ekle</span>
+                                    <span id="saveUserBtnText">Kullanıcı Ekle</span>
                                 </button>
                                 <button type="button" id="cancelUserEditBtn" onclick="resetUserForm()" class="hidden py-2.5 px-3 bg-slate-700 hover:bg-slate-600 text-white text-xs rounded-xl transition-all" title="İptal">
                                     <i class="fa-solid fa-xmark"></i>
@@ -1256,10 +1256,17 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
                 ? push(ref(db, USERS_DB_PATH()), userData)
                 : update(ref(db, USERS_DB_PATH() + '/' + editId), userData);
             request.then(() => {
+                // Veritabanı kaydı başarılı; arayüz güncelleme hatasını kayıt hatasıyla karıştırma.
+                try {
+                    resetUserForm();
+                    renderDynamicButtons();
+                } catch (uiError) {
+                    console.error("Kullanıcı kaydedildi ancak arayüz güncellenirken hata oluştu:", uiError);
+                }
                 showToast(`"${title}" için kullanıcı ve buton yetkileri kaydedildi.`, "success");
-                resetUserForm();
-                renderDynamicButtons();
-            }).catch(err => showToast("Kayıt hatası: " + err.message, "error"));
+            }, err => {
+                showToast("Kayıt hatası: " + (err?.message || "Bilinmeyen hata"), "error");
+            });
         }
 
         window.editUser = function(id) {
@@ -1289,7 +1296,7 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
 
             document.getElementById("userPanelTitleText").innerText = "Sisteme Kullanıcı / Şifre Tanımla";
             document.getElementById("userPanelIcon").className = "fa-solid fa-user-plus text-sm";
-            document.getElementById("saveUserBtnText").innerText = "Şifre Ekle";
+            document.getElementById("saveUserBtnText").innerText = "Kullanıcı Ekle";
             document.getElementById("cancelUserEditBtn").classList.add("hidden");
         }
 
