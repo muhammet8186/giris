@@ -1250,7 +1250,7 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
                 if (category !== activeCategory) {
                     activeCategory = category;
                     const heading = document.createElement("div");
-                    heading.className = "col-span-full w-full text-xs font-extrabold uppercase tracking-wider modern-text border-b border-black/10 pb-2 pt-3";
+                    heading.className = "col-span-full w-full text-xs font-extrabold uppercase tracking-wider text-slate-800 bg-slate-100 border border-slate-200 rounded-xl px-3 py-2.5 mt-3 mb-1 shadow-sm";
                     heading.textContent = category;
                     container.appendChild(heading);
                 }
