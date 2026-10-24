@@ -117,6 +117,28 @@
         .modern-toast-confirm { color:#fff; background:#dc2626; }
         .modern-toast-progress { position: absolute; bottom: 0; left: 0; height: 3px; width: 100%; background: var(--toast-accent); transform-origin: left; animation: modernToastTimer var(--toast-duration, 4s) linear forwards; opacity: .85; }
         @keyframes modernToastTimer { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+        /* Silme onayı: ekranın tam ortasında modal bildirim */
+        .delete-confirm-overlay {
+            position: fixed; inset: 0; z-index: 10050; display: grid; place-items: center;
+            padding: 20px; background: rgba(2, 6, 23, .62); backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px); opacity: 0; transition: opacity .2s ease;
+        }
+        .delete-confirm-overlay.is-visible { opacity: 1; }
+        .delete-confirm-card {
+            width: min(440px, 100%); position: relative; display: flex; align-items: flex-start; gap: 14px;
+            padding: 22px; border-radius: 22px; color: #f8fafc; background: #0f172a;
+            border: 1px solid rgba(148,163,184,.3); border-top: 4px solid #f59e0b;
+            box-shadow: 0 28px 90px rgba(0,0,0,.42); transform: translateY(12px) scale(.98);
+            transition: transform .22s cubic-bezier(.2,.8,.2,1);
+        }
+        .delete-confirm-overlay.is-visible .delete-confirm-card { transform: translateY(0) scale(1); }
+        .delete-confirm-card .modern-toast-icon { width: 44px; height: 44px; flex-basis: 44px; border-radius: 14px; font-size: 18px; }
+        .delete-confirm-card .modern-toast-title { font-size: 15px; margin: 2px 0 7px; }
+        .delete-confirm-card .modern-toast-message { font-size: 13px; color: #cbd5e1; }
+        .delete-confirm-card .modern-toast-actions { margin-top: 18px; }
+        .delete-confirm-card .modern-toast-action { padding: 10px 15px; font-size: 13px; }
+        .delete-confirm-card .modern-toast-close { margin: -8px -8px 0 0; }
+        @media (max-width: 520px) { .delete-confirm-card { padding: 18px; gap: 11px; } }
         @media (max-width: 520px) {
             .modern-toast-stack { top: max(10px, env(safe-area-inset-top)); left: 10px; right: 10px; width: auto; gap: 9px; }
             .modern-toast { padding: 12px 12px 15px; border-radius: 15px; }
@@ -1125,15 +1147,17 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
             });
         }
 
-        // Tarayıcının standart confirm penceresi yerine modern bildirim içinde onay al.
-        function showDeleteConfirmation(itemName, onConfirm) {
-            const container = document.getElementById("toastContainer");
-            if (!container) return;
-            const toast = document.createElement("section");
-            toast.className = "modern-toast is-visible";
-            toast.style.setProperty("--toast-accent", "#f59e0b");
-            toast.setAttribute("role", "alertdialog");
-            toast.setAttribute("aria-label", "Silme işlemini onayla");
+        // Silme onayı ekranın ortasında modern bir modal olarak gösterilir.
+        function showDeleteConfirmation(itemName, onConfirm, itemType = "buton") {
+            const overlay = document.createElement("div");
+            overlay.className = "delete-confirm-overlay";
+            overlay.setAttribute("role", "presentation");
+
+            const card = document.createElement("section");
+            card.className = "delete-confirm-card";
+            card.setAttribute("role", "alertdialog");
+            card.setAttribute("aria-modal", "true");
+            card.setAttribute("aria-label", "Silme işlemini onayla");
 
             const icon = document.createElement("div");
             icon.className = "modern-toast-icon";
@@ -1145,7 +1169,7 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
             title.textContent = "Silme işlemini onayla";
             const message = document.createElement("div");
             message.className = "modern-toast-message";
-            message.textContent = '“' + itemName + '” butonunu silmek istiyor musunuz?';
+            message.textContent = '“' + itemName + '” ' + itemType + ' silinsin mi? Bu işlem geri alınamaz.';
             const actions = document.createElement("div");
             actions.className = "modern-toast-actions";
             const cancel = document.createElement("button");
@@ -1163,13 +1187,22 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
             close.className = "modern-toast-close";
             close.setAttribute("aria-label", "Bildirimi kapat");
             close.innerHTML = '<i class="fa-solid fa-xmark" aria-hidden="true"></i>';
-            const dismiss = () => toast.remove();
+
+            const dismiss = () => {
+                overlay.classList.remove("is-visible");
+                setTimeout(() => overlay.remove(), 180);
+                document.removeEventListener("keydown", onKeyDown);
+            };
+            const onKeyDown = (event) => { if (event.key === "Escape") dismiss(); };
             cancel.addEventListener("click", dismiss);
             close.addEventListener("click", dismiss);
+            overlay.addEventListener("click", (event) => { if (event.target === overlay) dismiss(); });
             confirm.addEventListener("click", () => { dismiss(); onConfirm(); });
-            toast.append(icon, copy, close);
-            container.appendChild(toast);
-            while (container.children.length > 5) container.firstElementChild.remove();
+            card.append(icon, copy, close);
+            overlay.appendChild(card);
+            document.body.appendChild(overlay);
+            document.addEventListener("keydown", onKeyDown);
+            requestAnimationFrame(() => overlay.classList.add("is-visible"));
             cancel.focus();
         }
 
@@ -1273,11 +1306,15 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
                 return;
             }
 
-            remove(ref(db, USERS_DB_PATH() + '/' + id))
-                .then(() => {
-                    showToast("Kullanıcı silindi.", "info");
-                    resetUserForm();
-                });
+            const userName = (globalUsers[id] && (globalUsers[id].name || globalUsers[id].title)) || "Bu kullanıcı";
+            showDeleteConfirmation(userName, () => {
+                remove(ref(db, USERS_DB_PATH() + '/' + id))
+                    .then(() => {
+                        showToast('"' + userName + '" kullanıcısı silindi.', "success");
+                        resetUserForm();
+                    })
+                    .catch(err => showToast("Kullanıcı silinemedi: " + (err.message || "Bilinmeyen hata"), "error"));
+            }, "kullanıcısı");
         }
 
         function renderDynamicButtons() {
