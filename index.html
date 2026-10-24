@@ -131,7 +131,7 @@
                             <i class="fa-solid fa-user"></i>
                         </div>
                         <div class="text-left">
-                            <p id="navUserName" onclick="editLocalDisplayName()" title="Görünen adı değiştirmek için tıklayın" class="text-xs font-bold modern-text cursor-pointer">Kullanıcı</p>
+                            <p id="navUserName" class="text-xs font-bold modern-text">Kullanıcı</p>
                             <p id="navUserRole" class="text-[10px] font-semibold modern-muted uppercase tracking-wider">Rol</p>
                         </div>
                     </div>
@@ -189,23 +189,26 @@
             <!-- KONTROL PANELİ ALANI -->
             <div id="dashboardSection" class="hidden space-y-6">
 
-                <!-- SİSTEM BAŞLIĞI AYARI (Yalnızca Yönetici) -->
+                <!-- 1. BÖLÜM: BAŞLIK AYARI (Yalnızca Admin) -->
                 <div id="adminPortalSettings" class="hidden modern-panel border rounded-3xl p-6 shadow-xl relative transition-colors duration-300">
-                    <div class="flex items-center gap-3 mb-5 pb-3 border-b border-white/10">
-                        <div class="w-10 h-10 rounded-2xl bg-purple-500/20 text-purple-400 flex items-center justify-center border border-purple-500/30">
-                            <i class="fa-solid fa-heading text-lg"></i>
-                        </div>
-                        <div>
-                            <h3 class="text-sm font-bold modern-text">Sistem Başlık Ayarı</h3>
-                            <p class="text-[11px] modern-muted">Giriş sayfasında ve üst bölümde görünecek başlığı düzenleyin.</p>
+                    <div class="flex items-center justify-between mb-4 pb-3 border-b border-white/10">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center border border-purple-500/30">
+                                <i class="fa-solid fa-heading text-sm"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-bold modern-text transition-colors duration-300">Sistem Başlık Ayarı</h3>
+                                <p class="text-[11px] modern-muted">Ana başlığı canlı olarak güncelleyin</p>
+                            </div>
                         </div>
                     </div>
                     <form onsubmit="handleSavePortalTitle(event)" class="flex flex-col sm:flex-row gap-3">
-                        <input type="text" id="portalTitleInput" required maxlength="100"
-                            class="flex-grow px-3.5 py-3 open-input border rounded-xl text-sm shadow-sm"
-                            placeholder="Örn: Yönetim ve Erişim Merkezi">
-                        <button type="submit" class="px-5 py-3 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 flex-shrink-0">
-                            <i class="fa-solid fa-floppy-disk"></i><span>Başlığı Kaydet</span>
+                        <input type="text" id="portalTitleInput" required
+                            class="flex-grow px-3.5 py-2.5 open-input border rounded-xl text-xs shadow-sm"
+                            placeholder="Yeni başlık yazın...">
+                        <button type="submit" class="px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-semibold text-xs rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 flex-shrink-0">
+                            <i class="fa-solid fa-floppy-disk"></i>
+                            <span>Başlığı Güncelle</span>
                         </button>
                     </form>
                 </div>
@@ -229,21 +232,32 @@
                         <form onsubmit="handleSaveButton(event)" class="grid grid-cols-1 md:grid-cols-12 gap-4">
                             <input type="hidden" id="editButtonIdInput" value="">
 
-                            <div class="md:col-span-4">
+                            <div class="md:col-span-3">
                                 <label class="block text-[11px] font-bold uppercase modern-muted mb-1.5">Buton Adı</label>
                                 <input type="text" id="newBtnName" required
                                     class="w-full px-3 py-2.5 open-input border rounded-xl text-xs shadow-sm"
                                     placeholder="Örn: Kurumsal Web">
                             </div>
 
-                            <div class="md:col-span-5">
+                            <div class="md:col-span-3">
+                                <label class="block text-[11px] font-bold uppercase modern-muted mb-1.5">Kategori</label>
+                                <input type="text" id="newBtnCategory" list="buttonCategoryOptions"
+                                    class="w-full px-3 py-2.5 open-input border rounded-xl text-xs shadow-sm"
+                                    placeholder="Örn: Muhasebe">
+                                <datalist id="buttonCategoryOptions">
+                                    <option value="Genel"></option><option value="İş Yönetimi"></option>
+                                    <option value="Muhasebe"></option><option value="Web Siteleri"></option>
+                                    <option value="İletişim"></option><option value="Araçlar"></option>
+                                </datalist>
+                            </div>
+                            <div class="md:col-span-4">
                                 <label class="block text-[11px] font-bold uppercase modern-muted mb-1.5">İnternet Linki (URL)</label>
                                 <input type="url" id="newBtnUrl" required
                                     class="w-full px-3 py-2.5 open-input border rounded-xl text-xs shadow-sm"
                                     placeholder="https://www.ornek.com">
                             </div>
 
-                            <div class="md:col-span-3 flex items-end gap-2">
+                            <div class="md:col-span-2 flex items-end gap-2">
                                 <button type="submit" id="saveButtonSubmit" class="w-full py-2.5 dynamic-btn font-semibold text-xs rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
                                     <i class="fa-solid fa-floppy-disk text-xs"></i>
                                     <span id="saveButtonText">Butonu Ekle</span>
@@ -449,34 +463,6 @@
         </div>
     </div>
 
-    <!-- İLK GİRİŞ: MODERN GÖRÜNEN AD PENCERESİ -->
-    <div id="displayNameModal" class="hidden fixed inset-0 z-[70] items-center justify-center bg-slate-950/75 backdrop-blur-md p-4" role="dialog" aria-modal="true" aria-labelledby="displayNameModalTitle">
-        <div class="w-full max-w-md modern-panel border border-white/15 rounded-[2rem] p-6 sm:p-8 shadow-2xl relative overflow-hidden animate-[fadeIn_.25s_ease-out]">
-            <div class="absolute inset-x-0 top-0 h-1.5 dynamic-btn"></div>
-            <div class="flex flex-col items-center text-center">
-                <div class="w-16 h-16 rounded-2xl dynamic-btn flex items-center justify-center shadow-lg mb-5 ring-4 ring-white/5">
-                    <i class="fa-solid fa-user-pen text-2xl"></i>
-                </div>
-                <span class="text-[10px] font-extrabold tracking-[.22em] uppercase modern-muted mb-2">İlk giriş • Kişiselleştirme</span>
-                <h2 id="displayNameModalTitle" class="text-xl sm:text-2xl font-black modern-text">Size nasıl hitap edelim?</h2>
-                <p class="text-xs modern-muted mt-2 leading-relaxed max-w-xs">Bu ad yalnızca bu cihazın tarayıcısına kaydedilir ve sonraki girişlerinizde hatırlanır.</p>
-            </div>
-            <form id="displayNameForm" onsubmit="submitFirstDisplayName(event)" class="mt-6 space-y-4">
-                <label for="firstDisplayNameInput" class="block text-[11px] font-bold uppercase tracking-wider modern-text">Görünen adınız</label>
-                <div class="relative">
-                    <span class="absolute inset-y-0 left-0 pl-4 flex items-center modern-muted pointer-events-none"><i class="fa-solid fa-user"></i></span>
-                    <input type="text" id="firstDisplayNameInput" required maxlength="60" autocomplete="nickname"
-                        class="w-full pl-11 pr-4 py-3.5 open-input border rounded-2xl text-sm shadow-inner focus:ring-2 focus:ring-blue-500/40 outline-none"
-                        placeholder="Örn. Ahmet Yılmaz">
-                </div>
-                <button type="submit" class="w-full py-3.5 dynamic-btn font-extrabold text-sm rounded-2xl shadow-lg transition-all hover:brightness-110 flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-check"></i><span>Kaydet ve devam et</span>
-                </button>
-                <p class="text-[10px] modern-muted text-center"><i class="fa-solid fa-lock mr-1"></i>Adınız Firebase hesabınıza gönderilmez.</p>
-            </form>
-        </div>
-    </div>
-
     <!-- BİLDİRİM ALANI (TOAST) -->
     <div id="toastContainer" class="fixed bottom-6 right-6 z-50 flex flex-col gap-3 max-w-sm w-full pointer-events-none"></div>
 
@@ -530,7 +516,6 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
         const BUTTONS_DB_PATH = () => currentRootPath + '/butonlar';
 
         let currentUser = null;
-        let currentUserId = null;
         let globalButtons = {};
         let globalUsers = {
             "default_admin": {
@@ -602,6 +587,11 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
         function initListeners() {
             if (!db || !currentRootPath) return;
 
+            onValue(ref(db, TITLE_DB_PATH()), (snapshot) => {
+                systemTitle = snapshot.val() || "Yönetim ve Erişim Merkezi";
+                updateSystemTitleUI(systemTitle);
+            });
+
             onValue(ref(db, BUTTONS_DB_PATH()), (snapshot) => {
                 globalButtons = snapshot.val() || {};
                 renderDynamicButtons();
@@ -614,10 +604,7 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
                     globalUsers = snapshot.val() || {};
                 }
                 renderDynamicUsers();
-                if (currentUser) {
-                    const matchedId = Object.keys(globalUsers).find(k => globalUsers[k].password === currentUser.password);
-                    if (matchedId) { currentUserId = matchedId; currentUser = globalUsers[matchedId]; }
-                }
+                if (currentUser) currentUser = globalUsers[Object.keys(globalUsers).find(k => globalUsers[k].password === currentUser.password)] || currentUser;
                 renderDynamicButtons();
             });
         }
@@ -625,21 +612,12 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
         window.addEventListener('DOMContentLoaded', () => {
             const savedTheme = localStorage.getItem("sistem_temasi") || "dark";
             applyTheme(savedTheme);
-            const savedDisplayTitle = localStorage.getItem("sistem_son_gorunen_baslik");
-            if (savedDisplayTitle) {
-                document.getElementById("brandTitleText").innerText = savedDisplayTitle;
-                document.getElementById("loginTitleText").innerText = savedDisplayTitle;
-                document.getElementById("pageTitle").innerText = savedDisplayTitle + " - Giriş Paneli";
-                document.getElementById("footerText").innerText = "© 2026 " + savedDisplayTitle + ". Tüm hakları saklıdır.";
-            }
             initListeners();
             resetFirebaseConfigForm();
         });
 
         function updateSystemTitleUI(title) {
             document.getElementById("brandTitleText").innerText = title;
-            const loginTitle = document.getElementById("loginTitleText");
-            if (loginTitle) loginTitle.innerText = title;
             document.getElementById("pageTitle").innerText = title + " - Giriş Paneli";
             document.getElementById("footerText").innerText = "© 2026 " + title + ". Tüm hakları saklıdır.";
             const titleInput = document.getElementById("portalTitleInput");
@@ -813,92 +791,33 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
             });
         }
 
-        function readLocalDisplayNames() {
-            try { return JSON.parse(localStorage.getItem("sistem_kullanici_gorunen_adlari") || "{}"); }
-            catch (_) { return {}; }
-        }
-
-        function getLocalDisplayName(userId, user) {
-            const names = readLocalDisplayNames();
-            return (userId && names[userId]) || user.title || "Kullanıcı";
-        }
-
-        function saveLocalDisplayName(userId, name) {
-            const names = readLocalDisplayNames();
-            names[userId || "local_user"] = name;
-            localStorage.setItem("sistem_kullanici_gorunen_adlari", JSON.stringify(names));
-        }
-
-        window.editLocalDisplayName = function() {
-            if (!currentUser) return;
-            const existing = getLocalDisplayName(currentUserId, currentUser);
-            const entered = prompt("Bu cihazda gösterilecek adınızı yazın:", existing);
-            if (entered === null) return;
-            const name = entered.trim();
-            if (!name) { showToast("Ad boş bırakılamaz.", "error"); return; }
-            saveLocalDisplayName(currentUserId, name);
-            document.getElementById("navUserName").innerText = name;
-            document.getElementById("brandTitleText").innerText = name;
-            document.getElementById("loginTitleText").innerText = name;
-            document.getElementById("pageTitle").innerText = name + " - Giriş Paneli";
-            localStorage.setItem("sistem_son_gorunen_baslik", name);
-            document.getElementById("footerText").innerText = "© 2026 " + name + ". Tüm hakları saklıdır.";
-            showToast("Başlık ve görünen ad bu cihazda kaydedildi.", "success");
-        };
-
-        window.submitFirstDisplayName = function(event) {
-            event.preventDefault();
-            const input = document.getElementById("firstDisplayNameInput");
-            const name = input.value.trim();
-            if (!name) {
-                input.focus();
-                showToast("Lütfen görünen adınızı yazın.", "error");
-                return;
-            }
-            saveLocalDisplayName(window.pendingDisplayNameUserId || "local_user", name);
-            const modal = document.getElementById("displayNameModal");
-            modal.classList.add("hidden");
-            modal.classList.remove("flex");
-            // Aynı giriş işlemini yeniden çalıştır; artık yerel ad kayıtlı olduğu için penceresiz devam eder.
-            document.getElementById("passwordInput").value = window.pendingDisplayNamePassword || document.getElementById("passwordInput").value;
-            window.pendingDisplayNameUserId = null;
-            window.pendingDisplayNamePassword = null;
-            window.handleLogin({ preventDefault() {} });
-        };
-
         window.handleLogin = function(event) {
             event.preventDefault();
             const password = document.getElementById("passwordInput").value.trim();
             const errorAlert = document.getElementById("errorAlert");
 
             let foundUser = null;
-            let foundUserId = null;
             Object.keys(globalUsers).forEach(key => {
                 if (globalUsers[key].password === password) {
                     foundUser = globalUsers[key];
-                    foundUserId = key;
                 }
             });
 
             if (foundUser) {
-                const loginUserId = foundUserId || "local_user";
-                const localNames = readLocalDisplayNames();
-                if (!localNames[loginUserId]) {
-                    // İlk girişte tarayıcı prompt'u yerine modern, uygulama içi ad penceresi göster.
-                    window.pendingDisplayNameUserId = loginUserId;
-                    window.pendingDisplayNamePassword = password;
-                    document.getElementById("firstDisplayNameInput").value = foundUser.title || "";
-                    const nameModal = document.getElementById("displayNameModal");
-                    nameModal.classList.remove("hidden");
-                    nameModal.classList.add("flex");
-                    errorAlert.classList.add("hidden");
-                    setTimeout(() => document.getElementById("firstDisplayNameInput").focus(), 80);
+                currentUser = { ...foundUser };
+                errorAlert.classList.add("hidden");
+                // Ask for a display name after password entry; reuse the saved name on later visits.
+                const nameStorageKey = "portalDisplayName_" + (foundUser.title || foundUser.role || "user");
+                let savedDisplayName = "";
+                try { savedDisplayName = localStorage.getItem(nameStorageKey) || ""; } catch (_) {}
+                const enteredName = window.prompt("Size nasıl hitap edelim? İsminizi yazın:", savedDisplayName || foundUser.title || "");
+                if (enteredName === null) {
+                    document.getElementById("passwordInput").value = "";
                     return;
                 }
-
-                currentUser = foundUser;
-                currentUserId = loginUserId;
-                errorAlert.classList.add("hidden");
+                const displayName = enteredName.trim() || foundUser.title || "Kullanıcı";
+                try { localStorage.setItem(nameStorageKey, displayName); } catch (_) {}
+                currentUser.displayName = displayName;
 
                 document.getElementById("loginCard").classList.add("hidden");
                 document.getElementById("dashboardSection").classList.remove("hidden");
@@ -909,26 +828,23 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
                 mainContainer.classList.remove("items-center");
                 mainContainer.classList.add("items-start");
 
-                const displayName = getLocalDisplayName(currentUserId, currentUser);
-                document.getElementById("navUserName").innerText = displayName;
-                // Sistem başlığı kullanıcı adından bağımsız tutulur; yönetici ayarından düzenlenir.
-                updateSystemTitleUI(systemTitle || localStorage.getItem("sistem_son_gorunen_baslik") || "Yönetim ve Erişim Merkezi");
+                document.getElementById("navUserName").innerText = currentUser.displayName || currentUser.title;
                 document.getElementById("navUserRole").innerText = currentUser.role === "admin" ? "Yönetici" : "Kullanıcı";
 
+                const portalSettings = document.getElementById("adminPortalSettings");
                 const btnSection = document.getElementById("adminButtonSection");
                 const userSection = document.getElementById("adminUserSection");
                 const firebaseConfigSection = document.getElementById("adminFirebaseConfigSection");
                 const firebaseConfigsListSection = document.getElementById("adminFirebaseConfigsListSection");
 
-                const portalSettings = document.getElementById("adminPortalSettings");
                 if (currentUser.role === "admin") {
-                    if (portalSettings) portalSettings.classList.remove("hidden");
+                    portalSettings.classList.remove("hidden");
                     btnSection.classList.remove("hidden");
                     userSection.classList.remove("hidden");
                     if (firebaseConfigSection) firebaseConfigSection.classList.remove("hidden");
                     if (firebaseConfigsListSection) firebaseConfigsListSection.classList.remove("hidden");
                 } else {
-                    if (portalSettings) portalSettings.classList.add("hidden");
+                    portalSettings.classList.add("hidden");
                     btnSection.classList.add("hidden");
                     userSection.classList.add("hidden");
                     if (firebaseConfigSection) firebaseConfigSection.classList.add("hidden");
@@ -947,12 +863,6 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
 
         window.handleLogout = function() {
             currentUser = null;
-            currentUserId = null;
-            const lastDisplayTitle = localStorage.getItem("sistem_son_gorunen_baslik") || "Yönetim ve Erişim Merkezi";
-            document.getElementById("brandTitleText").innerText = lastDisplayTitle;
-            document.getElementById("loginTitleText").innerText = lastDisplayTitle;
-            document.getElementById("pageTitle").innerText = lastDisplayTitle + " - Giriş Paneli";
-            document.getElementById("footerText").innerText = "© 2026 " + lastDisplayTitle + ". Tüm hakları saklıdır.";
             document.getElementById("passwordInput").value = "";
             document.getElementById("dashboardSection").classList.add("hidden");
             document.getElementById("navUserArea").classList.add("hidden");
@@ -982,8 +892,10 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
             const nameInput = document.getElementById("newBtnName");
             const urlInput = document.getElementById("newBtnUrl");
             const editIdInput = document.getElementById("editButtonIdInput");
+            const categoryInput = document.getElementById("newBtnCategory");
 
             const name = nameInput.value.trim();
+            const category = (categoryInput && categoryInput.value.trim()) || "Genel";
             let url = urlInput.value.trim();
             const editId = editIdInput.value;
 
@@ -998,13 +910,13 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
 
             if (!editId) {
                 const newOrder = Object.keys(globalButtons).length;
-                push(ref(db, BUTTONS_DB_PATH()), { name: name, url: url, order: newOrder })
+                push(ref(db, BUTTONS_DB_PATH()), { name: name, url: url, category: category, order: newOrder })
                     .then(() => {
                         showToast(`"${name}" eklendi.`, "success");
                         resetButtonForm();
                     });
             } else {
-                update(ref(db, BUTTONS_DB_PATH() + '/' + editId), { name: name, url: url })
+                update(ref(db, BUTTONS_DB_PATH() + '/' + editId), { name: name, url: url, category: category })
                     .then(() => {
                         showToast(`"${name}" güncellendi.`, "success");
                         resetButtonForm();
@@ -1093,6 +1005,7 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
 
             document.getElementById("newBtnName").value = btn.name;
             document.getElementById("newBtnUrl").value = btn.url;
+            document.getElementById("newBtnCategory").value = btn.category || "Genel";
             document.getElementById("editButtonIdInput").value = id;
 
             document.getElementById("btnPanelTitleText").innerText = "Butonu Düzenle";
@@ -1106,6 +1019,7 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
         window.resetButtonForm = function() {
             document.getElementById("newBtnName").value = "";
             document.getElementById("newBtnUrl").value = "";
+            document.getElementById("newBtnCategory").value = "";
             document.getElementById("editButtonIdInput").value = "";
 
             document.getElementById("btnPanelTitleText").innerText = "Yeni Buton Ekle";
@@ -1251,10 +1165,19 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
             });
 
             container.innerHTML = "";
+            let activeCategory = null;
             sortedKeys.forEach((id) => {
                 const btn = globalButtons[id];
                 const isAdmin = currentUser && currentUser.role === "admin";
                 if (!isAdmin && (!currentUser || !currentUser.allowedButtons || currentUser.allowedButtons[id] !== true)) return;
+                const category = (btn.category || "Genel").trim() || "Genel";
+                if (category !== activeCategory) {
+                    activeCategory = category;
+                    const heading = document.createElement("div");
+                    heading.className = "col-span-full w-full text-xs font-extrabold uppercase tracking-wider modern-text border-b border-black/10 pb-2 pt-3";
+                    heading.textContent = category;
+                    container.appendChild(heading);
+                }
                 const card = document.createElement("div");
 
                 card.className = `w-full max-w-xs flex items-center justify-between p-3.5 quick-btn-card rounded-2xl shadow-md group ${isAdmin ? 'cursor-grab active:cursor-grabbing' : ''}`;
