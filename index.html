@@ -585,15 +585,21 @@
           catch(_){ return false; }
           finally{ clearTimeout(timer); }
         }
+        window.portalInternetAvailable = navigator.onLine;
         window.addEventListener('DOMContentLoaded',async()=>{
-          if(!(await hasInternet())) notice.style.display='flex';
+          window.portalInternetAvailable = await hasInternet();
+          if(!window.portalInternetAvailable) notice.style.display='flex';
         });
-        window.addEventListener('offline',()=>{notice.style.display='flex';});
+        window.addEventListener('online',async()=>{ window.portalInternetAvailable = await hasInternet(); });
+        window.addEventListener('offline',()=>{window.portalInternetAvailable=false;notice.style.display='flex';});
         // Firebase modülü internet yokken yüklenemese bile daha önce önbelleğe alınmış hesapla yerel giriş.
         window.handleLogin=window.handleLogin||function(event){
           event.preventDefault();
           let users={};
           try{users=JSON.parse(localStorage.getItem('portal_cached_users')||'{}')}catch(_){ }
+          const hasSavedFirebase = (()=>{ try { const active=JSON.parse(localStorage.getItem('sistem_firebase_aktif')||'null'); const list=JSON.parse(localStorage.getItem('sistem_firebase_listesi')||'{}'); return !!((active && active.apiKey && active.databaseURL) || Object.values(list).some(c=>c && (c.configData || c.apiKey || c.databaseURL))); } catch(_){ return false; } })();
+          const offline = !navigator.onLine || window.portalInternetAvailable === false;
+          if(offline && hasSavedFirebase){ document.getElementById('errorAlert').classList.remove('hidden'); document.getElementById('errorAlert').textContent='İnternet bağlantısı yok. Firebase bilgileri kayıtlı olduğundan varsayılan yönetici şifresiyle giriş yapılamaz.'; document.getElementById('passwordInput').value=''; return; }
           if(!Object.keys(users).length){ users={default_admin:{title:'Sistem Yöneticisi',role:'admin',password:'yonetici'}}; }
           const pass=(document.getElementById('passwordInput').value||'').trim();
           const match=Object.entries(users).find(([,u])=>u&&String(u.password)===pass);
@@ -952,6 +958,27 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
             event.preventDefault();
             const password = document.getElementById("passwordInput").value.trim();
             const errorAlert = document.getElementById("errorAlert");
+            const hasSavedFirebase = (() => {
+                try {
+                    const active = JSON.parse(localStorage.getItem("sistem_firebase_aktif") || "null");
+                    const configs = JSON.parse(localStorage.getItem("sistem_firebase_listesi") || "{}");
+                    return !!((active && active.apiKey && active.databaseURL) || Object.values(configs).some(c => {
+                        if (!c) return false;
+                        if (c.apiKey && c.databaseURL) return true;
+                        if (typeof c.configData === "string") {
+                            try { const parsed = (new Function("return (" + c.configData + ")"))(); return !!(parsed && parsed.apiKey && parsed.databaseURL); } catch (_) { return false; }
+                        }
+                        return false;
+                    }));
+                } catch (_) { return false; }
+            })();
+            const offline = !navigator.onLine || window.portalInternetAvailable === false;
+            if (offline && hasSavedFirebase && password === "yonetici") {
+                errorAlert.textContent = "İnternet bağlantısı yok. Firebase bilgileri kayıtlı olduğundan varsayılan yönetici şifresiyle giriş yapılamaz.";
+                errorAlert.classList.remove("hidden");
+                document.getElementById("passwordInput").value = "";
+                return;
+            }
             let foundUser = null;
             let foundUserId = "";
             Object.keys(globalUsers).forEach(key => {
