@@ -648,7 +648,12 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
 
             onValue(ref(db, TITLE_DB_PATH()), (snapshot) => {
                 systemTitle = snapshot.val() || "Yönetim ve Erişim Merkezi";
-                updateSystemTitleUI(systemTitle);
+                // Oturum açılmışsa kullanıcı başlığı, veritabanındaki kullanıcı adından türetilir.
+                if (currentUser && currentUser.displayName) {
+                    updateSystemTitleUI(currentUser.displayName);
+                } else {
+                    updateSystemTitleUI(systemTitle);
+                }
             });
 
             onValue(ref(db, BUTTONS_DB_PATH()), (snapshot) => {
@@ -663,7 +668,18 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
                     globalUsers = snapshot.val() || {};
                 }
                 renderDynamicUsers();
-                if (currentUser) currentUser = globalUsers[Object.keys(globalUsers).find(k => globalUsers[k].password === currentUser.password)] || currentUser;
+                if (currentUser) {
+                    const activeId = currentUser._databaseUserId || Object.keys(globalUsers).find(k => globalUsers[k] && globalUsers[k].password === currentUser.password);
+                    const refreshedUser = activeId && globalUsers[activeId];
+                    if (refreshedUser) {
+                        const databaseName = String(refreshedUser.title || refreshedUser.name || currentUser.displayName || "Kullanıcı").trim();
+                        currentUser = { ...refreshedUser, _databaseUserId: activeId, displayName: databaseName };
+                        try { localStorage.setItem("portalDatabaseUserName_" + activeId, databaseName); } catch (_) {}
+                        updateSystemTitleUI(databaseName);
+                        const navName = document.getElementById("navUserName");
+                        if (navName) navName.innerText = databaseName;
+                    }
+                }
                 renderDynamicButtons();
             });
         }
@@ -850,16 +866,18 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
             });
         }
 
-        let pendingLoginUser = null;
-        let pendingNameStorageKey = "";
-
+        // Kullanıcı adı veritabanındaki kullanıcı kaydından alınır ve bu cihazda saklanır.
         window.handleLogin = function(event) {
             event.preventDefault();
             const password = document.getElementById("passwordInput").value.trim();
             const errorAlert = document.getElementById("errorAlert");
             let foundUser = null;
+            let foundUserId = "";
             Object.keys(globalUsers).forEach(key => {
-                if (globalUsers[key].password === password) foundUser = globalUsers[key];
+                if (globalUsers[key] && globalUsers[key].password === password) {
+                    foundUser = globalUsers[key];
+                    foundUserId = key;
+                }
             });
             if (!foundUser) {
                 errorAlert.classList.remove("hidden");
@@ -867,33 +885,17 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
                 return;
             }
             errorAlert.classList.add("hidden");
-            pendingLoginUser = { ...foundUser };
-            pendingNameStorageKey = "portalDisplayName_" + (foundUser.title || foundUser.role || "user");
-            let savedDisplayName = "";
-            try { savedDisplayName = localStorage.getItem(pendingNameStorageKey) || ""; } catch (_) {}
-            document.getElementById("displayNameInput").value = savedDisplayName;
-            document.getElementById("displayNameModal").classList.remove("hidden");
-            setTimeout(() => document.getElementById("displayNameInput").focus(), 80);
-        };
 
-        document.getElementById("displayNameForm").addEventListener("submit", function(event) {
-            event.preventDefault();
-            if (!pendingLoginUser) return;
-            const displayName = document.getElementById("displayNameInput").value.trim();
-            if (!displayName) {
-                document.getElementById("displayNameInput").focus();
-                return;
-            }
-            try { localStorage.setItem(pendingNameStorageKey, displayName); } catch (_) {}
-            document.getElementById("displayNameModal").classList.add("hidden");
-            completeLogin(pendingLoginUser, displayName);
-            pendingLoginUser = null;
-            pendingNameStorageKey = "";
-        });
+            // Veritabanındaki Kullanıcı Adı / Unvanı doğrudan kullanılır; ad sorulmaz.
+            const databaseName = String(foundUser.title || foundUser.name || (foundUser.role === "admin" ? "Sistem Yöneticisi" : "Kullanıcı")).trim();
+            const localNameKey = "portalDatabaseUserName_" + foundUserId;
+            try { localStorage.setItem(localNameKey, databaseName); } catch (_) {}
+            completeLogin({ ...foundUser, _databaseUserId: foundUserId }, databaseName);
+        };
 
         function completeLogin(foundUser, displayName) {
             currentUser = { ...foundUser, displayName };
-            // After password validation, the chosen local display name becomes the visible portal heading.
+            // Veritabanından alınan ad başlıkta ve kullanıcı alanında kalıcı olarak gösterilir.
             updateSystemTitleUI(displayName);
             document.getElementById("loginCard").classList.add("hidden");
             document.getElementById("dashboardSection").classList.remove("hidden");
