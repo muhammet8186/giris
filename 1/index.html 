@@ -1,0 +1,1888 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle">Yönetim ve Erişim Merkezi - Giriş Paneli</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        temsa: {
+                            red: '#E30613',
+                            darkRed: '#B8000B',
+                            dark: '#121619',
+                            slate: '#1E242B',
+                            gray: '#2C343E',
+                            lightGray: '#F3F4F6'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome İkonları -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FFFFFF !important;
+            background-image: radial-gradient(rgba(0, 0, 0, 0.08) 1.2px, transparent 1.2px) !important;
+            background-size: 24px 24px !important;
+        }
+
+        /* 20 ADET ULTRA MODERN TEMA, PANEL VE TEMA UYUMLU BUTON TONLARI */
+        body.theme-dark { --panel-bg: rgba(15, 23, 42, 0.95); --quick-panel-bg: rgba(241, 245, 249, 0.95); --panel-border: rgba(51, 65, 85, 0.8); --panel-text: #F8FAFC; --panel-muted: #94A3B8; --primary-accent: #E30613; --primary-hover: #B8000B; --btn-bg: #1A2234; --btn-border: rgba(227, 6, 19, 0.4); }
+        body.theme-light { --panel-bg: rgba(30, 41, 59, 0.95); --quick-panel-bg: rgba(241, 245, 249, 0.95); --panel-border: rgba(71, 85, 105, 0.8); --panel-text: #F8FAFC; --panel-muted: #94A3B8; --primary-accent: #E30613; --primary-hover: #B8000B; --btn-bg: #27303F; --btn-border: rgba(227, 6, 19, 0.4); }
+        body.theme-emerald { --panel-bg: rgba(2, 44, 34, 0.95); --quick-panel-bg: rgba(236, 253, 245, 0.95); --panel-border: rgba(16, 185, 129, 0.3); --panel-text: #ECFDF5; --panel-muted: #6EE7B7; --primary-accent: #10B981; --primary-hover: #059669; --btn-bg: #064E3B; --btn-border: rgba(16, 185, 129, 0.4); }
+        body.theme-ocean { --panel-bg: rgba(11, 25, 44, 0.95); --quick-panel-bg: rgba(240, 249, 255, 0.95); --panel-border: rgba(0, 180, 216, 0.3); --panel-text: #F0F8FF; --panel-muted: #90E0EF; --primary-accent: #00B4D8; --primary-hover: #0077B6; --btn-bg: #112A46; --btn-border: rgba(0, 180, 216, 0.4); }
+        body.theme-purple { --panel-bg: rgba(26, 11, 46, 0.95); --quick-panel-bg: rgba(250, 245, 255, 0.95); --panel-border: rgba(168, 85, 247, 0.3); --panel-text: #FAF5FF; --panel-muted: #D8B4FE; --primary-accent: #A855F7; --primary-hover: #7E22CE; --btn-bg: #2E154F; --btn-border: rgba(168, 85, 247, 0.4); }
+        body.theme-sunset { --panel-bg: rgba(39, 19, 2, 0.95); --quick-panel-bg: rgba(255, 247, 237, 0.95); --panel-border: rgba(249, 115, 22, 0.3); --panel-text: #FFF7ED; --panel-muted: #FDBA74; --primary-accent: #F97316; --primary-hover: #C2410C; --btn-bg: #4A2208; --btn-border: rgba(249, 115, 22, 0.4); }
+        body.theme-rose { --panel-bg: rgba(42, 8, 19, 0.95); --quick-panel-bg: rgba(255, 241, 242, 0.95); --panel-border: rgba(244, 63, 94, 0.3); --panel-text: #FFF1F2; --panel-muted: #FDA4AF; --primary-accent: #F43F5E; --primary-hover: #BE123C; --btn-bg: #4C1122; --btn-border: rgba(244, 63, 94, 0.4); }
+        body.theme-teal { --panel-bg: rgba(4, 47, 46, 0.95); --quick-panel-bg: rgba(240, 253, 250, 0.95); --panel-border: rgba(20, 184, 166, 0.3); --panel-text: #F0FDFA; --panel-muted: #5EEAD4; --primary-accent: #14B8A6; --primary-hover: #0F766E; --btn-bg: #0F5956; --btn-border: rgba(20, 184, 166, 0.4); }
+        body.theme-gold { --panel-bg: rgba(28, 25, 23, 0.95); --quick-panel-bg: rgba(254, 252, 232, 0.95); --panel-border: rgba(234, 179, 8, 0.3); --panel-text: #FEFCE8; --panel-muted: #FDE047; --primary-accent: #EAB308; --primary-hover: #CA8A04; --btn-bg: #3E3830; --btn-border: rgba(234, 179, 8, 0.4); }
+        body.theme-indigo { --panel-bg: rgba(15, 23, 42, 0.95); --quick-panel-bg: rgba(238, 242, 255, 0.95); --panel-border: rgba(99, 102, 241, 0.3); --panel-text: #EEF2FF; --panel-muted: #A5B4FC; --primary-accent: #6366F1; --primary-hover: #4338CA; --btn-bg: #1E2548; --btn-border: rgba(99, 102, 241, 0.4); }
+        
+        body.theme-cyber { --panel-bg: rgba(15, 23, 42, 0.95); --quick-panel-bg: rgba(236, 254, 255, 0.95); --panel-border: rgba(6, 182, 212, 0.4); --panel-text: #ECFEFF; --panel-muted: #67E8F9; --primary-accent: #06B6D4; --primary-hover: #0891B2; --btn-bg: #10314C; --btn-border: rgba(6, 182, 212, 0.4); }
+        body.theme-crimson { --panel-bg: rgba(30, 10, 15, 0.95); --quick-panel-bg: rgba(255, 241, 242, 0.95); --panel-border: rgba(225, 29, 72, 0.4); --panel-text: #FFF1F2; --panel-muted: #FDA4AF; --primary-accent: #E11D48; --primary-hover: #BE123C; --btn-bg: #481420; --btn-border: rgba(225, 29, 72, 0.4); }
+        body.theme-midnight { --panel-bg: rgba(3, 7, 18, 0.95); --quick-panel-bg: rgba(243, 244, 246, 0.95); --panel-border: rgba(55, 65, 81, 0.8); --panel-text: #F9FAFB; --panel-muted: #9CA3AF; --primary-accent: #374151; --primary-hover: #1F2937; --btn-bg: #111827; --btn-border: rgba(55, 65, 81, 0.5); }
+        body.theme-lime { --panel-bg: rgba(20, 30, 10, 0.95); --quick-panel-bg: rgba(247, 254, 231, 0.95); --panel-border: rgba(132, 204, 22, 0.4); --panel-text: #F7FEE7; --panel-muted: #BEF264; --primary-accent: #84CC16; --primary-hover: #65A30D; --btn-bg: #2A400E; --btn-border: rgba(132, 204, 22, 0.4); }
+        body.theme-amethyst { --panel-bg: rgba(24, 9, 39, 0.95); --quick-panel-bg: rgba(250, 245, 255, 0.95); --panel-border: rgba(192, 132, 252, 0.4); --panel-text: #FAF5FF; --panel-muted: #E9D5FF; --primary-accent: #C084FC; --primary-hover: #A855F7; --btn-bg: #341257; --btn-border: rgba(192, 132, 252, 0.4); }
+        body.theme-coral { --panel-bg: rgba(35, 15, 15, 0.95); --quick-panel-bg: rgba(255, 241, 242, 0.95); --panel-border: rgba(251, 113, 133, 0.4); --panel-text: #FFF1F2; --panel-muted: #FECDD3; --primary-accent: #FB7185; --primary-hover: #F43F5E; --btn-bg: #4E2025; --btn-border: rgba(251, 113, 133, 0.4); }
+        body.theme-sapphire { --panel-bg: rgba(10, 25, 47, 0.95); --quick-panel-bg: rgba(239, 246, 255, 0.95); --panel-border: rgba(59, 130, 246, 0.4); --panel-text: #EFF6FF; --panel-muted: #93C5FD; --primary-accent: #3B82F6; --primary-hover: #1D4ED8; --btn-bg: #11325F; --btn-border: rgba(59, 130, 246, 0.4); }
+        body.theme-bronze { --panel-bg: rgba(28, 18, 8, 0.95); --quick-panel-bg: rgba(255, 251, 235, 0.95); --panel-border: rgba(217, 119, 6, 0.4); --panel-text: #FFFBEB; --panel-muted: #FDE68A; --primary-accent: #D97706; --primary-hover: #B45309; --btn-bg: #44290E; --btn-border: rgba(217, 119, 6, 0.4); }
+        body.theme-mint { --panel-bg: rgba(6, 30, 22, 0.95); --quick-panel-bg: rgba(240, 253, 250, 0.95); --panel-border: rgba(45, 212, 191, 0.4); --panel-text: #CCFBF1; --panel-muted: #5EEAD4; --primary-accent: #2DD4BF; --primary-hover: #0D9488; --btn-bg: #0E4939; --btn-border: rgba(45, 212, 191, 0.4); }
+        body.theme-carbon { --panel-bg: rgba(18, 18, 18, 0.95); --quick-panel-bg: rgba(243, 244, 246, 0.95); --panel-border: rgba(75, 85, 99, 0.6); --panel-text: #F3F4F6; --panel-muted: #9CA3AF; --primary-accent: #4B5563; --primary-hover: #374151; --btn-bg: #262626; --btn-border: rgba(75, 85, 99, 0.5); }
+
+        /* Dinamik Panel ve Renk Sınıfları */
+        .modern-panel { background-color: var(--panel-bg) !important; border-color: var(--panel-border) !important; color: var(--panel-text) !important; }
+        .quick-access-panel { background-color: var(--quick-panel-bg) !important; border-color: var(--panel-border) !important; color: #1E293B !important; }
+        .quick-access-panel h3 { color: #0F172A !important; }
+        .quick-access-panel p { color: #475569 !important; }
+        .modern-text { color: var(--panel-text) !important; }
+        .modern-muted { color: var(--panel-muted) !important; }
+        .dynamic-btn { background-color: var(--primary-accent) !important; color: #FFFFFF !important; }
+        .dynamic-btn:hover { background-color: var(--primary-hover) !important; }
+
+        /* Hızlı Erişim Buton Kartları */
+        .quick-btn-card {
+            background-color: var(--btn-bg) !important;
+            border: 1px solid var(--btn-border) !important;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .quick-btn-card:hover {
+            border-color: var(--primary-accent) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+        }
+        .quick-btn-card:hover .quick-title {
+            color: var(--primary-accent) !important;
+        }
+
+
+        /* Modern, mobil uyumlu bildirimler */
+        .modern-toast-stack {
+            position: fixed; top: max(16px, env(safe-area-inset-top)); right: max(16px, env(safe-area-inset-right));
+            z-index: 9999; display: flex; flex-direction: column; gap: 12px;
+            width: min(390px, calc(100vw - 32px)); pointer-events: none;
+        }
+        .modern-toast {
+            --toast-accent: #10b981;
+            position: relative; display: flex; align-items: flex-start; gap: 12px;
+            overflow: hidden; padding: 14px 14px 16px; border-radius: 18px;
+            color: #f8fafc; background: rgba(15, 23, 42, .96);
+            border: 1px solid rgba(148, 163, 184, .22); border-left: 4px solid var(--toast-accent);
+            box-shadow: 0 18px 50px rgba(2, 6, 23, .28), 0 4px 12px rgba(2, 6, 23, .16);
+            backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+            pointer-events: auto; opacity: 0; transform: translate3d(24px, -8px, 0) scale(.97);
+            transition: opacity .24s ease, transform .28s cubic-bezier(.2,.8,.2,1);
+        }
+        .modern-toast.is-visible { opacity: 1; transform: translate3d(0,0,0) scale(1); }
+        .modern-toast.is-leaving { opacity: 0; transform: translate3d(18px,-5px,0) scale(.98); }
+        .modern-toast-icon { flex: 0 0 36px; width: 36px; height: 36px; border-radius: 12px; display: grid; place-items: center; color: var(--toast-accent); background: color-mix(in srgb, var(--toast-accent) 16%, transparent); font-size: 15px; }
+        .modern-toast-copy { min-width: 0; flex: 1; padding-top: 1px; }
+        .modern-toast-title { font-size: 12px; line-height: 1.4; font-weight: 800; letter-spacing: .01em; margin-bottom: 3px; }
+        .modern-toast-message { font-size: 12px; line-height: 1.5; color: #cbd5e1; overflow-wrap: anywhere; }
+        .modern-toast-close { flex: 0 0 auto; border: 0; border-radius: 8px; padding: 5px 7px; color: #94a3b8; background: transparent; cursor: pointer; }
+        .modern-toast-close:hover, .modern-toast-close:focus-visible { color: #fff; background: rgba(148,163,184,.15); outline: none; }
+        .modern-toast-actions { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+        .modern-toast-action { border:0; border-radius:9px; padding:7px 11px; font-size:12px; font-weight:700; cursor:pointer; transition:filter .15s ease, transform .15s ease; }
+        .modern-toast-action:hover { filter:brightness(1.08); transform:translateY(-1px); }
+        .modern-toast-cancel { color:#e2e8f0; background:rgba(148,163,184,.18); }
+        .modern-toast-confirm { color:#fff; background:#dc2626; }
+        .modern-toast-progress { position: absolute; bottom: 0; left: 0; height: 3px; width: 100%; background: var(--toast-accent); transform-origin: left; animation: modernToastTimer var(--toast-duration, 4s) linear forwards; opacity: .85; }
+        @keyframes modernToastTimer { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+        /* Silme onayı: ekranın tam ortasında modal bildirim */
+        .delete-confirm-overlay {
+            position: fixed; inset: 0; z-index: 10050; display: grid; place-items: center;
+            padding: 20px; background: rgba(2, 6, 23, .62); backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px); opacity: 0; transition: opacity .2s ease;
+        }
+        .delete-confirm-overlay.is-visible { opacity: 1; }
+        .delete-confirm-card {
+            width: min(440px, 100%); position: relative; display: flex; align-items: flex-start; gap: 14px;
+            padding: 22px; border-radius: 22px; color: #f8fafc; background: #0f172a;
+            border: 1px solid rgba(148,163,184,.3); border-top: 4px solid #f59e0b;
+            box-shadow: 0 28px 90px rgba(0,0,0,.42); transform: translateY(12px) scale(.98);
+            transition: transform .22s cubic-bezier(.2,.8,.2,1);
+        }
+        .delete-confirm-overlay.is-visible .delete-confirm-card { transform: translateY(0) scale(1); }
+        .delete-confirm-card .modern-toast-icon { width: 44px; height: 44px; flex-basis: 44px; border-radius: 14px; font-size: 18px; }
+        .delete-confirm-card .modern-toast-title { font-size: 15px; margin: 2px 0 7px; }
+        .delete-confirm-card .modern-toast-message { font-size: 13px; color: #cbd5e1; }
+        .delete-confirm-card .modern-toast-actions { margin-top: 18px; }
+        .delete-confirm-card .modern-toast-action { padding: 10px 15px; font-size: 13px; }
+        .delete-confirm-card .modern-toast-close { margin: -8px -8px 0 0; }
+        @media (max-width: 520px) { .delete-confirm-card { padding: 18px; gap: 11px; } }
+        @media (max-width: 520px) {
+            .modern-toast-stack { top: max(10px, env(safe-area-inset-top)); left: 10px; right: 10px; width: auto; gap: 9px; }
+            .modern-toast { padding: 12px 12px 15px; border-radius: 15px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .modern-toast, .modern-toast.is-visible, .modern-toast.is-leaving { transition: none; transform: none; }
+            .modern-toast-progress { animation: none; }
+        }
+
+        /* Açık Kutucuklar (Light Inputs) */
+        .open-input {
+            background-color: #F8FAFC !important;
+            border-color: #CBD5E1 !important;
+            color: #0F172A !important;
+        }
+        .open-input::placeholder {
+            color: #64748B !important;
+        }
+        .open-input:focus {
+            background-color: #FFFFFF !important;
+            border-color: var(--primary-accent) !important;
+            outline: none;
+        }
+    </style>
+</head>
+<body id="mainBody" class="theme-dark text-slate-800 min-h-screen flex flex-col justify-between relative overflow-x-hidden transition-colors duration-300">
+
+    <!-- ÜST MENÜ (HEADER NAVBAR) -->
+    <header id="mainHeader" class="w-full modern-panel backdrop-blur-xl border-b sticky top-0 z-40 px-6 py-4 transition-all shadow-xl">
+        <div class="max-w-7xl mx-auto flex items-center justify-between relative min-h-[44px]">
+            
+            <!-- Sol / Başlık Alanı -->
+            <div id="brandHeaderContainer" class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl dynamic-btn flex items-center justify-center font-black text-lg shadow-md shadow-black/30">
+                    <i class="fa-solid fa-fingerprint"></i>
+                </div>
+                <div>
+                    <h1 id="brandTitleText" class="text-base sm:text-lg font-black tracking-wider modern-text uppercase transition-colors duration-300">Yönetim ve Erişim Merkezi</h1>
+                    <p class="text-[10px] font-semibold modern-muted tracking-widest uppercase">Güvenli Erişim Paneli</p>
+                </div>
+            </div>
+
+            <!-- Sağ Alan: Tema Değiştirici & Kullanıcı Bilgisi & Çıkış -->
+            <div class="ml-auto flex items-center gap-3 z-10">
+                <!-- Tema Değiştir Butonu -->
+                <button onclick="toggleTheme()" id="themeToggleBtn" class="px-3.5 py-2 text-xs font-bold modern-text bg-black/30 hover:bg-black/50 rounded-2xl transition-all duration-200 border border-white/10 flex items-center gap-2.5 shadow-md group" title="Temayı Değiştir (20 Modern Tema)">
+                    <i id="themeIcon" class="fa-solid fa-palette text-amber-400 group-hover:rotate-45 transition-transform duration-300 text-sm"></i>
+                    <span id="themeLabelName" class="hidden sm:inline">Dark</span>
+                </button>
+
+                <div id="navUserArea" class="hidden items-center gap-3">
+                    <div id="userBadgeBox" class="flex items-center gap-2.5 modern-panel border px-3.5 py-1.5 rounded-2xl shadow-md">
+                        <div class="w-7 h-7 rounded-xl dynamic-btn flex items-center justify-center font-bold text-xs shadow-inner">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <div class="text-left">
+                            <p id="navUserName" class="text-xs font-bold modern-text">Kullanıcı</p>
+                            <p id="navUserRole" class="text-[10px] font-semibold modern-muted uppercase tracking-wider">Rol</p>
+                        </div>
+                    </div>
+                    <button onclick="handleLogout()" class="p-2.5 text-slate-300 hover:text-white bg-black/30 hover:bg-red-600 rounded-2xl transition-all duration-200 border border-white/10 group shadow-md" title="Çıkış Yap">
+                        <i class="fa-solid fa-right-from-bracket group-hover:scale-110 transition-transform"></i>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- ANA İÇERİK KAPSAYICISI -->
+    <main id="mainContainer" class="flex-grow flex items-center justify-center p-4 sm:p-6 py-10 transition-all duration-300">
+        <div class="w-full max-w-5xl space-y-8">
+
+            <!-- GİRİŞ FORMU KARTI -->
+            <div id="loginCard" class="max-w-md mx-auto modern-panel backdrop-blur-2xl border rounded-3xl p-8 shadow-2xl relative overflow-hidden transition-all duration-500">
+                <div class="absolute top-0 left-0 right-0 h-1.5 dynamic-btn"></div>
+
+                <div class="text-center mb-8 pt-2">
+                    <div class="inline-flex items-center justify-center w-16 h-16 dynamic-btn rounded-2xl mb-4 shadow-lg shadow-black/30">
+                        <i class="fa-solid fa-shield-halved text-2xl"></i>
+                    </div>
+                    <h2 id="loginTitleText" class="text-2xl font-black tracking-tight modern-text transition-colors duration-300">Sistem Girişi</h2>
+                    <p id="loginSubtitleText" class="text-xs modern-muted mt-1.5 font-medium">Lütfen devam etmek için şifrenizi doğrulayın.</p>
+                </div>
+
+                <form onsubmit="handleLogin(event)" class="space-y-5">
+                    <div>
+                        <label id="loginPassLabel" class="block text-[11px] font-extrabold uppercase tracking-wider modern-text mb-2">Giriş Şifresi</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+                                <i class="fa-solid fa-lock text-sm"></i>
+                            </span>
+                            <input type="password" id="passwordInput" required
+                                class="w-full pl-10 pr-4 py-3 open-input border rounded-2xl text-sm transition-all shadow-inner font-mono"
+                                placeholder="Şifrenizi yazınız...">
+                        </div>
+                    </div>
+
+                    <!-- Hata Mesajı -->
+                    <div id="errorAlert" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-2xl text-xs flex items-center gap-2.5 shadow-md">
+                        <i class="fa-solid fa-triangle-exclamation text-red-500 text-sm"></i>
+                        <span class="font-semibold">Hatalı şifre! Lütfen tekrar deneyin.</span>
+                    </div>
+
+                    <button type="submit" class="w-full py-3.5 dynamic-btn font-extrabold text-xs uppercase tracking-wider rounded-2xl shadow-xl transition-all duration-200 flex items-center justify-center gap-2 group">
+                        <span>Giriş Yap</span>
+                        <i class="fa-solid fa-arrow-right text-xs group-hover:translate-x-1 transition-transform"></i>
+                    </button>
+                </form>
+            </div>
+
+            <!-- KONTROL PANELİ ALANI -->
+            <div id="dashboardSection" class="hidden space-y-6">
+
+                <!-- 1. BÖLÜM: BAŞLIK AYARI (Yalnızca Admin) -->
+                <div id="adminPortalSettings" class="hidden modern-panel border rounded-3xl p-6 shadow-xl relative transition-colors duration-300">
+                    <div class="flex items-center justify-between mb-4 pb-3 border-b border-white/10">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center border border-purple-500/30">
+                                <i class="fa-solid fa-heading text-sm"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-bold modern-text transition-colors duration-300">Sistem Başlık Ayarı</h3>
+                                <p class="text-[11px] modern-muted">Ana başlığı canlı olarak güncelleyin</p>
+                            </div>
+                        </div>
+                    </div>
+                    <form onsubmit="handleSavePortalTitle(event)" class="flex flex-col sm:flex-row gap-3">
+                        <input type="text" id="portalTitleInput" required
+                            class="flex-grow px-3.5 py-2.5 open-input border rounded-xl text-xs shadow-sm"
+                            placeholder="Yeni başlık yazın...">
+                        <button type="submit" class="px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-semibold text-xs rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 flex-shrink-0">
+                            <i class="fa-solid fa-floppy-disk"></i>
+                            <span>Başlığı Güncelle</span>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- 2. BÖLÜM: BUTON YÖNETİMİ (Yalnızca Admin) -->
+                <div id="adminButtonSection" class="hidden space-y-6">
+                    <!-- KATEGORİ YÖNETİMİ: BUTON EKLEME ALANINDAN AYRI -->
+                    <div class="modern-panel border rounded-3xl p-6 shadow-xl relative transition-colors duration-300">
+                        <div class="flex items-center gap-3 mb-5 pb-3 border-b border-white/10">
+                            <div class="w-9 h-9 rounded-xl bg-violet-500/20 text-violet-400 flex items-center justify-center border border-violet-500/30"><i class="fa-solid fa-folder-tree"></i></div>
+                            <div>
+                                <h3 class="text-sm font-bold modern-text">Kategori Yönetimi</h3>
+                                <p class="text-[11px] modern-muted">Kategori ekleyin, adını değiştirin veya kullanılmayan kategorileri silin.</p>
+                            </div>
+                        </div>
+                        <form onsubmit="handleSaveCategory(event)" class="flex flex-col sm:flex-row gap-3 mb-4">
+                            <input type="hidden" id="editCategoryIdInput" value="">
+                            <input type="text" id="categoryNameInput" required maxlength="60" class="flex-1 px-3.5 py-3 open-input border rounded-xl text-xs shadow-sm" placeholder="Yeni kategori adı (örn. Muhasebe)">
+                            <div class="flex gap-2">
+                                <button id="saveCategoryBtn" type="submit" class="px-5 py-3 bg-violet-600 hover:bg-violet-700 text-white font-bold text-xs rounded-xl shadow transition"><i class="fa-solid fa-plus mr-1"></i> Kategori Ekle</button>
+                                <button id="cancelCategoryEditBtn" type="button" onclick="resetCategoryForm()" class="hidden px-4 py-3 bg-white/10 border border-white/10 modern-text text-xs rounded-xl">İptal</button>
+                            </div>
+                        </form>
+                        <div id="categoryManagementList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                            <p class="text-xs modern-muted">Kategoriler yükleniyor…</p>
+                        </div>
+                    </div>
+
+                    <div class="modern-panel border rounded-3xl p-6 shadow-xl relative transition-colors duration-300">
+                        <div class="flex items-center justify-between mb-5 pb-3 border-b border-white/10">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-8 h-8 rounded-xl dynamic-btn flex items-center justify-center">
+                                    <i id="btnPanelIcon" class="fa-solid fa-plus text-sm"></i>
+                                </div>
+                                <div>
+                                    <h3 id="btnPanelTitleText" class="text-sm font-bold modern-text transition-colors duration-300">Yeni Buton Ekle</h3>
+                                    <p class="text-[11px] modern-muted">Sayfaya yeni bir internet linki butonu tanımlayın veya güncelleyin</p>
+                                </div>
+                            </div>
+                            <span class="text-[10px] dynamic-btn font-extrabold px-2 py-0.5 rounded tracking-wide uppercase">Yönetici Paneli</span>
+                        </div>
+
+                        <form onsubmit="handleSaveButton(event)" class="grid grid-cols-1 md:grid-cols-12 gap-4">
+                            <input type="hidden" id="editButtonIdInput" value="">
+
+                            <div class="md:col-span-3">
+                                <label class="block text-[11px] font-bold uppercase modern-muted mb-1.5">Buton Adı</label>
+                                <input type="text" id="newBtnName" required
+                                    class="w-full px-3 py-2.5 open-input border rounded-xl text-xs shadow-sm"
+                                    placeholder="Örn: Kurumsal Web">
+                            </div>
+
+                            <div class="md:col-span-3">
+                                <label class="block text-[11px] font-bold uppercase modern-muted mb-1.5">Kategori</label>
+                                <select id="newBtnCategory" required
+                                    class="w-full px-3 py-2.5 open-input border rounded-xl text-xs shadow-sm">
+                                    <option value="">Önce kategori ekleyin</option>
+                                </select>
+                                <p class="text-[10px] modern-muted mt-1">Kategorileri üstteki ayrı Kategori Yönetimi bölümünden ekleyebilirsiniz.</p>
+                            </div>
+                            <div class="md:col-span-4">
+                                <label class="block text-[11px] font-bold uppercase modern-muted mb-1.5">İnternet Linki (URL)</label>
+                                <input type="url" id="newBtnUrl" required
+                                    class="w-full px-3 py-2.5 open-input border rounded-xl text-xs shadow-sm"
+                                    placeholder="https://www.ornek.com">
+                            </div>
+
+                            <div class="md:col-span-2 flex items-end gap-2">
+                                <button type="submit" id="saveButtonSubmit" class="w-full py-2.5 dynamic-btn font-semibold text-xs rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-floppy-disk text-xs"></i>
+                                    <span id="saveButtonText">Butonu Ekle</span>
+                                </button>
+                                <button type="button" id="cancelButtonEditBtn" onclick="resetButtonForm()" class="hidden min-h-[42px] py-2.5 px-4 bg-white/5 hover:bg-rose-500/15 border border-white/15 hover:border-rose-400/50 text-slate-200 hover:text-rose-200 font-semibold text-xs rounded-xl transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-rose-400/60" title="Düzenlemeyi iptal et">
+                                    <i class="fa-solid fa-xmark"></i><span>İptal</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- HIZLI ERİŞİM MENÜSÜ -->
+                <div class="quick-access-panel border backdrop-blur-xl rounded-3xl p-6 shadow-xl relative overflow-hidden transition-colors duration-300">
+                    <div class="absolute top-0 left-0 right-0 h-1.5 dynamic-btn"></div>
+                    <div class="flex items-center justify-between mb-5 pb-3 border-b border-black/10 pt-1">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-xl dynamic-btn flex items-center justify-center text-white shadow-md">
+                                <i class="fa-solid fa-link text-sm"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-bold transition-colors duration-300">Hızlı Erişim Menüsü</h3>
+                                <p class="text-[11px]">Tanımlanmış internet bağlantı butonları (Yönetici isterseniz sürükleyerek sıralayabilirsiniz)</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="dynamicButtonsList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 justify-items-center min-h-[120px]">
+                        <!-- Firebase Verileri -->
+                    </div>
+
+                </div>
+
+                <!-- 3. BÖLÜM: KULLANICI / ŞİFRE YÖNETİMİ (Yalnızca Admin) -->
+                <div id="adminUserSection" class="hidden space-y-6 pt-4">
+                    <div class="modern-panel border rounded-3xl p-6 shadow-xl relative transition-colors duration-300">
+                        <div class="flex items-center justify-between mb-5 pb-3 border-b border-white/10">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-8 h-8 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center border border-blue-500/30">
+                                    <i id="userPanelIcon" class="fa-solid fa-user-plus text-sm"></i>
+                                </div>
+                                <div>
+                                    <h3 id="userPanelTitleText" class="text-sm font-bold modern-text transition-colors duration-300">Sisteme Kullanıcı / Şifre Tanımla</h3>
+                                    <p class="text-[11px] modern-muted">Yeni bir yönetici veya standart kullanıcı hesabı oluşturun veya güncelleyin</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <form onsubmit="handleSaveUser(event)" class="grid grid-cols-1 md:grid-cols-12 gap-4">
+                            <input type="hidden" id="editUserIdInput" value="">
+
+                            <div class="md:col-span-4">
+                                <label class="block text-[11px] font-bold uppercase modern-muted mb-1.5">Kullanıcı Adı / Unvanı</label>
+                                <input type="text" id="newUserNameInput" required
+                                    class="w-full px-3 py-2.5 open-input border rounded-xl text-xs shadow-sm"
+                                    placeholder="Örn: Ahmet Yılmaz">
+                            </div>
+
+                            <div class="md:col-span-3">
+                                <label class="block text-[11px] font-bold uppercase modern-muted mb-1.5">Kullanıcı Rolü</label>
+                                <select id="newUserRoleInput" class="w-full px-3 py-2.5 open-input border rounded-xl text-xs shadow-sm">
+                                    <option value="user">Standart Kullanıcı</option>
+                                    <option value="admin">Sistem Yöneticisi</option>
+                                </select>
+                            </div>
+
+                            <div class="md:col-span-3">
+                                <label class="block text-[11px] font-bold uppercase modern-muted mb-1.5">Giriş Şifresi</label>
+                                <input type="text" id="newUserPassInput" required
+                                    class="w-full px-3 py-2.5 open-input border rounded-xl text-xs shadow-sm font-mono"
+                                    placeholder="Şifre belirleyin">
+                            </div>
+
+                            <div class="md:col-span-12">
+                                <label class="block text-[11px] font-bold uppercase modern-muted mb-2">Bu kullanıcının görebileceği butonlar</label>
+                                <div id="userButtonPermissions" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 p-3 rounded-xl border border-white/10 bg-black/10">
+                                    <p class="text-xs modern-muted">Henüz buton eklenmemiş.</p>
+                                </div>
+                                <p class="text-[10px] modern-muted mt-1">İşaretlediğiniz butonlar kullanıcı giriş yaptığında görünür. İşaretlemedikleriniz gizlenir.</p>
+                            </div>
+
+                            <div class="md:col-span-2 flex items-end gap-2">
+                                <button type="submit" id="saveUserSubmitBtn" class="w-full min-h-[42px] py-2.5 px-4 bg-gradient-to-r from-indigo-600 via-blue-600 to-cyan-600 hover:from-indigo-500 hover:via-blue-500 hover:to-cyan-500 border border-blue-400/40 text-white font-bold text-xs rounded-xl shadow-lg shadow-blue-900/25 transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-blue-400/70">
+                                    <i class="fa-solid fa-user-check text-xs text-emerald-400"></i>
+                                    <span id="saveUserBtnText">Kullanıcı Ekle</span>
+                                </button>
+                                <button type="button" id="cancelUserEditBtn" onclick="resetUserForm()" class="hidden py-2.5 px-3 bg-slate-700 hover:bg-slate-600 text-white text-xs rounded-xl transition-all" title="İptal">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Kayıtlı Kullanıcılar Listesi -->
+                    <div class="modern-panel border rounded-3xl p-6 shadow-xl transition-colors duration-300">
+                        <div class="flex items-center justify-between mb-5 pb-3 border-b border-white/10">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-8 h-8 rounded-xl bg-black/30 text-blue-400 flex items-center justify-center border border-white/10">
+                                    <i class="fa-solid fa-users text-sm"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-sm font-bold modern-text transition-colors duration-300">Sistem Kullanıcıları ve Şifreleri</h3>
+                                    <p class="text-[11px] modern-muted">Sisteme kayıtlı kullanıcıların adı, rolü ve şifre bilgileri</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="dynamicUsersList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 min-h-[100px]">
+                            <!-- Firebase Verileri -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. BÖLÜM: FIREBASE KONFİGÜRASYON FORMU & LİSTESİ (Yalnızca Admin) -->
+                <div id="adminFirebaseConfigSection" class="hidden modern-panel border rounded-3xl p-6 shadow-xl relative transition-colors duration-300 pt-4">
+                    <div class="flex items-center justify-between mb-4 pb-3 border-b border-white/10">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center border border-amber-500/30">
+                                <i id="firebaseConfigPanelIcon" class="fa-solid fa-database text-sm"></i>
+                            </div>
+                            <div>
+                                <h3 id="firebaseConfigPanelTitleText" class="text-sm font-bold modern-text transition-colors duration-300">Firebase Konfigürasyon Tanımla</h3>
+                                <p class="text-[11px] modern-muted">Yeni bir Firebase kök başlığı ve konfigürasyon kaydı oluşturun</p>
+                            </div>
+                        </div>
+                    </div>
+                    <form onsubmit="handleSaveFirebaseConfig(event)" class="space-y-4">
+                        <input type="hidden" id="editFirebaseConfigIdInput" value="">
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase modern-muted mb-1.5">Firebase Kök Başlığı (Root Path)</label>
+                            <input type="text" id="firebaseRootPathInput" required
+                                class="w-full px-3.5 py-2.5 open-input border rounded-xl text-xs shadow-sm font-mono"
+                                placeholder="Fireebase kök başlığı">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase modern-muted mb-1.5">Konfigürasyon Verisi</label>
+                            <textarea id="firebaseConfigInput" rows="7" required
+                                class="w-full px-3.5 py-2.5 open-input border rounded-xl text-xs shadow-sm font-mono"
+                                placeholder="{
+  apiKey: '',
+  authDomain: '',
+  databaseURL: '',
+  projectId: '',
+  storageBucket: '',
+  messagingSenderId: '',
+  appId: '',
+  measurementId: ''
+}"></textarea>
+                        </div>
+                        <div class="flex items-center justify-end gap-2">
+                            <button type="submit" id="saveFirebaseConfigBtnText" class="px-5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-semibold text-xs rounded-xl shadow-lg transition-all flex items-center gap-2">
+                                <i class="fa-solid fa-floppy-disk"></i>
+                                <span>Konfigürasyonu Kaydet</span>
+                            </button>
+                            <button type="button" id="cancelFirebaseConfigEditBtn" onclick="resetFirebaseConfigForm()" class="hidden py-2.5 px-3 bg-slate-700 hover:bg-slate-600 text-white text-xs rounded-xl transition-all" title="İptal">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Kayıtlı Firebase Konfigürasyonları Listesi -->
+                <div id="adminFirebaseConfigsListSection" class="hidden modern-panel border rounded-3xl p-6 shadow-xl transition-colors duration-300">
+                    <div class="flex items-center justify-between mb-5 pb-3 border-b border-white/10">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-xl bg-black/30 text-amber-400 flex items-center justify-center border border-white/10">
+                                <i class="fa-solid fa-server text-sm"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-bold modern-text transition-colors duration-300">Kayıtlı Firebase Konfigürasyonları</h3>
+                                <p class="text-[11px] modern-muted">Sisteme kayıtlı kök yollar ve konfigürasyon verileri</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="dynamicFirebaseConfigsList" class="grid grid-cols-1 md:grid-cols-2 gap-4 min-h-[100px]">
+                        <!-- Firebase Verileri -->
+                    </div>
+                </div>
+
+                <!-- EN SON BÖLÜM: VERİ YEDEKLEME VE GERİ YÜKLEME -->
+                <section id="dataBackupSection" class="hidden modern-panel border rounded-3xl p-6 shadow-xl relative transition-colors duration-300">
+                    <div class="flex items-center gap-3 mb-4 pb-3 border-b border-white/10">
+                        <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-500/30"><i class="fa-solid fa-database"></i></div>
+                        <div>
+                            <h3 class="text-sm font-bold modern-text">Veri Yedekleme ve Geri Yükleme</h3>
+                            <p class="text-[11px] modern-muted">Bu cihazdaki uygulama verilerini JSON dosyasına yedekleyin veya önceki yedeği geri yükleyin.</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <button type="button" onclick="backupPortalData()" class="px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-lg flex items-center justify-center gap-2"><i class="fa-solid fa-download"></i> Verileri Yedekle</button>
+                        <label for="restorePortalBackupFile" class="cursor-pointer px-5 py-3 bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs rounded-xl shadow-lg flex items-center justify-center gap-2"><i class="fa-solid fa-upload"></i> Yedekten Geri Yükle</label>
+                        <input id="restorePortalBackupFile" type="file" accept=".json,application/json" class="hidden" onchange="restorePortalData(event)">
+                    </div>
+                    <p class="text-[11px] modern-muted mt-3">Not: Firebase verileri yalnızca bağlantı etkinse yedeğe dahil edilir. Geri yükleme, yedekteki Firebase verilerini mevcut kök yolun üzerine yazabilir.</p>
+                </section>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- MODERN ŞİFRE ONAY MODALI (SİLME İŞLEMİ İÇİN) -->
+    <div id="passwordConfirmModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        <div class="modern-panel border rounded-3xl p-6 max-w-sm w-full shadow-2xl space-y-4 relative">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-red-500/20 text-red-500 flex items-center justify-center border border-red-500/30 flex-shrink-0">
+                    <i class="fa-solid fa-shield-halved text-base"></i>
+                </div>
+                <div>
+                    <h4 class="text-sm font-bold modern-text">Yönetici Şifre Onayı</h4>
+                    <p class="text-[11px] modern-muted">Silme işlemini onaylamak için yönetici şifrenizi girin</p>
+                </div>
+            </div>
+            <form onsubmit="confirmDeleteFirebaseConfig(event)" class="space-y-3">
+                <input type="password" id="confirmPasswordInput" required
+                    class="w-full px-3.5 py-2.5 open-input border rounded-xl text-xs shadow-sm font-mono"
+                    placeholder="Yönetici şifreniz...">
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closePasswordModal()" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white text-xs rounded-xl transition-all">İptal</button>
+                    <button type="submit" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold rounded-xl transition-all shadow-lg">Sil</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- BİLDİRİM ALANI (TOAST) -->
+    <div id="toastContainer" class="modern-toast-stack" aria-live="polite" aria-atomic="false"></div>
+    <!-- İlk giriş / görünen ad modalı -->
+    <div id="displayNameModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="displayNameHeading">
+        <div class="absolute inset-0 bg-slate-950/75 backdrop-blur-md"></div>
+        <div class="relative w-full max-w-md overflow-hidden rounded-3xl border border-white/15 bg-slate-900 text-white shadow-2xl">
+            <div class="h-1.5 w-full bg-gradient-to-r from-cyan-400 via-violet-500 to-fuchsia-500"></div>
+            <div class="p-6 sm:p-8">
+                <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-400/20 to-violet-500/25 text-cyan-300 ring-1 ring-white/10 shadow-lg"><i class="fa-solid fa-user-pen text-2xl"></i></div>
+                <div class="text-center">
+                    <p class="mb-2 text-[10px] font-extrabold uppercase tracking-[.25em] text-cyan-300">Kişisel karşılama</p>
+                    <h2 id="displayNameHeading" class="text-2xl font-black tracking-tight">Size nasıl hitap edelim?</h2>
+                    <p class="mt-2 text-sm leading-6 text-slate-300">Adınızı yazın. Bu cihazda kaydedilecek ve sonraki girişlerinizde hatırlanacak.</p>
+                </div>
+                <form id="displayNameForm" class="mt-6 space-y-4">
+                    <label for="displayNameInput" class="block text-xs font-bold uppercase tracking-wider text-slate-300">Görünen adınız</label>
+                    <div class="relative"><i class="fa-solid fa-id-card absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i><input id="displayNameInput" type="text" maxlength="60" required autocomplete="name" placeholder="Adınızı yazın" class="w-full rounded-2xl border border-white/15 bg-slate-800 py-3.5 pl-11 pr-4 text-sm text-white outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"></div>
+                    <button type="submit" class="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-500 to-violet-600 px-4 py-3.5 text-sm font-extrabold shadow-lg transition hover:brightness-110 active:scale-[.99]"><i class="fa-solid fa-check"></i> Adımı kaydet ve devam et</button>
+                    <p class="text-center text-[11px] text-slate-400"><i class="fa-solid fa-lock mr-1"></i> Adınız yalnızca bu tarayıcıda saklanır.</p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ALT BİLGİ (FOOTER) -->
+    <footer id="mainFooter" class="w-full modern-panel backdrop-blur-md border-t py-4 px-6 text-center text-xs modern-muted transition-colors duration-300 shadow-inner">
+        <p id="footerText">© 2026 Yönetim ve Erişim Merkezi. Tüm hakları saklıdır.</p>
+    </footer>
+
+    <!-- İnternet yoksa da çalışabilen bağlantı uyarısı ve yerel giriş yedeği -->
+    <style>
+      #offlineNotice{position:fixed;inset:0;z-index:10000;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(2,6,23,.68);backdrop-filter:blur(10px)}
+      #offlineNotice .offline-card{width:min(420px,100%);border:1px solid rgba(255,255,255,.14);border-radius:26px;padding:26px;background:linear-gradient(145deg,#111827,#1e293b);color:#f8fafc;box-shadow:0 25px 80px rgba(0,0,0,.4);text-align:center;animation:offlinePop .22s ease-out}
+      #offlineNotice .offline-icon{width:62px;height:62px;margin:0 auto 16px;border-radius:20px;display:grid;place-items:center;background:rgba(245,158,11,.15);color:#fbbf24;font-size:25px;border:1px solid rgba(245,158,11,.25)}
+      #offlineNotice button{width:100%;margin-top:20px;border:0;border-radius:14px;padding:13px 18px;background:linear-gradient(90deg,#2563eb,#7c3aed);color:white;font-weight:800;cursor:pointer}
+      @keyframes offlinePop{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+    </style>
+    <div id="offlineNotice" role="alertdialog" aria-modal="true" aria-labelledby="offlineNoticeTitle" aria-describedby="offlineNoticeText">
+      <div class="offline-card"><div class="offline-icon"><i class="fa-solid fa-wifi"></i></div>
+        <h2 id="offlineNoticeTitle" style="font-size:21px;font-weight:900;margin:0 0 8px">İnternet bağlantısı yok</h2>
+        <p id="offlineNoticeText" style="font-size:13px;line-height:1.7;color:#cbd5e1;margin:0">Lütfen internet bağlantınızı kontrol edin. Bağlantı olmadığında, bu cihazda daha önce kaydedilmiş kullanıcı bilgileriyle yerel olarak giriş yapabilirsiniz.</p>
+        <button type="button" id="offlineNoticeOk">Tamam</button>
+      </div>
+    </div>
+    <script>
+      (function(){
+        const notice=document.getElementById('offlineNotice');
+        const close=()=>{notice.style.display='none';};
+        document.getElementById('offlineNoticeOk').addEventListener('click',close);
+        async function hasInternet(){
+          if(!navigator.onLine) return false;
+          const controller=new AbortController();
+          const timer=setTimeout(()=>controller.abort(),3500);
+          try { await fetch('https://www.gstatic.com/generate_204',{mode:'no-cors',cache:'no-store',signal:controller.signal}); return true; }
+          catch(_){ return false; }
+          finally{ clearTimeout(timer); }
+        }
+        window.portalInternetAvailable = navigator.onLine;
+        window.addEventListener('DOMContentLoaded',async()=>{
+          window.portalInternetAvailable = await hasInternet();
+          if(!window.portalInternetAvailable) notice.style.display='flex';
+        });
+        window.addEventListener('online',async()=>{ window.portalInternetAvailable = await hasInternet(); });
+        window.addEventListener('offline',()=>{window.portalInternetAvailable=false;notice.style.display='flex';});
+        // Firebase modülü internet yokken yüklenemese bile daha önce önbelleğe alınmış hesapla yerel giriş.
+        window.handleLogin=window.handleLogin||function(event){
+          event.preventDefault();
+          let users={};
+          try{users=JSON.parse(localStorage.getItem('portal_cached_users')||'{}')}catch(_){ }
+          const hasSavedFirebase = (()=>{ try { const active=JSON.parse(localStorage.getItem('sistem_firebase_aktif')||'null'); const list=JSON.parse(localStorage.getItem('sistem_firebase_listesi')||'{}'); return !!((active && active.apiKey && active.databaseURL) || Object.values(list).some(c=>c && (c.configData || c.apiKey || c.databaseURL))); } catch(_){ return false; } })();
+          const offline = !navigator.onLine || window.portalInternetAvailable === false;
+          if(offline && hasSavedFirebase){ document.getElementById('errorAlert').classList.remove('hidden'); document.getElementById('errorAlert').textContent='İnternet bağlantısı yok. Firebase bilgileri kayıtlı olduğundan varsayılan yönetici şifresiyle giriş yapılamaz.'; document.getElementById('passwordInput').value=''; return; }
+          if(!Object.keys(users).length){ users={default_admin:{title:'Sistem Yöneticisi',role:'admin',password:'yonetici'}}; }
+          const pass=(document.getElementById('passwordInput').value||'').trim();
+          const match=Object.entries(users).find(([,u])=>u&&String(u.password)===pass);
+          if(!match){document.getElementById('errorAlert').classList.remove('hidden');document.getElementById('passwordInput').value='';return;}
+          const [id,user]=match; const name=String(user.title||user.name||(user.role==='admin'?'Sistem Yöneticisi':'Kullanıcı')).trim();
+          try{localStorage.setItem('portalDatabaseUserName_'+id,name);localStorage.setItem('portal_last_user_id',id);localStorage.setItem('portal_last_user_name',name);}catch(_){ }
+          document.getElementById('errorAlert').classList.add('hidden');
+          document.getElementById('brandTitleText').textContent=name;document.getElementById('pageTitle').textContent=name+' - Giriş Paneli';document.getElementById('footerText').textContent='© 2026 '+name+'. Tüm hakları saklıdır.';
+          document.getElementById('loginCard').classList.add('hidden');document.getElementById('dashboardSection').classList.remove('hidden');
+          const area=document.getElementById('navUserArea');area.classList.remove('hidden');area.classList.add('flex');document.getElementById('navUserName').textContent=name;document.getElementById('navUserRole').textContent=user.role==='admin'?'Yönetici':'Kullanıcı';
+          document.getElementById('mainContainer').classList.remove('items-center');document.getElementById('mainContainer').classList.add('items-start');
+        };
+      })();
+    </script>
+
+    <!-- FIREBASE SDK & TEMA YÖNETİMİ -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, get, set, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // ====================================================================================
+        // ⚙️ KOD İÇİNDEN DEĞİŞTİRİLEBİLİR FIREBASE VE KÖK YOL (ROOT PATH) AYARLARI
+        // Kendi Firebase bilgilerinizi ve kök yolunuzu bu alandan kolayca güncelleyebilirsiniz:
+        // ====================================================================================
+        const emptyFirebaseConfig = {
+  apiKey: "AIzaSyDeDpVrZAniRCbqzgTTuuoX-3MkT9seu5Y",
+  authDomain: "muhammet-3ee51.firebaseapp.com",
+  databaseURL: "https://muhammet-3ee51-default-rtdb.firebaseio.com",
+  projectId: "muhammet-3ee51",
+  storageBucket: "muhammet-3ee51.appspot.com",
+  messagingSenderId: "362841104827",
+  appId: "1:362841104827:web:c31a43cd46c340f581249e",
+  measurementId: "G-8N2CGCXL8W"
+};
+        // Firebase bağlantı bilgileri ve kayıtlı bağlantı listesi yalnızca bu tarayıcının localStorage alanında tutulur.
+        let defaultFirebaseConfig = emptyFirebaseConfig;
+        try {
+            defaultFirebaseConfig = JSON.parse(localStorage.getItem("sistem_firebase_aktif") || "null") || emptyFirebaseConfig;
+        } catch (_) { defaultFirebaseConfig = emptyFirebaseConfig; }
+        function readLocalFirebaseConfigs() {
+            try { return JSON.parse(localStorage.getItem("sistem_firebase_listesi") || "{}"); }
+            catch (_) { return {}; }
+        }
+        function saveLocalFirebaseConfigs() {
+            localStorage.setItem("sistem_firebase_listesi", JSON.stringify(globalFirebaseConfigs));
+        }
+
+        // Firebase Veritabanı Kök Yolu (Root Path)
+let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli";
+        // ====================================================================================
+
+        let db = null;
+        try {
+            if (defaultFirebaseConfig.apiKey && defaultFirebaseConfig.databaseURL) {
+                let activeApp = initializeApp(defaultFirebaseConfig);
+                db = getDatabase(activeApp);
+            }
+        } catch (e) {
+            console.warn("Firebase bağlantısı yapılandırılmamış.");
+        }
+
+        const TITLE_DB_PATH = () => currentRootPath + '/baslik';
+        const USERS_DB_PATH = () => currentRootPath + '/kullanicilar';
+        const BUTTONS_DB_PATH = () => currentRootPath + '/butonlar';
+        const CATEGORIES_DB_PATH = () => currentRootPath + '/kategoriler';
+
+        let currentUser = null;
+        let globalButtons = {};
+        const categoryCacheKey = () => "portal_cached_categories_" + String(currentRootPath || "Giriş Paneli");
+        function readLocalCategories() {
+            try {
+                const value = JSON.parse(localStorage.getItem(categoryCacheKey()) || "{}");
+                return value && typeof value === "object" ? value : {};
+            } catch (_) { return {}; }
+        }
+        function saveLocalCategories() {
+            try { localStorage.setItem(categoryCacheKey(), JSON.stringify(globalCategories)); }
+            catch (err) { console.warn("Kategoriler yerel olarak kaydedilemedi:", err); }
+        }
+        let globalCategories = readLocalCategories();
+        let categoriesStoredInFirebase = false;
+        let categoriesFirebaseLoaded = false;
+        let categorySyncInProgress = false;
+        let globalUsers = {
+            "default_admin": { title: "Sistem Yöneticisi", role: "admin", password: "yonetici" }
+        };
+        // Daha önce çevrimiçiyken alınan kullanıcı kayıtları, bağlantı yokken giriş için yerelde tutulur.
+        try {
+            const cachedUsers = JSON.parse(localStorage.getItem("portal_cached_users") || "null");
+            if (cachedUsers && typeof cachedUsers === "object" && Object.keys(cachedUsers).length) globalUsers = cachedUsers;
+        } catch (_) {}
+        let globalFirebaseConfigs = readLocalFirebaseConfigs();
+        let systemTitle = "Yönetim ve Erişim Merkezi";
+        let draggedButtonId = null;
+        let pendingDeleteConfigId = null;
+
+        // 20 ADET ULTRA MODERN TEMA LİSTESİ
+        const themesList = [
+            { id: "dark", name: "1. Temsa Kırmızı", icon: "fa-moon" },
+            { id: "light", name: "2. Slate Koyu", icon: "fa-circle-half-stroke" },
+            { id: "emerald", name: "3. Zümrüt Yeşili", icon: "fa-gem" },
+            { id: "ocean", name: "4. Okyanus Mavi", icon: "fa-water" },
+            { id: "purple", name: "5. Asil Mor", icon: "fa-wand-magic-sparkles" },
+            { id: "sunset", name: "6. Gün Batımı", icon: "fa-sun-plant-wilt" },
+            { id: "rose", name: "7. Gül Pembe", icon: "fa-heart" },
+            { id: "teal", name: "8. Kuzey Turkuaz", icon: "fa-compass" },
+            { id: "gold", name: "9. Siber Altın", icon: "fa-crown" },
+            { id: "indigo", name: "10. Gece İndigo", icon: "fa-meteor" },
+            { id: "cyber", name: "11. Siber Mavi", icon: "fa-bolt" },
+            { id: "crimson", name: "12. Kan Kırmızı", icon: "fa-fire" },
+            { id: "midnight", name: "13. Gece Yarısı", icon: "fa-star" },
+            { id: "lime", name: "14. Neon Limon", icon: "fa-lemon" },
+            { id: "amethyst", name: "15. Ametist Mor", icon: "fa-eye" },
+            { id: "coral", name: "16. Mercan Turuncu", icon: "fa-fish" },
+            { id: "sapphire", name: "17. Safir Mavi", icon: "fa-shield-halved" },
+            { id: "bronze", name: "18. Bronz Kehribar", icon: "fa-coins" },
+            { id: "mint", name: "19. Ferah Nane", icon: "fa-leaf" },
+            { id: "carbon", name: "20. Karbon Siyah", icon: "fa-atom" }
+        ];
+
+        window.toggleTheme = function() {
+            const currentTheme = localStorage.getItem("sistem_temasi") || "dark";
+            let currentIndex = themesList.findIndex(t => t.id === currentTheme);
+            if (currentIndex === -1) currentIndex = 0;
+            
+            const nextIndex = (currentIndex + 1) % themesList.length;
+            const newTheme = themesList[nextIndex].id;
+            
+            localStorage.setItem("sistem_temasi", newTheme);
+            applyTheme(newTheme);
+            showToast(`Tema: ${themesList[nextIndex].name}`, "info");
+        }
+
+        function applyTheme(theme) {
+            const body = document.getElementById("mainBody");
+            const themeLabel = document.getElementById("themeLabelName");
+            const themeIcon = document.getElementById("themeIcon");
+
+            themesList.forEach(t => body.classList.remove(`theme-${t.id}`));
+            body.classList.add(`theme-${theme}`);
+
+            const themeObj = themesList.find(t => t.id === theme) || themesList[0];
+            if (themeLabel) themeLabel.innerText = themeObj.name;
+            if (themeIcon) themeIcon.className = `fa-solid ${themeObj.icon} text-amber-400 group-hover:rotate-45 transition-transform duration-300 text-sm`;
+
+            renderDynamicButtons();
+            renderDynamicUsers();
+            renderDynamicFirebaseConfigs();
+        }
+
+        // GERÇEK ZAMANLI DİNLEYİCİLERİ BAŞLAT
+        function initListeners() {
+            if (!db || !currentRootPath) return;
+
+            onValue(ref(db, TITLE_DB_PATH()), (snapshot) => {
+                systemTitle = snapshot.val() || "Yönetim ve Erişim Merkezi";
+                // Oturum açılmışsa kullanıcı başlığı, veritabanındaki kullanıcı adından türetilir.
+                if (currentUser && currentUser.displayName) {
+                    updateSystemTitleUI(currentUser.displayName);
+                } else {
+                    updateSystemTitleUI(systemTitle);
+                }
+            });
+
+            onValue(ref(db, BUTTONS_DB_PATH()), (snapshot) => {
+                globalButtons = snapshot.val() || {};
+                // Butonlarda daha önce kullanılmış ancak kategori listesine aktarılmamış adları da kaybetme.
+                const knownNames = new Set(Object.values(globalCategories).map(item => String(item?.name || '').trim().toLocaleLowerCase('tr-TR')));
+                Object.values(globalButtons).forEach((button, index) => {
+                    const name = String(button?.category || '').trim();
+                    if (name && !knownNames.has(name.toLocaleLowerCase('tr-TR'))) {
+                        globalCategories['legacy_button_' + index] = { name };
+                        knownNames.add(name.toLocaleLowerCase('tr-TR'));
+                    }
+                });
+                renderDynamicButtons();
+                renderCategoryOptions();
+                renderCategoryManagement();
+                const editingUserId = document.getElementById("editUserIdInput")?.value;
+                renderUserButtonPermissions(editingUserId && globalUsers[editingUserId] ? (globalUsers[editingUserId].allowedButtons || {}) : {});
+            });
+
+            onValue(ref(db, CATEGORIES_DB_PATH()), async (snapshot) => {
+                categoriesStoredInFirebase = snapshot.exists();
+                const remoteCategories = snapshot.val() || {};
+                const localCategories = readLocalCategories();
+                // Firebase kayıtları önceliklidir; yerelde bulunup Firebase'e henüz ulaşmamış kayıtlar korunur.
+                globalCategories = { ...localCategories, ...remoteCategories };
+                categoriesFirebaseLoaded = true;
+                saveLocalCategories();
+                // Yerelde olup Firebase'de bulunmayan kategorileri bağlantı geldiyse eşitle.
+                if (!categorySyncInProgress && db) {
+                    const missing = Object.entries(localCategories).filter(([id]) => !Object.prototype.hasOwnProperty.call(remoteCategories, id));
+                    if (missing.length) {
+                        categorySyncInProgress = true;
+                        try {
+                            for (const [id, item] of missing) await set(ref(db, CATEGORIES_DB_PATH() + '/' + id), item);
+                        } catch (syncError) {
+                            console.warn("Yerel kategoriler Firebase'e eşitlenemedi; yerelde korunuyor.", syncError);
+                        } finally { categorySyncInProgress = false; }
+                    }
+                }
+                // Eski kayıtlarla uyumluluk: mevcut butonların kategorileri otomatik listelenir.
+                const knownNames = new Set(Object.values(globalCategories).map(item => String(item?.name || '').trim().toLocaleLowerCase('tr-TR')));
+                Object.values(globalButtons).forEach((button, index) => {
+                    const name = String(button?.category || '').trim();
+                    if (name && !knownNames.has(name.toLocaleLowerCase('tr-TR'))) {
+                        globalCategories['legacy_button_' + index] = { name };
+                        knownNames.add(name.toLocaleLowerCase('tr-TR'));
+                    }
+                });
+                if (!Object.keys(globalCategories).length) {
+                    ['Genel', 'İş Yönetimi', 'Muhasebe', 'Web Siteleri', 'İletişim', 'Araçlar'].forEach((name, index) => { globalCategories['default_' + index] = { name }; });
+                    saveLocalCategories();
+                }
+                renderCategoryOptions();
+                renderCategoryManagement();
+            });
+
+            onValue(ref(db, USERS_DB_PATH()), (snapshot) => {
+                if (snapshot.exists()) {
+                    globalUsers = snapshot.val() || {};
+                    try { localStorage.setItem("portal_cached_users", JSON.stringify(globalUsers)); } catch (_) {}
+                }
+                renderDynamicUsers();
+                if (currentUser) {
+                    const activeId = currentUser._databaseUserId || Object.keys(globalUsers).find(k => globalUsers[k] && globalUsers[k].password === currentUser.password);
+                    const refreshedUser = activeId && globalUsers[activeId];
+                    if (refreshedUser) {
+                        const databaseName = String(refreshedUser.title || refreshedUser.name || currentUser.displayName || "Kullanıcı").trim();
+                        currentUser = { ...refreshedUser, _databaseUserId: activeId, displayName: databaseName };
+                        try { localStorage.setItem("portalDatabaseUserName_" + activeId, databaseName); } catch (_) {}
+                        updateSystemTitleUI(databaseName);
+                        const navName = document.getElementById("navUserName");
+                        if (navName) navName.innerText = databaseName;
+                    }
+                }
+                renderDynamicButtons();
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem("sistem_temasi") || "dark";
+            applyTheme(savedTheme);
+            initListeners();
+            resetFirebaseConfigForm();
+        });
+
+        function updateSystemTitleUI(title) {
+            document.getElementById("brandTitleText").innerText = title;
+            document.getElementById("pageTitle").innerText = title + " - Giriş Paneli";
+            document.getElementById("footerText").innerText = "© 2026 " + title + ". Tüm hakları saklıdır.";
+            const titleInput = document.getElementById("portalTitleInput");
+            if (titleInput) titleInput.value = title;
+        }
+
+        window.handleSavePortalTitle = function(event) {
+            event.preventDefault();
+            if (!currentUser || currentUser.role !== "admin") return;
+            if (!db) {
+                showToast("Lütfen önce alt kısımdan Firebase konfigürasyonu ekleyin.", "error");
+                return;
+            }
+
+            const input = document.getElementById("portalTitleInput");
+            const newTitle = input.value.trim();
+
+            if (!newTitle) {
+                showToast("Başlık boş olamaz!", "error");
+                return;
+            }
+
+            set(ref(db, TITLE_DB_PATH()), newTitle)
+                .then(() => showToast("Sistem başlığı güncellendi.", "success"))
+                .catch((err) => showToast("Hata: " + err.message, "error"));
+        }
+
+        // FIREBASE KONFİGÜRASYON YÖNETİMİ & DİNAMİK BAĞLANTI DEĞİŞİMİ
+        window.handleSaveFirebaseConfig = function(event) {
+            event.preventDefault();
+            if (!currentUser || currentUser.role !== "admin") return;
+
+            const rootPathVal = document.getElementById("firebaseRootPathInput").value.trim();
+            const configText = document.getElementById("firebaseConfigInput").value.trim();
+            const editId = document.getElementById("editFirebaseConfigIdInput").value;
+            if (!rootPathVal || !configText) {
+                showToast("Lütfen tüm alanları doldurunuz.", "error");
+                return;
+            }
+
+            let parsedConfig;
+            try { parsedConfig = new Function("return " + configText)(); }
+            catch (e) {
+                showToast("Konfigürasyon formatı geçersiz JSON/JS objesi!", "error");
+                return;
+            }
+            if (!parsedConfig.apiKey || !parsedConfig.databaseURL) {
+                showToast("apiKey ve databaseURL alanları zorunludur.", "error");
+                return;
+            }
+
+            const id = editId || ("local_" + Date.now());
+            globalFirebaseConfigs[id] = { rootPath: rootPathVal, configData: configText };
+            saveLocalFirebaseConfigs();
+            localStorage.setItem("sistem_firebase_aktif", JSON.stringify(parsedConfig));
+            switchDatabase(parsedConfig, rootPathVal);
+            renderDynamicFirebaseConfigs();
+            showToast("Firebase ayarları yalnızca bu cihazda kaydedildi ve bağlantı kuruldu.", "success");
+            resetFirebaseConfigForm();
+        }
+
+        function switchDatabase(newConfig, newRootPath) {
+            try {
+                const newApp = initializeApp(newConfig, "DynamicApp_" + Date.now());
+                db = getDatabase(newApp);
+                localStorage.setItem("sistem_firebase_aktif", JSON.stringify(newConfig));
+                currentRootPath = newRootPath;
+                localStorage.setItem("sistem_kok_yolu", newRootPath);
+                initListeners();
+            } catch (e) {
+                console.error("Veritabanı geçiş hatası:", e);
+            }
+        }
+
+        window.editFirebaseConfig = function(id) {
+            const item = globalFirebaseConfigs[id];
+            if (!item) return;
+
+            document.getElementById("firebaseRootPathInput").value = item.rootPath;
+            document.getElementById("firebaseConfigInput").value = item.configData;
+            document.getElementById("editFirebaseConfigIdInput").value = id;
+
+            document.getElementById("firebaseConfigPanelTitleText").innerText = "Firebase Konfigürasyonunu Düzenle";
+            document.getElementById("firebaseConfigPanelIcon").className = "fa-solid fa-pen text-sm";
+            document.getElementById("saveFirebaseConfigBtnText").innerHTML = '<i class="fa-solid fa-floppy-disk"></i><span>Değişiklikleri Kaydet</span>';
+            document.getElementById("cancelFirebaseConfigEditBtn").classList.remove("hidden");
+
+            document.getElementById("firebaseRootPathInput").focus();
+        }
+
+        window.resetFirebaseConfigForm = function() {
+            document.getElementById("firebaseRootPathInput").value = currentRootPath;
+            document.getElementById("firebaseConfigInput").value = "";
+            document.getElementById("editFirebaseConfigIdInput").value = "";
+
+            document.getElementById("firebaseConfigPanelTitleText").innerText = "Firebase Konfigürasyon Tanımla";
+            document.getElementById("firebaseConfigPanelIcon").className = "fa-solid fa-database text-sm";
+            document.getElementById("saveFirebaseConfigBtnText").innerHTML = '<i class="fa-solid fa-floppy-disk"></i><span>Konfigürasyonu Kaydet</span>';
+            document.getElementById("cancelFirebaseConfigEditBtn").classList.add("hidden");
+        }
+
+        window.deleteFirebaseConfig = function(id) {
+            if (!currentUser || currentUser.role !== "admin") return;
+            pendingDeleteConfigId = id;
+            document.getElementById("confirmPasswordInput").value = "";
+            document.getElementById("passwordConfirmModal").classList.remove("hidden");
+            document.getElementById("confirmPasswordInput").focus();
+        }
+
+        window.closePasswordModal = function() {
+            document.getElementById("passwordConfirmModal").classList.add("hidden");
+            pendingDeleteConfigId = null;
+        }
+
+        window.confirmDeleteFirebaseConfig = function(event) {
+            event.preventDefault();
+            const password = document.getElementById("confirmPasswordInput").value.trim();
+            if (!currentUser || currentUser.password !== password) {
+                showToast("Hatalı yönetici şifresi!", "error");
+                document.getElementById("confirmPasswordInput").value = "";
+                return;
+            }
+            if (pendingDeleteConfigId) {
+                delete globalFirebaseConfigs[pendingDeleteConfigId];
+                saveLocalFirebaseConfigs();
+                renderDynamicFirebaseConfigs();
+                showToast("Firebase ayarı bu cihazın yerel listesinden silindi.", "info");
+                resetFirebaseConfigForm();
+                closePasswordModal();
+            }
+        }
+
+        function renderDynamicFirebaseConfigs() {
+            const container = document.getElementById("dynamicFirebaseConfigsList");
+            const keys = Object.keys(globalFirebaseConfigs);
+
+            if (keys.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full py-8 text-center bg-black/5 rounded-2xl border border-dashed border-black/15 w-full">
+                        <i class="fa-solid fa-database text-2xl text-slate-400 mb-2 block"></i>
+                        <p class="text-xs text-slate-600">Bu cihazda henüz kayıtlı Firebase ayarı yok.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = "";
+            keys.forEach((id) => {
+                const item = globalFirebaseConfigs[id];
+                const card = document.createElement("div");
+
+                card.className = "flex flex-col justify-between p-4 bg-slate-100 border border-slate-300 rounded-2xl shadow-sm gap-3";
+
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-bold bg-amber-500/20 text-amber-800 px-2.5 py-1 rounded-lg font-mono">${escapeHtml(item.rootPath)}</span>
+                            <div class="flex items-center gap-1">
+                                <button onclick="editFirebaseConfig('${id}')" class="p-1.5 text-slate-500 hover:text-amber-600 hover:bg-amber-500/10 rounded-lg transition-colors" title="Düzenle">
+                                    <i class="fa-solid fa-pen text-xs"></i>
+                                </button>
+                                <button onclick="deleteFirebaseConfig('${id}')" class="p-1.5 text-slate-500 hover:text-red-600 hover:bg-red-500/10 rounded-lg transition-colors" title="Sil">
+                                    <i class="fa-solid fa-trash-can text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <pre class="text-[10px] text-slate-700 font-mono bg-white p-3 rounded-xl border border-slate-200 overflow-x-auto max-h-36">${escapeHtml(item.configData)}</pre>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Kullanıcı adı veritabanındaki kullanıcı kaydından alınır ve bu cihazda saklanır.
+        window.handleLogin = function(event) {
+            event.preventDefault();
+            const password = document.getElementById("passwordInput").value.trim();
+            const errorAlert = document.getElementById("errorAlert");
+            const hasSavedFirebase = (() => {
+                try {
+                    const active = JSON.parse(localStorage.getItem("sistem_firebase_aktif") || "null");
+                    const configs = JSON.parse(localStorage.getItem("sistem_firebase_listesi") || "{}");
+                    return !!((active && active.apiKey && active.databaseURL) || Object.values(configs).some(c => {
+                        if (!c) return false;
+                        if (c.apiKey && c.databaseURL) return true;
+                        if (typeof c.configData === "string") {
+                            try { const parsed = (new Function("return (" + c.configData + ")"))(); return !!(parsed && parsed.apiKey && parsed.databaseURL); } catch (_) { return false; }
+                        }
+                        return false;
+                    }));
+                } catch (_) { return false; }
+            })();
+            const offline = !navigator.onLine || window.portalInternetAvailable === false;
+            if (offline && hasSavedFirebase && password === "yonetici") {
+                errorAlert.textContent = "İnternet bağlantısı yok. Firebase bilgileri kayıtlı olduğundan varsayılan yönetici şifresiyle giriş yapılamaz.";
+                errorAlert.classList.remove("hidden");
+                document.getElementById("passwordInput").value = "";
+                return;
+            }
+            let foundUser = null;
+            let foundUserId = "";
+            Object.keys(globalUsers).forEach(key => {
+                if (globalUsers[key] && globalUsers[key].password === password) {
+                    foundUser = globalUsers[key];
+                    foundUserId = key;
+                }
+            });
+            if (!foundUser) {
+                errorAlert.classList.remove("hidden");
+                document.getElementById("passwordInput").value = "";
+                return;
+            }
+            errorAlert.classList.add("hidden");
+
+            // Veritabanındaki Kullanıcı Adı / Unvanı doğrudan kullanılır; ad sorulmaz.
+            const databaseName = String(foundUser.title || foundUser.name || (foundUser.role === "admin" ? "Sistem Yöneticisi" : "Kullanıcı")).trim();
+            const localNameKey = "portalDatabaseUserName_" + foundUserId;
+            try {
+                localStorage.setItem(localNameKey, databaseName);
+                localStorage.setItem("portal_last_user_id", foundUserId);
+                localStorage.setItem("portal_last_user_name", databaseName);
+                localStorage.setItem("portal_cached_users", JSON.stringify(globalUsers));
+            } catch (_) {}
+            completeLogin({ ...foundUser, _databaseUserId: foundUserId }, databaseName);
+        };
+
+        function completeLogin(foundUser, displayName) {
+            currentUser = { ...foundUser, displayName };
+            // Veritabanından alınan ad başlıkta ve kullanıcı alanında kalıcı olarak gösterilir.
+            updateSystemTitleUI(displayName);
+            document.getElementById("loginCard").classList.add("hidden");
+            document.getElementById("dashboardSection").classList.remove("hidden");
+            document.getElementById("navUserArea").classList.remove("hidden");
+            document.getElementById("navUserArea").classList.add("flex");
+            const mainContainer = document.getElementById("mainContainer");
+            mainContainer.classList.remove("items-center");
+            mainContainer.classList.add("items-start");
+            document.getElementById("navUserName").innerText = displayName;
+            document.getElementById("navUserRole").innerText = currentUser.role === "admin" ? "Yönetici" : "Kullanıcı";
+            const portalSettings = document.getElementById("adminPortalSettings");
+            const btnSection = document.getElementById("adminButtonSection");
+            const userSection = document.getElementById("adminUserSection");
+            const firebaseConfigSection = document.getElementById("adminFirebaseConfigSection");
+            const firebaseConfigsListSection = document.getElementById("adminFirebaseConfigsListSection");
+            const dataBackupSection = document.getElementById("dataBackupSection");
+            if (currentUser.role === "admin") {
+                if (dataBackupSection) dataBackupSection.classList.remove("hidden");
+                portalSettings.classList.remove("hidden");
+                btnSection.classList.remove("hidden");
+                userSection.classList.remove("hidden");
+                if (firebaseConfigSection) firebaseConfigSection.classList.remove("hidden");
+                if (firebaseConfigsListSection) firebaseConfigsListSection.classList.remove("hidden");
+            } else {
+                if (dataBackupSection) dataBackupSection.classList.add("hidden");
+                portalSettings.classList.add("hidden");
+                btnSection.classList.add("hidden");
+                userSection.classList.add("hidden");
+                if (firebaseConfigSection) firebaseConfigSection.classList.add("hidden");
+                if (firebaseConfigsListSection) firebaseConfigsListSection.classList.add("hidden");
+            }
+            renderDynamicButtons();
+            renderDynamicUsers();
+            renderDynamicFirebaseConfigs();
+            showToast("Hoş geldin, " + displayName + "!", "success");
+        }
+
+        // Veri yedekleme ve geri yükleme: yalnızca bu uygulamanın mevcut yerel verileri.
+        window.backupPortalData = async function() {
+            try {
+                const localData = {};
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    localData[key] = localStorage.getItem(key);
+                }
+                const backup = { format: "giris-paneli-backup", version: 1, createdAt: new Date().toISOString(), localStorage: localData };
+                if (db) {
+                    try {
+                        const snapshot = await get(ref(db, currentRootPath));
+                        backup.firebase = { rootPath: currentRootPath, data: snapshot.exists() ? snapshot.val() : null };
+                    } catch (firebaseError) {
+                        console.warn("Firebase yedeğe eklenemedi:", firebaseError);
+                        showToast("Yerel veriler yedeklendi; Firebase verisi alınamadı.", "info");
+                    }
+                }
+                const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json;charset=utf-8" });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement("a");
+                link.href = url;
+                link.download = "giris-paneli-yedek-" + new Date().toISOString().replace(/[:.]/g, "-") + ".json";
+                document.body.appendChild(link); link.click(); link.remove(); URL.revokeObjectURL(url);
+                showToast("Veri yedeği indirildi.", "success");
+            } catch (error) {
+                console.error(error); showToast("Yedek oluşturulamadı.", "error");
+            }
+        };
+
+        window.restorePortalData = async function(event) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+            try {
+                const backup = JSON.parse(await file.text());
+                if (!backup || backup.format !== "giris-paneli-backup" || !backup.localStorage || typeof backup.localStorage !== "object") {
+                    throw new Error("Geçersiz yedek dosyası");
+                }
+                if (!confirm("Yedekteki yerel uygulama verileri bu cihazdaki verilerle birleştirilecek. Devam edilsin mi?")) { event.target.value = ""; return; }
+                for (const [key, value] of Object.entries(backup.localStorage)) {
+                    if (typeof value === "string") localStorage.setItem(key, value);
+                }
+                if (backup.firebase && backup.firebase.data !== undefined && db) {
+                    if (!confirm("Yedekte Firebase verisi de var. '" + (backup.firebase.rootPath || currentRootPath) + "' kök yolundaki mevcut veriler yedekle değiştirilsin mi?")) {
+                        showToast("Yerel veriler geri yüklendi; Firebase geri yüklemesi atlandı. Değişikliklerin uygulanması için sayfayı yenileyin.", "info");
+                        event.target.value = ""; return;
+                    }
+                    await set(ref(db, backup.firebase.rootPath || currentRootPath), backup.firebase.data);
+                }
+                showToast("Yedek geri yüklendi. Değişikliklerin tamamı için sayfayı yenileyin.", "success");
+                setTimeout(() => location.reload(), 900);
+            } catch (error) {
+                console.error(error); showToast("Yedek dosyası okunamadı veya geri yüklenemedi.", "error");
+            } finally { event.target.value = ""; }
+        };
+
+        document.addEventListener("keydown", function(event) {
+            if (event.key === "Escape" && !document.getElementById("displayNameModal").classList.contains("hidden")) {
+                // Name is required to continue; keep the modal open.
+                event.preventDefault();
+            }
+        });
+
+        window.handleLogout = function() {
+            currentUser = null;
+            document.getElementById("passwordInput").value = "";
+            document.getElementById("dashboardSection").classList.add("hidden");
+            document.getElementById("navUserArea").classList.add("hidden");
+            document.getElementById("navUserArea").classList.remove("flex");
+            document.getElementById("loginCard").classList.remove("hidden");
+
+            const mainContainer = document.getElementById("mainContainer");
+            mainContainer.classList.remove("items-start");
+            mainContainer.classList.add("items-center");
+
+            resetButtonForm();
+            resetUserForm();
+            resetFirebaseConfigForm();
+            closePasswordModal();
+            showToast("Oturum kapatıldı.", "info");
+        }
+
+        // KATEGORİ YÖNETİMİ
+        function categoryEntries() {
+            const seen = new Set();
+            return Object.entries(globalCategories).filter(([id, item]) => {
+                const name = String(item?.name || '').trim();
+                if (!name || seen.has(name.toLocaleLowerCase('tr-TR'))) return false;
+                seen.add(name.toLocaleLowerCase('tr-TR'));
+                return true;
+            }).sort((a, b) => String(a[1].name).localeCompare(String(b[1].name), 'tr'));
+        }
+
+        function renderCategoryOptions(selectedValue) {
+            const select = document.getElementById('newBtnCategory');
+            if (!select) return;
+            const previous = selectedValue ?? select.value;
+            const entries = categoryEntries();
+            select.innerHTML = '<option value="">Kategori seçin</option>' + entries.map(([id, item]) => `<option value="${escapeHtml(item.name)}">${escapeHtml(item.name)}</option>`).join('');
+            if (previous && entries.some(([, item]) => item.name === previous)) select.value = previous;
+            else if (entries.length === 1) select.value = entries[0][1].name;
+        }
+
+        function renderCategoryManagement() {
+            const box = document.getElementById('categoryManagementList');
+            if (!box) return;
+            const entries = categoryEntries();
+            if (!entries.length) {
+                box.innerHTML = '<p class="text-xs modern-muted">Henüz kategori bulunmuyor. Yukarıdan kategori ekleyin.</p>';
+                renderCategoryOptions();
+                return;
+            }
+            box.innerHTML = entries.map(([id, item]) => {
+                const name = String(item.name || '');
+                const inUse = Object.values(globalButtons).some(btn => String(btn?.category || 'Genel').trim().toLocaleLowerCase('tr-TR') === name.trim().toLocaleLowerCase('tr-TR'));
+                return `<div class="flex items-center justify-between gap-3 p-3 rounded-xl border border-white/10 bg-white/5">
+                    <div class="min-w-0"><p class="text-xs font-bold modern-text truncate">${escapeHtml(name)}</p><p class="text-[10px] modern-muted mt-1">${inUse ? 'Kullanımda · silinemez' : 'Kullanımda değil'}</p></div>
+                    <div class="flex items-center gap-1 shrink-0"><button type="button" onclick="editCategory('${id}')" class="px-2.5 py-2 rounded-lg bg-blue-500/15 text-blue-300 text-xs" title="Düzenle"><i class="fa-solid fa-pen"></i></button><button type="button" onclick="deleteCategory('${id}')" ${inUse ? 'disabled' : ''} class="px-2.5 py-2 rounded-lg ${inUse ? 'opacity-30 cursor-not-allowed' : 'bg-rose-500/15 text-rose-300'} text-xs" title="${inUse ? 'Bu kategoriye bağlı buton var' : 'Sil'}"><i class="fa-solid fa-trash"></i></button></div>
+                </div>`;
+            }).join('');
+            renderCategoryOptions();
+        }
+
+        window.handleSaveCategory = async function(event) {
+            event.preventDefault();
+            if (!currentUser || currentUser.role !== 'admin') return;
+            const name = document.getElementById('categoryNameInput').value.trim();
+            const editId = document.getElementById('editCategoryIdInput').value;
+            if (!name) { showToast('Kategori adı boş olamaz.', 'error'); return; }
+            const duplicate = categoryEntries().some(([id, item]) => id !== editId && String(item.name).trim().toLocaleLowerCase('tr-TR') === name.toLocaleLowerCase('tr-TR'));
+            if (duplicate) { showToast('Bu kategori zaten kayıtlı.', 'error'); return; }
+            const oldName = editId ? globalCategories[editId]?.name : '';
+            const id = editId || ('local_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8));
+            // Önce yerel kayıt: bağlantı kesilse bile kategori bu cihazda kalır.
+            globalCategories[id] = { ...(globalCategories[id] || {}), name, _pendingSync: true };
+            saveLocalCategories();
+            renderCategoryOptions(name);
+            renderCategoryManagement();
+            resetCategoryForm();
+            if (!db) {
+                showToast(editId ? 'Kategori yerelde güncellendi. Firebase bağlantısı kurulunca eşitlenecek.' : 'Kategori yerel olarak kaydedildi. Firebase bağlantısı kurulunca eşitlenecek.', 'info');
+                return;
+            }
+            try {
+                const categoryValue = { name };
+                await set(ref(db, CATEGORIES_DB_PATH() + '/' + id), categoryValue);
+                globalCategories[id] = categoryValue;
+                saveLocalCategories();
+                if (editId && oldName && oldName !== name) {
+                    const updates = {};
+                    Object.entries(globalButtons).forEach(([buttonId, button]) => { if (String(button?.category || '').trim() === oldName) updates[buttonId + '/category'] = name; });
+                    if (Object.keys(updates).length) {
+                        // Buton değişikliklerini de önce yerel kategori kaydının ardından Firebase'e uygula.
+                        await update(ref(db, BUTTONS_DB_PATH()), updates);
+                    }
+                }
+                renderCategoryManagement();
+                showToast(editId ? 'Kategori yerelde kaydedildi ve Firebase ile eşitlendi.' : 'Kategori yerelde kaydedildi ve Firebase ile eşitlendi.', 'success');
+            } catch (err) {
+                showToast('Kategori yerelde kayıtlı. Firebase eşitlemesi bekliyor: ' + (err?.message || 'Bağlantı hatası'), 'info');
+            }
+        };
+
+        window.editCategory = function(id) {
+            const item = globalCategories[id];
+            if (!item || !currentUser || currentUser.role !== 'admin') return;
+            document.getElementById('categoryNameInput').value = item.name || '';
+            document.getElementById('editCategoryIdInput').value = id;
+            document.getElementById('saveCategoryBtn').innerHTML = '<i class="fa-solid fa-floppy-disk mr-1"></i> Değişiklikleri Kaydet';
+            document.getElementById('cancelCategoryEditBtn').classList.remove('hidden');
+            document.getElementById('categoryNameInput').focus();
+        };
+
+        window.resetCategoryForm = function() {
+            const input = document.getElementById('categoryNameInput');
+            const idInput = document.getElementById('editCategoryIdInput');
+            if (input) input.value = '';
+            if (idInput) idInput.value = '';
+            const save = document.getElementById('saveCategoryBtn');
+            if (save) save.innerHTML = '<i class="fa-solid fa-plus mr-1"></i> Kategori Ekle';
+            document.getElementById('cancelCategoryEditBtn')?.classList.add('hidden');
+        };
+
+        window.deleteCategory = async function(id) {
+            if (!currentUser || currentUser.role !== 'admin') { showToast('Bu işlem için yönetici yetkisi gerekiyor.', 'error'); return; }
+            const item = globalCategories[id];
+            if (!item) return;
+            const used = Object.values(globalButtons).some(btn => String(btn?.category || 'Genel').trim().toLocaleLowerCase('tr-TR') === String(item.name).trim().toLocaleLowerCase('tr-TR'));
+            if (used) { showToast('Bu kategoriye kayıtlı butonlar var. Önce butonların kategorisini değiştirin veya butonları silin.', 'error'); return; }
+            if (!confirm('"' + item.name + '" kategorisi silinsin mi?')) return;
+            // Yerelden hemen kaldır; Firebase silme işlemi başarısız olsa bile sonraki bağlantı için bilgi ver.
+            delete globalCategories[id];
+            saveLocalCategories();
+            renderCategoryManagement();
+            if (document.getElementById('editCategoryIdInput').value === id) resetCategoryForm();
+            if (!db) { showToast('Kategori yerelden silindi. Firebase bağlantısı olmadığı için sunucudaki kayıt varsa ayrıca eşitlenmelidir.', 'info'); return; }
+            try {
+                await remove(ref(db, CATEGORIES_DB_PATH() + '/' + id));
+                showToast('Kategori yerelden silindi ve Firebase ile eşitlendi.', 'success');
+            } catch (err) { showToast('Kategori yerelden silindi; Firebase eşitlemesi başarısız: ' + (err?.message || 'Bağlantı hatası'), 'info'); }
+        };
+
+        // BUTON YÖNETİMİ
+        window.handleSaveButton = function(event) {
+            event.preventDefault();
+            if (!currentUser || currentUser.role !== "admin") return;
+            if (!db) {
+                showToast("Firebase bağlantısı yapılmadı!", "error");
+                return;
+            }
+
+            const nameInput = document.getElementById("newBtnName");
+            const urlInput = document.getElementById("newBtnUrl");
+            const editIdInput = document.getElementById("editButtonIdInput");
+            const categoryInput = document.getElementById("newBtnCategory");
+
+            const name = nameInput.value.trim();
+            const category = (categoryInput && categoryInput.value.trim()) || "";
+            let url = urlInput.value.trim();
+            const editId = editIdInput.value;
+
+            if (!name || !url || !category) {
+                showToast("Lütfen buton adı, kategori ve link alanlarını doldurunuz. Gerekirse önce kategori ekleyin.", "error");
+                return;
+            }
+
+            if (!url.startsWith("http://") && !url.startsWith("https://")) {
+                url = "https://" + url;
+            }
+
+            if (!editId) {
+                const newOrder = Object.keys(globalButtons).length;
+                push(ref(db, BUTTONS_DB_PATH()), { name: name, url: url, category: category, order: newOrder })
+                    .then(() => {
+                        showToast(`"${name}" eklendi.`, "success");
+                        resetButtonForm();
+                    });
+            } else {
+                update(ref(db, BUTTONS_DB_PATH() + '/' + editId), { name: name, url: url, category: category })
+                    .then(() => {
+                        showToast(`"${name}" güncellendi.`, "success");
+                        resetButtonForm();
+                    });
+            }
+        }
+
+        window.moveButton = function(id, direction) {
+            if (!currentUser || currentUser.role !== "admin" || !db) return;
+            const entries = Object.entries(globalButtons).map(([id, val]) => ({ id, ...val }));
+            entries.sort((a, b) => (a.order || 0) - (b.order || 0));
+
+            const index = entries.findIndex(item => item.id === id);
+            if (index === -1) return;
+
+            if (direction === 'up' && index > 0) {
+                const temp = entries[index].order ?? index;
+                entries[index].order = entries[index - 1].order ?? (index - 1);
+                entries[index - 1].order = temp;
+                if (entries[index].order === entries[index - 1].order) {
+                    entries[index].order -= 1;
+                }
+            } else if (direction === 'down' && index < entries.length - 1) {
+                const temp = entries[index].order ?? index;
+                entries[index].order = entries[index + 1].order ?? (index + 1);
+                entries[index + 1].order = temp;
+                if (entries[index].order === entries[index + 1].order) {
+                    entries[index].order += 1;
+                }
+            } else {
+                return;
+            }
+
+            const updates = {};
+            updates[entries[index].id + '/order'] = entries[index].order;
+            const targetIndex = direction === 'up' ? index - 1 : index + 1;
+            updates[entries[targetIndex].id + '/order'] = entries[targetIndex].order;
+
+            update(ref(db, BUTTONS_DB_PATH()), updates)
+                .then(() => showToast("Buton sırası güncellendi.", "success"))
+                .catch(err => showToast("Hata: " + err.message, "error"));
+        }
+
+        window.handleDragStart = function(e, id) {
+            if (!currentUser || currentUser.role !== "admin") return;
+            draggedButtonId = id;
+            e.dataTransfer.setData('text/plain', id);
+        };
+
+        window.handleDragOver = function(e) {
+            if (!currentUser || currentUser.role !== "admin") return;
+            e.preventDefault();
+        };
+
+        window.handleDrop = function(e, targetId) {
+            if (!currentUser || currentUser.role !== "admin" || !db) return;
+            e.preventDefault();
+            if (!draggedButtonId || draggedButtonId === targetId) return;
+
+            const entries = Object.entries(globalButtons).map(([id, val]) => ({ id, ...val }));
+            entries.sort((a, b) => (a.order || 0) - (b.order || 0));
+
+            const draggedIdx = entries.findIndex(item => item.id === draggedButtonId);
+            const targetIdx = entries.findIndex(item => item.id === targetId);
+
+            if (draggedIdx === -1 || targetIdx === -1) return;
+
+            const [movedItem] = entries.splice(draggedIdx, 1);
+            entries.splice(targetIdx, 0, movedItem);
+
+            const updates = {};
+            entries.forEach((item, idx) => {
+                updates[item.id + '/order'] = idx;
+            });
+
+            update(ref(db, BUTTONS_DB_PATH()), updates)
+                .then(() => showToast("Sıralama güncellendi.", "success"))
+                .catch(err => showToast("Hata: " + err.message, "error"));
+
+            draggedButtonId = null;
+        };
+
+        window.editButton = function(id) {
+            const btn = globalButtons[id];
+            if (!btn) return;
+
+            document.getElementById("newBtnName").value = btn.name;
+            document.getElementById("newBtnUrl").value = btn.url;
+            document.getElementById("newBtnCategory").value = btn.category || "Genel";
+            document.getElementById("editButtonIdInput").value = id;
+
+            document.getElementById("btnPanelTitleText").innerText = "Butonu Düzenle";
+            document.getElementById("btnPanelIcon").className = "fa-solid fa-pen text-sm";
+            document.getElementById("saveButtonText").innerText = "Değişiklikleri Kaydet";
+            document.getElementById("cancelButtonEditBtn").classList.remove("hidden");
+
+            document.getElementById("newBtnName").focus();
+        }
+
+        window.resetButtonForm = function() {
+            document.getElementById("newBtnName").value = "";
+            document.getElementById("newBtnUrl").value = "";
+            document.getElementById("newBtnCategory").value = "";
+            document.getElementById("editButtonIdInput").value = "";
+
+            document.getElementById("btnPanelTitleText").innerText = "Yeni Buton Ekle";
+            document.getElementById("btnPanelIcon").className = "fa-solid fa-plus text-sm";
+            document.getElementById("saveButtonText").innerText = "Butonu Ekle";
+            document.getElementById("cancelButtonEditBtn").classList.add("hidden");
+        }
+
+        window.deleteButton = function(id) {
+            if (!currentUser || currentUser.role !== "admin" || !db) {
+                showToast("Bu işlem için yönetici yetkisi gerekiyor.", "error");
+                return;
+            }
+            const buttonName = (globalButtons[id] && globalButtons[id].name) || "Bu buton";
+            showDeleteConfirmation(buttonName, () => {
+                remove(ref(db, BUTTONS_DB_PATH() + '/' + id))
+                    .then(() => {
+                        showToast('"' + buttonName + '" butonu silindi.', "success");
+                        resetButtonForm();
+                    })
+                    .catch(err => showToast("Buton silinemedi: " + (err.message || "Bilinmeyen hata"), "error"));
+            });
+        }
+
+        // Silme onayı ekranın ortasında modern bir modal olarak gösterilir.
+        function showDeleteConfirmation(itemName, onConfirm, itemType = "buton") {
+            const overlay = document.createElement("div");
+            overlay.className = "delete-confirm-overlay";
+            overlay.setAttribute("role", "presentation");
+
+            const card = document.createElement("section");
+            card.className = "delete-confirm-card";
+            card.setAttribute("role", "alertdialog");
+            card.setAttribute("aria-modal", "true");
+            card.setAttribute("aria-label", "Silme işlemini onayla");
+
+            const icon = document.createElement("div");
+            icon.className = "modern-toast-icon";
+            icon.innerHTML = '<i class="fa-solid fa-trash-can" aria-hidden="true"></i>';
+            const copy = document.createElement("div");
+            copy.className = "modern-toast-copy";
+            const title = document.createElement("div");
+            title.className = "modern-toast-title";
+            title.textContent = "Silme işlemini onayla";
+            const message = document.createElement("div");
+            message.className = "modern-toast-message";
+            message.textContent = '“' + itemName + '” ' + itemType + ' silinsin mi? Bu işlem geri alınamaz.';
+            const actions = document.createElement("div");
+            actions.className = "modern-toast-actions";
+            const cancel = document.createElement("button");
+            cancel.type = "button";
+            cancel.className = "modern-toast-action modern-toast-cancel";
+            cancel.textContent = "Vazgeç";
+            const confirm = document.createElement("button");
+            confirm.type = "button";
+            confirm.className = "modern-toast-action modern-toast-confirm";
+            confirm.textContent = "Evet, sil";
+            actions.append(cancel, confirm);
+            copy.append(title, message, actions);
+            const close = document.createElement("button");
+            close.type = "button";
+            close.className = "modern-toast-close";
+            close.setAttribute("aria-label", "Bildirimi kapat");
+            close.innerHTML = '<i class="fa-solid fa-xmark" aria-hidden="true"></i>';
+
+            const dismiss = () => {
+                overlay.classList.remove("is-visible");
+                setTimeout(() => overlay.remove(), 180);
+                document.removeEventListener("keydown", onKeyDown);
+            };
+            const onKeyDown = (event) => { if (event.key === "Escape") dismiss(); };
+            cancel.addEventListener("click", dismiss);
+            close.addEventListener("click", dismiss);
+            overlay.addEventListener("click", (event) => { if (event.target === overlay) dismiss(); });
+            confirm.addEventListener("click", () => { dismiss(); onConfirm(); });
+            card.append(icon, copy, close);
+            overlay.appendChild(card);
+            document.body.appendChild(overlay);
+            document.addEventListener("keydown", onKeyDown);
+            requestAnimationFrame(() => overlay.classList.add("is-visible"));
+            cancel.focus();
+        }
+
+        // KULLANICI YÖNETİMİ
+        function renderUserButtonPermissions(selected = {}) {
+            const box = document.getElementById("userButtonPermissions");
+            if (!box) return;
+            const ids = Object.keys(globalButtons).sort((a, b) => (globalButtons[a].order ?? 0) - (globalButtons[b].order ?? 0));
+            if (!ids.length) {
+                box.innerHTML = '<p class="text-xs modern-muted">Önce hızlı erişim bölümünden buton ekleyin.</p>';
+                return;
+            }
+            box.innerHTML = ids.map(id => `
+                <label class="flex items-center gap-2 p-2 rounded-lg bg-white/5 text-xs modern-text">
+                    <input type="checkbox" class="user-button-permission accent-amber-500" value="${id}" ${selected[id] ? 'checked' : ''}>
+                    <span class="truncate">${escapeHtml(globalButtons[id].name || 'İsimsiz buton')}</span>
+                </label>
+            `).join('');
+        }
+
+        window.handleSaveUser = function(event) {
+            event.preventDefault();
+            if (!currentUser || currentUser.role !== "admin") return;
+            if (!db) {
+                showToast("Firebase bağlantısı yapılmadı!", "error");
+                return;
+            }
+
+            const title = document.getElementById("newUserNameInput").value.trim();
+            const role = document.getElementById("newUserRoleInput").value;
+            const password = document.getElementById("newUserPassInput").value.trim();
+            const editId = document.getElementById("editUserIdInput").value;
+            const allowedButtons = {};
+            document.querySelectorAll(".user-button-permission:checked").forEach(input => { allowedButtons[input.value] = true; });
+
+            if (!title || !password) {
+                showToast("Lütfen kullanıcı adı ve şifre alanlarını doldurunuz.", "error");
+                return;
+            }
+            let isDuplicate = false;
+            Object.keys(globalUsers).forEach(key => {
+                if (key !== editId && globalUsers[key].password === password) isDuplicate = true;
+            });
+            if (isDuplicate) {
+                showToast("Bu şifre başka bir kullanıcı tarafından kullanılıyor!", "error");
+                return;
+            }
+
+            const userData = { title, role, password, allowedButtons };
+            const request = !editId
+                ? push(ref(db, USERS_DB_PATH()), userData)
+                : update(ref(db, USERS_DB_PATH() + '/' + editId), userData);
+            request.then(() => {
+                // Veritabanı kaydı başarılı; arayüz güncelleme hatasını kayıt hatasıyla karıştırma.
+                try {
+                    resetUserForm();
+                    renderDynamicButtons();
+                } catch (uiError) {
+                    console.error("Kullanıcı kaydedildi ancak arayüz güncellenirken hata oluştu:", uiError);
+                }
+                showToast(`"${title}" için kullanıcı ve buton yetkileri kaydedildi.`, "success");
+            }, err => {
+                showToast("Kayıt hatası: " + (err?.message || "Bilinmeyen hata"), "error");
+            });
+        }
+
+        window.editUser = function(id) {
+            const user = globalUsers[id];
+            if (!user) return;
+
+            document.getElementById("newUserNameInput").value = user.title;
+            document.getElementById("newUserRoleInput").value = user.role;
+            document.getElementById("newUserPassInput").value = user.password;
+            document.getElementById("editUserIdInput").value = id;
+            renderUserButtonPermissions(user.allowedButtons || {});
+
+            document.getElementById("userPanelTitleText").innerText = "Kullanıcıyı Düzenle";
+            document.getElementById("userPanelIcon").className = "fa-solid fa-pen text-sm";
+            document.getElementById("saveUserBtnText").innerText = "Değişiklikleri Kaydet";
+            document.getElementById("cancelUserEditBtn").classList.remove("hidden");
+
+            document.getElementById("newUserNameInput").focus();
+        }
+
+        window.resetUserForm = function() {
+            document.getElementById("newUserNameInput").value = "";
+            document.getElementById("newUserRoleInput").value = "user";
+            document.getElementById("newUserPassInput").value = "";
+            document.getElementById("editUserIdInput").value = "";
+            renderUserButtonPermissions({});
+
+            document.getElementById("userPanelTitleText").innerText = "Sisteme Kullanıcı / Şifre Tanımla";
+            document.getElementById("userPanelIcon").className = "fa-solid fa-user-plus text-sm";
+            document.getElementById("saveUserBtnText").innerText = "Kullanıcı Ekle";
+            document.getElementById("cancelUserEditBtn").classList.add("hidden");
+        }
+
+        window.deleteUser = function(id) {
+            if (!currentUser || currentUser.role !== "admin" || !db) return;
+
+            let adminCount = 0;
+            Object.keys(globalUsers).forEach(key => {
+                if (globalUsers[key].role === 'admin') adminCount++;
+            });
+
+            if (globalUsers[id] && globalUsers[id].role === 'admin' && adminCount <= 1) {
+                showToast("Sistemde en az bir yönetici kalmalıdır!", "error");
+                return;
+            }
+
+            const userName = (globalUsers[id] && (globalUsers[id].name || globalUsers[id].title)) || "Bu kullanıcı";
+            showDeleteConfirmation(userName, () => {
+                remove(ref(db, USERS_DB_PATH() + '/' + id))
+                    .then(() => {
+                        showToast('"' + userName + '" kullanıcısı silindi.', "success");
+                        resetUserForm();
+                    })
+                    .catch(err => showToast("Kullanıcı silinemedi: " + (err.message || "Bilinmeyen hata"), "error"));
+            }, "kullanıcısı");
+        }
+
+        function renderDynamicButtons() {
+            const container = document.getElementById("dynamicButtonsList");
+            const keys = Object.keys(globalButtons);
+
+            if (keys.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full py-8 text-center bg-black/5 rounded-2xl border border-dashed border-black/15 w-full">
+                        <i class="fa-solid fa-link-slash text-2xl text-slate-400 mb-2 block"></i>
+                        <p class="text-xs text-slate-600">Henüz özel buton eklenmemiş.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let sortedKeys = keys.sort((a, b) => {
+                let orderA = globalButtons[a].order ?? 0;
+                let orderB = globalButtons[b].order ?? 0;
+                return orderA - orderB;
+            });
+
+            container.innerHTML = "";
+            let activeCategory = null;
+            sortedKeys.forEach((id) => {
+                const btn = globalButtons[id];
+                const isAdmin = currentUser && currentUser.role === "admin";
+                if (!isAdmin && (!currentUser || !currentUser.allowedButtons || currentUser.allowedButtons[id] !== true)) return;
+                const category = (btn.category || "Genel").trim() || "Genel";
+                if (category !== activeCategory) {
+                    activeCategory = category;
+                    const heading = document.createElement("div");
+                    heading.className = "col-span-full w-full text-xs font-extrabold uppercase tracking-wider text-slate-800 bg-slate-100 border border-slate-200 rounded-xl px-3 py-2.5 mt-3 mb-1 shadow-sm";
+                    heading.textContent = category;
+                    container.appendChild(heading);
+                }
+                const card = document.createElement("div");
+
+                card.className = `w-full max-w-xs flex items-center justify-between p-3.5 quick-btn-card rounded-2xl shadow-md group ${isAdmin ? 'cursor-grab active:cursor-grabbing' : ''}`;
+                
+                if (isAdmin) {
+                    card.setAttribute('draggable', 'true');
+                    card.setAttribute('ondragstart', `handleDragStart(event, '${id}')`);
+                    card.setAttribute('ondragover', 'handleDragOver(event)');
+                    card.setAttribute('ondrop', `handleDrop(event, '${id}')`);
+                }
+
+                card.innerHTML = `
+                    <a href="${btn.url}" target="_blank" class="flex items-center gap-3 flex-grow min-w-0 pr-2">
+                        <div class="w-9 h-9 rounded-xl dynamic-btn flex items-center justify-center text-xs font-bold transition-all flex-shrink-0 shadow-sm text-white">
+                            <i class="fa-solid fa-globe"></i>
+                        </div>
+                        <div class="truncate">
+                            <h4 class="text-xs font-bold text-white quick-title transition-colors truncate">${escapeHtml(btn.name)}</h4>
+                        </div>
+                    </a>
+                    ${isAdmin ? `
+                        <div class="flex items-center gap-0.5 flex-shrink-0">
+                            <button onclick="moveButton('${id}', 'up')" class="p-1.5 text-slate-400 hover:text-amber-400 hover:bg-amber-400/10 rounded-lg transition-colors" title="Yukarı Taşı">
+                                <i class="fa-solid fa-arrow-up text-[10px]"></i>
+                            </button>
+                            <button onclick="moveButton('${id}', 'down')" class="p-1.5 text-slate-400 hover:text-amber-400 hover:bg-amber-400/10 rounded-lg transition-colors" title="Aşağı Taşı">
+                                <i class="fa-solid fa-arrow-down text-[10px]"></i>
+                            </button>
+                            <button onclick="editButton('${id}')" class="p-1.5 text-slate-400 hover:text-amber-400 hover:bg-amber-400/10 rounded-lg transition-colors ml-1" title="Düzenle">
+                                <i class="fa-solid fa-pen text-[10px]"></i>
+                            </button>
+                            <button onclick="deleteButton('${id}')" class="p-1.5 text-slate-400 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors" title="Sil">
+                                <i class="fa-solid fa-trash-can text-[10px]"></i>
+                            </button>
+                        </div>
+                    ` : ''}
+                `;
+                container.appendChild(card);
+            });
+            if (!isAdmin && container.children.length === 0) {
+                container.innerHTML = '<div class="col-span-full py-8 text-center text-xs modern-muted">Size atanmış bir hızlı erişim butonu bulunmuyor.</div>';
+            }
+        }
+
+        function renderDynamicUsers() {
+            const container = document.getElementById("dynamicUsersList");
+            const keys = Object.keys(globalUsers);
+
+            container.innerHTML = "";
+            keys.forEach((id) => {
+                const user = globalUsers[id];
+                const card = document.createElement("div");
+
+                card.className = "flex items-center justify-between p-3.5 bg-slate-100 border border-slate-300 rounded-2xl shadow-sm";
+
+                const isAdmin = user.role === "admin";
+
+                card.innerHTML = `
+                    <div class="flex items-center gap-3 flex-grow min-w-0 pr-2">
+                        <div class="w-9 h-9 rounded-xl ${isAdmin ? 'bg-amber-500/20 text-amber-600 border-amber-500/40' : 'bg-blue-500/20 text-blue-600 border-blue-500/40'} flex items-center justify-center text-xs font-bold border flex-shrink-0">
+                            <i class="fa-solid ${isAdmin ? 'fa-user-shield' : 'fa-user'}"></i>
+                        </div>
+                        <div class="truncate">
+                            <h4 class="text-xs font-bold text-slate-900 truncate">${escapeHtml(user.title)}</h4>
+                            <p class="text-[10px] text-slate-600 font-mono mt-0.5">Şifre: <span class="text-slate-900 font-semibold">${escapeHtml(user.password)}</span> <span class="ml-1 px-1.5 py-0.5 rounded text-[9px] ${isAdmin ? 'bg-amber-500/20 text-amber-700' : 'bg-slate-300 text-slate-800'}">${isAdmin ? 'Yönetici' : 'Kullanıcı'}</span></p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1 flex-shrink-0">
+                        <button onclick="editUser('${id}')" class="p-2 text-slate-500 hover:text-amber-600 hover:bg-amber-500/10 rounded-lg transition-colors" title="Düzenle">
+                            <i class="fa-solid fa-pen text-xs"></i>
+                        </button>
+                        <button onclick="deleteUser('${id}')" class="p-2 text-slate-500 hover:text-red-600 hover:bg-red-500/10 rounded-lg transition-colors" title="Sil">
+                            <i class="fa-solid fa-trash-can text-xs"></i>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.innerText = text || "";
+            return div.innerHTML;
+        }
+
+        // MODERN BİLDİRİM (TOAST) FONKSİYONU — masaüstü ve mobil uyumlu
+        function showToast(message, type = "success") {
+            const container = document.getElementById("toastContainer");
+            if (!container) return;
+
+            const presets = {
+                success: { title: "İşlem başarılı", icon: "fa-circle-check", accent: "#10b981" },
+                error:   { title: "Bir sorun oluştu", icon: "fa-circle-exclamation", accent: "#f43f5e" },
+                info:    { title: "Bilgilendirme", icon: "fa-circle-info", accent: "#38bdf8" },
+                warning: { title: "Dikkat", icon: "fa-triangle-exclamation", accent: "#f59e0b" }
+            };
+            const preset = presets[type] || presets.success;
+            const duration = type === "error" ? 6000 : 4200;
+            const toast = document.createElement("section");
+            toast.className = "modern-toast";
+            toast.setAttribute("role", type === "error" ? "alert" : "status");
+            toast.style.setProperty("--toast-accent", preset.accent);
+            toast.style.setProperty("--toast-duration", `${duration}ms`);
+
+            const icon = document.createElement("div");
+            icon.className = "modern-toast-icon";
+            icon.setAttribute("aria-hidden", "true");
+            const iconEl = document.createElement("i");
+            iconEl.className = `fa-solid ${preset.icon}`;
+            icon.appendChild(iconEl);
+
+            const copy = document.createElement("div");
+            copy.className = "modern-toast-copy";
+            const title = document.createElement("div");
+            title.className = "modern-toast-title";
+            title.textContent = preset.title;
+            const body = document.createElement("div");
+            body.className = "modern-toast-message";
+            body.textContent = String(message ?? "");
+            copy.append(title, body);
+
+            const close = document.createElement("button");
+            close.type = "button";
+            close.className = "modern-toast-close";
+            close.setAttribute("aria-label", "Bildirimi kapat");
+            close.innerHTML = '<i class="fa-solid fa-xmark" aria-hidden="true"></i>';
+
+            const progress = document.createElement("div");
+            progress.className = "modern-toast-progress";
+            progress.setAttribute("aria-hidden", "true");
+            toast.append(icon, copy, close, progress);
+            container.appendChild(toast);
+
+            let removeTimer;
+            const dismiss = () => {
+                if (toast.dataset.dismissed === "true") return;
+                toast.dataset.dismissed = "true";
+                clearTimeout(removeTimer);
+                toast.classList.remove("is-visible");
+                toast.classList.add("is-leaving");
+                setTimeout(() => toast.remove(), 280);
+            };
+            close.addEventListener("click", dismiss);
+            toast.addEventListener("mouseenter", () => { progress.style.animationPlayState = "paused"; });
+            toast.addEventListener("mouseleave", () => { progress.style.animationPlayState = "running"; });
+            requestAnimationFrame(() => toast.classList.add("is-visible"));
+            removeTimer = setTimeout(dismiss, duration);
+
+            // Ekranı kaplamaması için eski bildirimleri sınırla.
+            while (container.children.length > 5) container.firstElementChild.remove();
+        }
+
+    </script>
+</body>
+</html>
