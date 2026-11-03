@@ -1,10 +1,14 @@
 {
   "name": "Yönetim ve Erişim Merkezi",
   "short_name": "Giriş Paneli",
-  "description": "Yönetim ve erişim merkezi",
-  "start_url": "./Giriş Paneli Yeni.html",
+  "description": "Güvenli erişim ve yönetim paneli",
+  "start_url": "./",
   "scope": "./",
   "display": "fullscreen",
+  "display_override": [
+    "fullscreen",
+    "standalone"
+  ],
   "orientation": "any",
   "background_color": "#121619",
   "theme_color": "#E30613",
@@ -20,6 +24,12 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }
