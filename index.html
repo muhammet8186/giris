@@ -680,7 +680,9 @@ const emptyFirebaseConfig = {
   appId: "1:362841104827:web:c31a43cd46c340f581249e",
   measurementId: "G-8N2CGCXL8W"
 };
-
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 // ===========================================================================================
 
         // Firebase bağlantı bilgileri ve kayıtlı bağlantı listesi yalnızca bu tarayıcının localStorage alanında tutulur.
