@@ -3,6 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#E30613">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="icon" type="image/svg+xml" href="./icons/favicon.svg">
+    <link rel="apple-touch-icon" href="./icons/icon-192.png">
+    <link rel="manifest" href="./manifest.webmanifest">
     <title id="pageTitle">Yönetim ve Erişim Merkezi - Giriş Paneli</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -662,15 +669,9 @@
         // Kendi Firebase bilgilerinizi ve kök yolunuzu bu alandan kolayca güncelleyebilirsiniz:
         // ====================================================================================
         const emptyFirebaseConfig = {
-  apiKey: "AIzaSyDeDpVrZAniRCbqzgTTuuoX-3MkT9seu5Y",
-  authDomain: "muhammet-3ee51.firebaseapp.com",
-  databaseURL: "https://muhammet-3ee51-default-rtdb.firebaseio.com",
-  projectId: "muhammet-3ee51",
-  storageBucket: "muhammet-3ee51.appspot.com",
-  messagingSenderId: "362841104827",
-  appId: "1:362841104827:web:c31a43cd46c340f581249e",
-  measurementId: "G-8N2CGCXL8W"
-};
+            apiKey: "", authDomain: "", databaseURL: "", projectId: "",
+            storageBucket: "", messagingSenderId: "", appId: "", measurementId: ""
+        };
         // Firebase bağlantı bilgileri ve kayıtlı bağlantı listesi yalnızca bu tarayıcının localStorage alanında tutulur.
         let defaultFirebaseConfig = emptyFirebaseConfig;
         try {
@@ -1883,6 +1884,14 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
             while (container.children.length > 5) container.firstElementChild.remove();
         }
 
+    </script>
+    <script>
+      // PWA service worker: HTTPS veya localhost üzerinde etkinleşir.
+      if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./service-worker.js').catch(err => console.warn('PWA SW:', err));
+        });
+      }
     </script>
 </body>
 </html>

@@ -1,0 +1,25 @@
+{
+  "name": "Yönetim ve Erişim Merkezi",
+  "short_name": "Giriş Paneli",
+  "description": "Yönetim ve erişim merkezi",
+  "start_url": "./Giriş Paneli Yeni.html",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#121619",
+  "theme_color": "#E30613",
+  "icons": [
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
