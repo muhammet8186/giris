@@ -680,9 +680,8 @@ const emptyFirebaseConfig = {
   appId: "1:362841104827:web:c31a43cd46c340f581249e",
   measurementId: "G-8N2CGCXL8W"
 };
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+// Firebase başlangıç bağlantısı, kayıtlı aktif yapılandırma aşağıda kontrol edilerek kurulur.
+// Analytics kullanılmadığı için getAnalytics çağrısı kaldırıldı.
 // ===========================================================================================
 
         // Firebase bağlantı bilgileri ve kayıtlı bağlantı listesi yalnızca bu tarayıcının localStorage alanında tutulur.
@@ -705,13 +704,16 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
         // ====================================================================================
 
         let db = null;
+        let activeFirebaseApp = null;
+        let firebaseListenerUnsubs = [];
         try {
-            if (defaultFirebaseConfig.apiKey && defaultFirebaseConfig.databaseURL) {
-                let activeApp = initializeApp(defaultFirebaseConfig);
-                db = getDatabase(activeApp);
+            if (defaultFirebaseConfig && defaultFirebaseConfig.apiKey && defaultFirebaseConfig.databaseURL) {
+                activeFirebaseApp = initializeApp(defaultFirebaseConfig, "PortalMainApp");
+                db = getDatabase(activeFirebaseApp);
             }
         } catch (e) {
-            console.warn("Firebase bağlantısı yapılandırılmamış.");
+            console.warn("Firebase başlangıç bağlantısı kurulamadı:", e);
+            db = null;
         }
 
         const TITLE_DB_PATH = () => currentRootPath + '/baslik';
@@ -805,9 +807,14 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
 
         // GERÇEK ZAMANLI DİNLEYİCİLERİ BAŞLAT
         function initListeners() {
+            // Veritabanı değişirken önce önceki gerçek zamanlı dinleyicileri kapat.
+            firebaseListenerUnsubs.forEach(unsubscribe => {
+                try { if (typeof unsubscribe === "function") unsubscribe(); } catch (_) {}
+            });
+            firebaseListenerUnsubs = [];
             if (!db || !currentRootPath) return;
 
-            onValue(ref(db, TITLE_DB_PATH()), (snapshot) => {
+            firebaseListenerUnsubs.push(onValue(ref(db, TITLE_DB_PATH()), (snapshot) => {
                 systemTitle = snapshot.val() || "Yönetim ve Erişim Merkezi";
                 // Oturum açılmışsa kullanıcı başlığı, veritabanındaki kullanıcı adından türetilir.
                 if (currentUser && currentUser.displayName) {
@@ -817,7 +824,7 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
                 }
             });
 
-            onValue(ref(db, BUTTONS_DB_PATH()), (snapshot) => {
+            firebaseListenerUnsubs.push(onValue(ref(db, BUTTONS_DB_PATH()), (snapshot) => {
                 globalButtons = snapshot.val() || {};
                 // Butonlarda daha önce kullanılmış ancak kategori listesine aktarılmamış adları da kaybetme.
                 const knownNames = new Set(Object.values(globalCategories).map(item => String(item?.name || '').trim().toLocaleLowerCase('tr-TR')));
@@ -835,7 +842,7 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
                 renderUserButtonPermissions(editingUserId && globalUsers[editingUserId] ? (globalUsers[editingUserId].allowedButtons || {}) : {});
             });
 
-            onValue(ref(db, CATEGORIES_DB_PATH()), async (snapshot) => {
+            firebaseListenerUnsubs.push(onValue(ref(db, CATEGORIES_DB_PATH()), async (snapshot) => {
                 categoriesStoredInFirebase = snapshot.exists();
                 const remoteCategories = snapshot.val() || {};
                 const localCategories = readLocalCategories();
@@ -870,9 +877,9 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
                 }
                 renderCategoryOptions();
                 renderCategoryManagement();
-            });
+            }));
 
-            onValue(ref(db, USERS_DB_PATH()), (snapshot) => {
+            firebaseListenerUnsubs.push(onValue(ref(db, USERS_DB_PATH()), (snapshot) => {
                 if (snapshot.exists()) {
                     globalUsers = snapshot.val() || {};
                     try { localStorage.setItem("portal_cached_users", JSON.stringify(globalUsers)); } catch (_) {}
@@ -891,7 +898,7 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
                     }
                 }
                 renderDynamicButtons();
-            });
+            }));
         }
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -931,6 +938,19 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
         }
 
         // FIREBASE KONFİGÜRASYON YÖNETİMİ & DİNAMİK BAĞLANTI DEĞİŞİMİ
+        // Firebase bilgileri hem kod içindeki emptyFirebaseConfig nesnesinden
+        // hem de yönetim panelindeki düzenlenebilir alandan kullanılabilir.
+        function firebaseConfigToEditor(config) {
+            return JSON.stringify(config || emptyFirebaseConfig, null, 2);
+        }
+        function fillFirebaseConfigEditor() {
+            const rootInput = document.getElementById("firebaseRootPathInput");
+            const configInput = document.getElementById("firebaseConfigInput");
+            if (rootInput && !rootInput.value) rootInput.value = currentRootPath || "Giriş Paneli";
+            if (configInput && !configInput.value.trim()) configInput.value = firebaseConfigToEditor(defaultFirebaseConfig || emptyFirebaseConfig);
+        }
+        fillFirebaseConfigEditor();
+
         window.handleSaveFirebaseConfig = function(event) {
             event.preventDefault();
             if (!currentUser || currentUser.role !== "admin") return;
@@ -967,6 +987,8 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
         function switchDatabase(newConfig, newRootPath) {
             try {
                 const newApp = initializeApp(newConfig, "DynamicApp_" + Date.now());
+                // Eski bağlantının listener'ları initListeners içinde kaldırılır.
+                activeFirebaseApp = newApp;
                 db = getDatabase(newApp);
                 localStorage.setItem("sistem_firebase_aktif", JSON.stringify(newConfig));
                 currentRootPath = newRootPath;
@@ -995,7 +1017,9 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
 
         window.resetFirebaseConfigForm = function() {
             document.getElementById("firebaseRootPathInput").value = currentRootPath;
-            document.getElementById("firebaseConfigInput").value = "";
+            // Form sıfırlanınca Firebase alanı boş kalmasın; kodda tanımlı
+            // veya aktif bağlantı bilgileri yeniden gösterilsin.
+            document.getElementById("firebaseConfigInput").value = firebaseConfigToEditor(defaultFirebaseConfig || emptyFirebaseConfig);
             document.getElementById("editFirebaseConfigIdInput").value = "";
 
             document.getElementById("firebaseConfigPanelTitleText").innerText = "Firebase Konfigürasyon Tanımla";
