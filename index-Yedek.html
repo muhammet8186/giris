@@ -671,8 +671,14 @@
         // Kendi Firebase bilgilerinizi ve kök yolunuzu bu alandan kolayca güncelleyebilirsiniz:
         // ====================================================================================
         const emptyFirebaseConfig = {
-            apiKey: "", authDomain: "", databaseURL: "", projectId: "",
-            storageBucket: "", messagingSenderId: "", appId: "", measurementId: ""
+            apiKey: "AIzaSyDeDpVrZAniRCbqzgTTuuoX-3MkT9seu5Y",
+            authDomain: "muhammet-3ee51.firebaseapp.com",
+            databaseURL: "https://muhammet-3ee51-default-rtdb.firebaseio.com",
+            projectId: "muhammet-3ee51",
+            storageBucket: "muhammet-3ee51.appspot.com",
+            messagingSenderId: "362841104827",
+            appId: "1:362841104827:web:c31a43cd46c340f581249e",
+            measurementId: "G-8N2CGCXL8W"
         };
         // Firebase bağlantı bilgileri ve kayıtlı bağlantı listesi yalnızca bu tarayıcının localStorage alanında tutulur.
         let defaultFirebaseConfig = emptyFirebaseConfig;
@@ -1359,48 +1365,33 @@ let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli"
         };
 
         // BUTON YÖNETİMİ
-        window.handleSaveButton = function(event) {
+        window.handleSaveButton = async function(event) {
             event.preventDefault();
             if (!currentUser || currentUser.role !== "admin") return;
-            if (!db) {
-                showToast("Firebase bağlantısı yapılmadı!", "error");
-                return;
-            }
-
+            if (!db) { showToast("Firebase bağlantısı kurulamadı. Buton kaydedilemedi.", "error"); return; }
             const nameInput = document.getElementById("newBtnName");
             const urlInput = document.getElementById("newBtnUrl");
             const editIdInput = document.getElementById("editButtonIdInput");
             const categoryInput = document.getElementById("newBtnCategory");
-
             const name = nameInput.value.trim();
             const category = (categoryInput && categoryInput.value.trim()) || "";
             let url = urlInput.value.trim();
             const editId = editIdInput.value;
-
-            if (!name || !url || !category) {
-                showToast("Lütfen buton adı, kategori ve link alanlarını doldurunuz. Gerekirse önce kategori ekleyin.", "error");
-                return;
+            if (!name || !url || !category) { showToast("Lütfen buton adı, kategori ve link alanlarını doldurunuz.", "error"); return; }
+            if (!/^https?:\/\//i.test(url)) url = "https://" + url;
+            try {
+                if (!editId) {
+                    const newOrder = Object.keys(globalButtons).length;
+                    await push(ref(db, BUTTONS_DB_PATH()), { name, url, category, order: newOrder });
+                } else {
+                    await update(ref(db, BUTTONS_DB_PATH() + "/" + editId), { name, url, category });
+                }
+                showToast(`"${name}" Firebase'e kaydedildi.`, "success");
+                resetButtonForm();
+            } catch (err) {
+                showToast("Buton Firebase'e kaydedilemedi: " + (err?.message || "Bağlantı/izin hatası"), "error");
             }
-
-            if (!url.startsWith("http://") && !url.startsWith("https://")) {
-                url = "https://" + url;
-            }
-
-            if (!editId) {
-                const newOrder = Object.keys(globalButtons).length;
-                push(ref(db, BUTTONS_DB_PATH()), { name: name, url: url, category: category, order: newOrder })
-                    .then(() => {
-                        showToast(`"${name}" eklendi.`, "success");
-                        resetButtonForm();
-                    });
-            } else {
-                update(ref(db, BUTTONS_DB_PATH() + '/' + editId), { name: name, url: url, category: category })
-                    .then(() => {
-                        showToast(`"${name}" güncellendi.`, "success");
-                        resetButtonForm();
-                    });
-            }
-        }
+        };
 
         window.moveButton = function(id, direction) {
             if (!currentUser || currentUser.role !== "admin" || !db) return;
