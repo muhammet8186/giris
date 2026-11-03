@@ -670,10 +670,19 @@
         // ⚙️ KOD İÇİNDEN DEĞİŞTİRİLEBİLİR FIREBASE VE KÖK YOL (ROOT PATH) AYARLARI
         // Kendi Firebase bilgilerinizi ve kök yolunuzu bu alandan kolayca güncelleyebilirsiniz:
         // ====================================================================================
-        const emptyFirebaseConfig = {
-            apiKey: "", authDomain: "", databaseURL: "", projectId: "",
-            storageBucket: "", messagingSenderId: "", appId: "", measurementId: ""
-        };
+const emptyFirebaseConfig = {
+  apiKey: '',
+  authDomain: '',
+  databaseURL: '',
+  projectId: '',
+  storageBucket: '',
+  messagingSenderId: '',
+  appId: '',
+  measurementId: ''
+};
+
+// ===========================================================================================
+
         // Firebase bağlantı bilgileri ve kayıtlı bağlantı listesi yalnızca bu tarayıcının localStorage alanında tutulur.
         let defaultFirebaseConfig = emptyFirebaseConfig;
         try {
@@ -686,6 +695,8 @@
         function saveLocalFirebaseConfigs() {
             localStorage.setItem("sistem_firebase_listesi", JSON.stringify(globalFirebaseConfigs));
         }
+
+// ============================================================================================
 
         // Firebase Veritabanı Kök Yolu (Root Path)
 let currentRootPath = localStorage.getItem("sistem_kok_yolu") || "Giriş Paneli";
